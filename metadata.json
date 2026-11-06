@@ -1,0 +1,6 @@
+{
+  "name": "Android Credit Card Hub",
+  "description": "Production-grade Android Room data layer, Clean Architecture, Hilt DI, and repayment cycle calculator for Credit Card Management with Jetpack Compose previews.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
