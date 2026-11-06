@@ -6,3 +6,9 @@ coverage/
 *.log
 .env*
 !.env.example
+.gradle/
+app/build/
+*.jks
+*.keystore
+.idea/
+*.iml
