@@ -1,0 +1,24 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:translateX="24"
+        android:translateY="24">
+        <!-- Credit Card Outline -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M52,6H8C4.7,6 2,8.7 2,12v36c0,3.3 2.7,6 6,6h44c3.3,0 6,-2.7 6,-6V12C58,8.7 55.3,6 52,6zM8,10h44c1.1,0 2,0.9 2,2v4H6v-4C6,10.9 6.9,10 8,10zM52,50H8c-1.1,0 -2,-0.9 -2,-2V24h48v24C54,49.1 53.1,50 52,50z" />
+        <!-- Card Chip / Stripes -->
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M12,32h10v6H12z" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M26,34h18v2H26z" />
+        <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M12,42h16v2H12z" />
+    </group>
+</vector>
