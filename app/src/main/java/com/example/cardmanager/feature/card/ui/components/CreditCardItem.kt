@@ -1,7 +1,14 @@
 package com.example.cardmanager.feature.card.ui.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -21,17 +28,29 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.ReceiptLong
+import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -54,11 +73,14 @@ import java.util.Locale
 fun CreditCardItem(
     card: CreditCardEntity,
     modifier: Modifier = Modifier,
+    initiallyExpanded: Boolean = false,
     onClick: () -> Unit = {}
 ) {
     val themeState = LocalThemeState.current
     val isMiui = themeState.currentStyle == AppThemeStyle.MIUIX
     val cornerRadius = if (isMiui) 26.dp else 20.dp
+
+    var expanded by remember { mutableStateOf(initiallyExpanded) }
 
     val daysRemaining = card.calculateDaysUntilRepayment()
     val baseColor = try {
@@ -67,16 +89,36 @@ fun CreditCardItem(
         Color(0xFF2563EB)
     }
 
-    // Micro-interaction: tactile scale bounce on press
+    // Micro-interaction: tactile scale bounce on touch down
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
+
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.97f else 1f,
+        targetValue = when {
+            isPressed -> 0.97f
+            expanded -> 1.01f
+            else -> 1f
+        },
         animationSpec = spring(dampingRatio = 0.75f, stiffness = 400f),
         label = "cardScale"
     )
 
-    // Palette with dark-mode richness
+    val elevation by animateDpAsState(
+        targetValue = when {
+            isPressed -> 2.dp
+            expanded -> 12.dp
+            else -> 6.dp
+        },
+        animationSpec = spring(dampingRatio = 0.8f, stiffness = 350f),
+        label = "cardElevation"
+    )
+
+    val arrowRotation by animateFloatAsState(
+        targetValue = if (expanded) 180f else 0f,
+        animationSpec = spring(dampingRatio = 0.8f, stiffness = 400f),
+        label = "arrowRotation"
+    )
+
     val gradientColors = listOf(
         baseColor,
         baseColor.copy(alpha = 0.88f),
@@ -86,23 +128,23 @@ fun CreditCardItem(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(210.dp)
             .scale(scale)
+            .animateContentSize(animationSpec = spring(dampingRatio = 0.8f, stiffness = 300f))
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
-                onClick = onClick
+                onClick = { expanded = !expanded }
             ),
         shape = RoundedCornerShape(cornerRadius),
         elevation = CardDefaults.cardElevation(
-            defaultElevation = 6.dp,
+            defaultElevation = elevation,
             pressedElevation = 2.dp
         ),
         border = BorderStroke(
             1.dp,
             Brush.linearGradient(
                 colors = listOf(
-                    Color.White.copy(alpha = 0.35f),
+                    Color.White.copy(alpha = if (expanded) 0.5f else 0.35f),
                     Color.White.copy(alpha = 0.08f),
                     Color.Black.copy(alpha = 0.25f)
                 ),
@@ -113,7 +155,7 @@ fun CreditCardItem(
     ) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .background(
                     Brush.linearGradient(
                         colors = gradientColors,
@@ -122,8 +164,7 @@ fun CreditCardItem(
                     )
                 )
         ) {
-            // Subtle ambient card background decorative pattern
-            Canvas(modifier = Modifier.fillMaxSize()) {
+            Canvas(modifier = Modifier.matchParentSize()) {
                 drawCircle(
                     color = Color.White.copy(alpha = 0.05f),
                     radius = size.width * 0.45f,
@@ -138,9 +179,8 @@ fun CreditCardItem(
 
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 22.dp, vertical = 20.dp),
-                verticalArrangement = Arrangement.SpaceBetween
+                    .fillMaxWidth()
+                    .padding(horizontal = 22.dp, vertical = 20.dp)
             ) {
                 // Top Row: Bank Name, Alias & Due Countdown Badge
                 Row(
@@ -168,48 +208,62 @@ fun CreditCardItem(
                         )
                     }
 
-                    // Urgency-aware Countdown Pill
-                    val (badgeBg, dotColor, badgeText) = when {
-                        daysRemaining <= 0L -> Triple(Color(0xFFDC2626), Color(0xFFFF8A80), "Due Today!")
-                        daysRemaining <= 3L -> Triple(Color(0xFFEF4444), Color(0xFFFFB4AB), "$daysRemaining days left")
-                        daysRemaining <= 7L -> Triple(Color(0xFFD97706), Color(0xFFFFD54F), "$daysRemaining days left")
-                        else -> Triple(Color(0xFF059669), Color(0xFFA7F3D0), "$daysRemaining days left")
-                    }
-
-                    Surface(
-                        color = badgeBg.copy(alpha = 0.88f),
-                        shape = RoundedCornerShape(14.dp),
-                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.25f))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(6.dp)
-                                    .background(dotColor, CircleShape)
-                            )
-                            Spacer(Modifier.width(6.dp))
-                            Text(
-                                text = badgeText,
-                                color = Color.White,
-                                style = MaterialTheme.typography.labelSmall.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 11.sp
-                                )
-                            )
+                        val (badgeBg, dotColor, badgeText) = when {
+                            daysRemaining <= 0L -> Triple(Color(0xFFDC2626), Color(0xFFFF8A80), "Due Today!")
+                            daysRemaining <= 3L -> Triple(Color(0xFFEF4444), Color(0xFFFFB4AB), "$daysRemaining days left")
+                            daysRemaining <= 7L -> Triple(Color(0xFFD97706), Color(0xFFFFD54F), "$daysRemaining days left")
+                            else -> Triple(Color(0xFF059669), Color(0xFFA7F3D0), "$daysRemaining days left")
                         }
+
+                        Surface(
+                            color = badgeBg.copy(alpha = 0.88f),
+                            shape = RoundedCornerShape(14.dp),
+                            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.25f))
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(6.dp)
+                                        .background(dotColor, CircleShape)
+                                )
+                                Spacer(Modifier.width(6.dp))
+                                Text(
+                                    text = badgeText,
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 11.sp
+                                    )
+                                )
+                            }
+                        }
+
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Expand Card",
+                            tint = Color.White.copy(alpha = 0.75f),
+                            modifier = Modifier
+                                .size(22.dp)
+                                .rotate(arrowRotation)
+                        )
                     }
                 }
 
-                // Middle: Realistic EMV Chip & Contactless Waves + Card Number
+                Spacer(Modifier.height(24.dp))
+
+                // Middle: EMV Chip & Contactless Waves + Card Number
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Brushed Gold EMV Chip with Contactless Arcs
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -218,7 +272,6 @@ fun CreditCardItem(
                         ContactlessWavesGraphic()
                     }
 
-                    // Masked Monospaced Card Number
                     Text(
                         text = "••••  ••••  ••••  ${card.last4Digits}",
                         style = MaterialTheme.typography.titleMedium.copy(
@@ -230,7 +283,9 @@ fun CreditCardItem(
                     )
                 }
 
-                // Bottom Row: Credit Limit and Due Day + Payment Network Monogram
+                Spacer(Modifier.height(24.dp))
+
+                // Bottom Row: Credit Limit and Due Day + Payment Network
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -277,8 +332,77 @@ fun CreditCardItem(
                             )
                         }
 
-                        // Stylized Card Network Monogram (Overlapping glowing circles)
                         PaymentNetworkGraphic()
+                    }
+                }
+
+                // Spring-Animated Expanded Details Section
+                AnimatedVisibility(
+                    visible = expanded,
+                    enter = fadeIn(spring(dampingRatio = 0.8f)) + expandVertically(spring(dampingRatio = 0.8f, stiffness = 300f)),
+                    exit = fadeOut() + shrinkVertically(spring(dampingRatio = 0.8f, stiffness = 300f))
+                ) {
+                    Column(modifier = Modifier.padding(top = 18.dp)) {
+                        HorizontalDivider(
+                            color = Color.White.copy(alpha = 0.15f),
+                            thickness = 1.dp
+                        )
+
+                        Spacer(Modifier.height(14.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text(
+                                    text = "STATEMENT DAY",
+                                    style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.8.sp),
+                                    color = Color.White.copy(alpha = 0.65f)
+                                )
+                                Text(
+                                    text = "${card.statementDay}th of month",
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                                    color = Color.White
+                                )
+                            }
+
+                            Column(horizontalAlignment = Alignment.End) {
+                                Text(
+                                    text = "BILLING CYCLE",
+                                    style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.8.sp),
+                                    color = Color.White.copy(alpha = 0.65f)
+                                )
+                                Text(
+                                    text = "Active Cycle",
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                                    color = Color(0xFF34D399)
+                                )
+                            }
+                        }
+
+                        Spacer(Modifier.height(14.dp))
+
+                        FilledTonalButton(
+                            onClick = onClick,
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.filledTonalButtonColors(
+                                containerColor = Color.White.copy(alpha = 0.2f),
+                                contentColor = Color.White
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Tune,
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(
+                                text = "Manage Card & Transactions",
+                                style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
+                            )
+                        }
                     }
                 }
             }
@@ -286,9 +410,6 @@ fun CreditCardItem(
     }
 }
 
-/**
- * High-fidelity Vector Graphic of a Smart EMV Card Chip
- */
 @Composable
 private fun EmvChipGraphic(modifier: Modifier = Modifier) {
     Box(
@@ -309,15 +430,12 @@ private fun EmvChipGraphic(modifier: Modifier = Modifier) {
             val strokeColor = Color(0xFF78350F).copy(alpha = 0.5f)
             val strokeWidth = 1.dp.toPx()
 
-            // Outer border
             drawRoundRect(
                 color = Color.White.copy(alpha = 0.4f),
                 size = size,
                 cornerRadius = CornerRadius(6.dp.toPx(), 6.dp.toPx()),
                 style = Stroke(1.dp.toPx())
             )
-
-            // Inner circuit lines
             drawLine(
                 color = strokeColor,
                 start = Offset(0f, size.height * 0.5f),
@@ -347,15 +465,11 @@ private fun EmvChipGraphic(modifier: Modifier = Modifier) {
     }
 }
 
-/**
- * Contactless Radio Wave Graphic
- */
 @Composable
 private fun ContactlessWavesGraphic(modifier: Modifier = Modifier) {
     Canvas(modifier = modifier.size(16.dp, 20.dp)) {
         val waveColor = Color.White.copy(alpha = 0.75f)
         val stroke = Stroke(width = 1.5.dp.toPx())
-
         drawArc(
             color = waveColor,
             startAngle = -45f,
@@ -377,9 +491,6 @@ private fun ContactlessWavesGraphic(modifier: Modifier = Modifier) {
     }
 }
 
-/**
- * Stylized Overlapping circles representing premium payment brand
- */
 @Composable
 private fun PaymentNetworkGraphic(modifier: Modifier = Modifier) {
     Box(modifier = modifier.size(36.dp, 22.dp), contentAlignment = Alignment.Center) {
