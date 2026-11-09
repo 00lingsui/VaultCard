@@ -18,6 +18,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.CreditCard
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -30,9 +32,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -284,6 +288,52 @@ fun CardListScreen(
             },
             onSetAlarm = {
                 AlarmIntentHelper.setRepaymentAlarm(context, card)
+            }
+        )
+    }
+
+    val updateManager = remember { com.example.cardmanager.core.update.UpdateManager() }
+    var updateInfo by remember { mutableStateOf<com.example.cardmanager.core.update.AppUpdateInfo?>(null) }
+
+    LaunchedEffect(Unit) {
+        val info = updateManager.checkForUpdates("1.0.0")
+        if (info?.isUpdateAvailable == true) {
+            updateInfo = info
+        }
+    }
+
+    updateInfo?.let { update ->
+        AlertDialog(
+            onDismissRequest = { updateInfo = null },
+            title = { Text("New Version v${update.latestVersion} Available") },
+            text = {
+                Column {
+                    Text(
+                        "An updated release of VaultCard is available on GitHub.",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        update.releaseNotes,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        updateManager.startDownload(context, update.downloadUrl)
+                        updateInfo = null
+                    }
+                ) {
+                    Text("Download Update")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { updateInfo = null }) {
+                    Text("Later")
+                }
             }
         )
     }
