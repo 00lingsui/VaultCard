@@ -23,7 +23,7 @@ data class AppUpdateInfo(
 class UpdateManager @Inject constructor() {
 
     suspend fun checkForUpdates(
-        currentVersionName: String = "1.0.0"
+        currentVersionName: String = "1.0.2"
     ): AppUpdateInfo? = withContext(Dispatchers.IO) {
         try {
             val url = URL("https://api.github.com/repos/00lingsui/VaultCard/releases/latest")
