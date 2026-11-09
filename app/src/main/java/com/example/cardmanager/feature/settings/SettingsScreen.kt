@@ -1,5 +1,7 @@
 package com.example.cardmanager.feature.settings
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,34 +18,46 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.BrightnessAuto
+import androidx.compose.material.icons.outlined.CloudDownload
+import androidx.compose.material.icons.outlined.CloudUpload
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material.icons.outlined.Style
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cardmanager.R
+import com.example.cardmanager.core.backup.BackupManager
 import com.example.cardmanager.ui.theme.AppThemeMode
 import com.example.cardmanager.ui.theme.AppThemeStyle
 import com.example.cardmanager.ui.theme.LocalThemeState
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,6 +68,49 @@ fun SettingsScreen(
     val themeState = LocalThemeState.current
     val isMiui = themeState.currentStyle == AppThemeStyle.MIUIX
     val cardRadius = if (isMiui) 24.dp else 16.dp
+
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val backupManager = remember { BackupManager() }
+
+    val exportLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CreateDocument("application/json")
+    ) { uri ->
+        uri?.let { destUri ->
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("Exporting database backup...")
+                val result = backupManager.exportBackup(context, destUri)
+                result.fold(
+                    onSuccess = { count ->
+                        snackbarHostState.showSnackbar("Export successful: $count records backed up")
+                    },
+                    onFailure = { err ->
+                        snackbarHostState.showSnackbar("Export failed: ${err.localizedMessage ?: "Unknown error"}")
+                    }
+                )
+            }
+        }
+    }
+
+    val importLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri ->
+        uri?.let { sourceUri ->
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("Restoring database backup...")
+                val result = backupManager.importBackup(context, sourceUri)
+                result.fold(
+                    onSuccess = { (cards, txs) ->
+                        snackbarHostState.showSnackbar("Restore complete: $cards cards, $txs transactions imported")
+                    },
+                    onFailure = { err ->
+                        snackbarHostState.showSnackbar("Import failed: ${err.localizedMessage ?: "Invalid backup file"}")
+                    }
+                )
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -80,6 +137,7 @@ fun SettingsScreen(
                 )
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         modifier = modifier
     ) { innerPadding ->
         LazyColumn(
@@ -157,7 +215,47 @@ fun SettingsScreen(
                 }
             }
 
-            // Section 3: App Version
+            // Section 3: Data Backup & Recovery
+            item {
+                SectionHeader(
+                    title = "Data Backup & Recovery",
+                    icon = Icons.Outlined.Storage
+                )
+                Spacer(Modifier.height(8.dp))
+                Card(
+                    shape = RoundedCornerShape(cardRadius),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                        SettingsActionRow(
+                            title = "Export Backup (JSON)",
+                            subtitle = "Save cards and transaction history into a local JSON file",
+                            icon = Icons.Outlined.CloudUpload,
+                            onClick = {
+                                val timestamp = java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault()).format(java.util.Date())
+                                exportLauncher.launch("vaultcard_backup_$timestamp.json")
+                            }
+                        )
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        )
+                        SettingsActionRow(
+                            title = "Restore Backup (JSON)",
+                            subtitle = "Import and merge cards and transaction records from a file",
+                            icon = Icons.Outlined.CloudDownload,
+                            onClick = {
+                                importLauncher.launch(arrayOf("application/json", "*/*"))
+                            }
+                        )
+                    }
+                }
+            }
+
+            // Section 4: App Version
             item {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),
@@ -287,6 +385,42 @@ private fun ThemeModeOptionRow(
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun SettingsActionRow(
+    title: String,
+    subtitle: String,
+    icon: ImageVector,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(22.dp)
+        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }

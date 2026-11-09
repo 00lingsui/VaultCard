@@ -28,6 +28,9 @@ interface CreditCardDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCard(card: CreditCardEntity): Long
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCards(cards: List<CreditCardEntity>): List<Long>
+
     @Upsert
     suspend fun upsertCard(card: CreditCardEntity): Long
 

@@ -1,0 +1,132 @@
+package com.example.cardmanager.core.backup
+
+import android.content.Context
+import android.net.Uri
+import com.example.cardmanager.core.database.AppDatabase
+import com.example.cardmanager.core.database.entity.CreditCardEntity
+import com.example.cardmanager.core.database.entity.TransactionEntity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class BackupManager @Inject constructor() {
+
+    suspend fun exportBackup(context: Context, destinationUri: Uri): kotlin.Result<Int> = withContext(Dispatchers.IO) {
+        try {
+            val db = AppDatabase.getInstance(context)
+            val cards = db.creditCardDao().getAllCardsList()
+            val transactions = db.transactionDao().getAllTransactionsList()
+
+            val rootJson = JSONObject().apply {
+                put("version", 1)
+                put("export_timestamp", System.currentTimeMillis())
+
+                val cardsArray = JSONArray()
+                cards.forEach { card ->
+                    val cardObj = JSONObject().apply {
+                        put("id", card.id)
+                        put("bank_name", card.bankName)
+                        put("card_alias", card.cardAlias)
+                        put("last_4_digits", card.last4Digits)
+                        put("credit_limit", card.creditLimit)
+                        put("bill_day", card.billDay)
+                        put("repayment_day", card.repaymentDay)
+                        put("card_color_hex", card.cardColorHex)
+                    }
+                    cardsArray.put(cardObj)
+                }
+                put("cards", cardsArray)
+
+                val transactionsArray = JSONArray()
+                transactions.forEach { tx ->
+                    val txObj = JSONObject().apply {
+                        put("id", tx.id)
+                        put("card_id", tx.cardId)
+                        put("amount", tx.amount)
+                        put("category", tx.category)
+                        put("note", tx.note)
+                        put("date_timestamp", tx.dateTimestamp)
+                    }
+                    transactionsArray.put(txObj)
+                }
+                put("transactions", transactionsArray)
+            }
+
+            context.contentResolver.openOutputStream(destinationUri)?.use { outputStream ->
+                outputStream.bufferedWriter().use { writer ->
+                    writer.write(rootJson.toString(2))
+                }
+            } ?: return@withContext kotlin.Result.failure(Exception("Unable to open output file stream"))
+
+            kotlin.Result.success(cards.size + transactions.size)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            kotlin.Result.failure(e)
+        }
+    }
+
+    suspend fun importBackup(context: Context, sourceUri: Uri): kotlin.Result<Pair<Int, Int>> = withContext(Dispatchers.IO) {
+        try {
+            val db = AppDatabase.getInstance(context)
+            val jsonString = context.contentResolver.openInputStream(sourceUri)?.use { inputStream ->
+                BufferedReader(InputStreamReader(inputStream)).use { reader ->
+                    reader.readText()
+                }
+            } ?: return@withContext kotlin.Result.failure(Exception("Unable to open input file stream"))
+
+            val rootJson = JSONObject(jsonString)
+            val cardsArray = rootJson.optJSONArray("cards") ?: JSONArray()
+            val transactionsArray = rootJson.optJSONArray("transactions") ?: JSONArray()
+
+            val cardsToInsert = mutableListOf<CreditCardEntity>()
+            for (i in 0 until cardsArray.length()) {
+                val obj = cardsArray.getJSONObject(i)
+                cardsToInsert.add(
+                    CreditCardEntity(
+                        id = obj.optLong("id", 0L),
+                        bankName = obj.optString("bank_name", "Unknown Bank"),
+                        cardAlias = obj.optString("card_alias", "Credit Card"),
+                        last4Digits = obj.optString("last_4_digits", "0000"),
+                        creditLimit = obj.optDouble("credit_limit", 1000.0),
+                        billDay = obj.optInt("bill_day", 1),
+                        repaymentDay = obj.optInt("repayment_day", 15),
+                        cardColorHex = obj.optString("card_color_hex", "#1E293B")
+                    )
+                )
+            }
+
+            val transactionsToInsert = mutableListOf<TransactionEntity>()
+            for (i in 0 until transactionsArray.length()) {
+                val obj = transactionsArray.getJSONObject(i)
+                transactionsToInsert.add(
+                    TransactionEntity(
+                        id = obj.optLong("id", 0L),
+                        cardId = obj.optLong("card_id", 0L),
+                        amount = obj.optDouble("amount", 0.0),
+                        category = obj.optString("category", "General"),
+                        note = obj.optString("note", ""),
+                        dateTimestamp = obj.optLong("date_timestamp", System.currentTimeMillis())
+                    )
+                )
+            }
+
+            if (cardsToInsert.isNotEmpty()) {
+                db.creditCardDao().insertCards(cardsToInsert)
+            }
+            if (transactionsToInsert.isNotEmpty()) {
+                db.transactionDao().insertTransactions(transactionsToInsert)
+            }
+
+            kotlin.Result.success(Pair(cardsToInsert.size, transactionsToInsert.size))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            kotlin.Result.failure(e)
+        }
+    }
+}
