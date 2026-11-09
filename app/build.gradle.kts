@@ -38,21 +38,12 @@ android {
     val hasReleaseKeystore = releaseKeystore.exists() && !keyAlias.isNullOrEmpty()
 
     signingConfigs {
-        create("release") {
-            if (hasReleaseKeystore) {
+        if (hasReleaseKeystore) {
+            create("release") {
                 storeFile = releaseKeystore
                 this.storePassword = storePassword
                 this.keyAlias = keyAlias
                 this.keyPassword = keyPassword
-            } else {
-                // If release keystore is absent in local dev, fallback gracefully to debug config
-                val debugKeystore = file("${System.getProperty("user.home")}/.android/debug.keystore")
-                if (debugKeystore.exists()) {
-                    storeFile = debugKeystore
-                    this.storePassword = "android"
-                    this.keyAlias = "androiddebugkey"
-                    this.keyPassword = "android"
-                }
             }
         }
     }
@@ -64,7 +55,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = if (hasReleaseKeystore) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
         debug {
             applicationIdSuffix = ".debug"
