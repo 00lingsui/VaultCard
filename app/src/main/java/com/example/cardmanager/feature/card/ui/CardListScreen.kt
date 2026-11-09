@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -29,6 +31,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -149,13 +152,29 @@ fun CardListScreen(
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // 1. Redesigned Gradient Summary Card
+                // 1. Redesigned Premium Gradient Summary Card
                 item {
                     val currencyFormat = NumberFormat.getCurrencyInstance(Locale.US)
+                    val totalLimit = uiState.totalCreditLimit
+                    val totalDebt = uiState.totalDebt
+                    val availableCredit = (totalLimit - totalDebt).coerceAtLeast(0.0)
+                    val utilizationRatio = if (totalLimit > 0) (totalDebt / totalLimit).toFloat().coerceIn(0f, 1f) else 0f
+                    val utilizationPct = (utilizationRatio * 100).toInt()
+
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(cardCornerRadius),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                        border = BorderStroke(
+                            1.dp,
+                            Brush.linearGradient(
+                                colors = listOf(
+                                    Color.White.copy(alpha = 0.22f),
+                                    Color.White.copy(alpha = 0.05f),
+                                    Color.Black.copy(alpha = 0.3f)
+                                )
+                            )
+                        )
                     ) {
                         Box(
                             modifier = Modifier
@@ -163,9 +182,9 @@ fun CardListScreen(
                                 .background(
                                     Brush.linearGradient(
                                         colors = if (isMiui) {
-                                            listOf(Color(0xFF1E2430), Color(0xFF13171F))
+                                            listOf(Color(0xFF1E2533), Color(0xFF141923), Color(0xFF0D1117))
                                         } else {
-                                            listOf(Color(0xFF232D3F), Color(0xFF141A24))
+                                            listOf(Color(0xFF242F42), Color(0xFF1A2230), Color(0xFF111620))
                                         }
                                     )
                                 )
@@ -179,21 +198,22 @@ fun CardListScreen(
                                 ) {
                                     Text(
                                         text = stringResource(R.string.portfolio_overview),
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = Color.White.copy(alpha = 0.6f),
-                                        letterSpacing = 1.2.sp,
-                                        fontWeight = FontWeight.SemiBold
+                                        style = MaterialTheme.typography.labelSmall.copy(
+                                            letterSpacing = 1.4.sp,
+                                            fontWeight = FontWeight.Bold
+                                        ),
+                                        color = Color.White.copy(alpha = 0.65f)
                                     )
                                     Surface(
-                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                                        shape = RoundedCornerShape(10.dp)
+                                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                                        shape = RoundedCornerShape(12.dp),
+                                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.35f))
                                     ) {
                                         Text(
                                             text = stringResource(R.string.cards_count, uiState.cards.size),
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                                             color = MaterialTheme.colorScheme.primary,
-                                            style = MaterialTheme.typography.labelSmall,
-                                            fontWeight = FontWeight.Bold
+                                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold)
                                         )
                                     }
                                 }
@@ -210,7 +230,7 @@ fun CardListScreen(
                                         )
                                         Spacer(Modifier.height(4.dp))
                                         Text(
-                                            text = currencyFormat.format(uiState.totalCreditLimit),
+                                            text = currencyFormat.format(totalLimit),
                                             style = MaterialTheme.typography.headlineSmall.copy(
                                                 fontWeight = FontWeight.Bold,
                                                 letterSpacing = (-0.5).sp
@@ -227,21 +247,100 @@ fun CardListScreen(
                                         )
                                         Spacer(Modifier.height(4.dp))
                                         Text(
-                                            text = currencyFormat.format(uiState.totalDebt),
+                                            text = currencyFormat.format(totalDebt),
                                             style = MaterialTheme.typography.headlineSmall.copy(
                                                 fontWeight = FontWeight.Bold,
                                                 letterSpacing = (-0.5).sp
                                             ),
-                                            color = Color(0xFFFF5252)
+                                            color = if (totalDebt > 0) Color(0xFFFF5252) else Color(0xFF10B981)
                                         )
                                     }
+                                }
+
+                                // Credit Utilization Progress Bar
+                                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "Available: ${currencyFormat.format(availableCredit)}",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = Color.White.copy(alpha = 0.6f)
+                                        )
+
+                                        val utilColor = when {
+                                            utilizationPct >= 70 -> Color(0xFFFF5252)
+                                            utilizationPct >= 35 -> Color(0xFFFBBF24)
+                                            else -> Color(0xFF34D399)
+                                        }
+
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(6.dp)
+                                                    .background(utilColor, CircleShape)
+                                            )
+                                            Text(
+                                                text = "$utilizationPct% Utilized",
+                                                style = MaterialTheme.typography.labelSmall.copy(
+                                                    fontWeight = FontWeight.SemiBold
+                                                ),
+                                                color = utilColor
+                                            )
+                                        }
+                                    }
+
+                                    LinearProgressIndicator(
+                                        progress = { utilizationRatio },
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(6.dp),
+                                        color = when {
+                                            utilizationPct >= 70 -> Color(0xFFFF5252)
+                                            utilizationPct >= 35 -> Color(0xFFFBBF24)
+                                            else -> Color(0xFF10B981)
+                                        },
+                                        trackColor = Color.White.copy(alpha = 0.12f),
+                                    )
                                 }
                             }
                         }
                     }
                 }
 
-                // 2. Elevated Empty State
+                // 2. Section Header: My Cards
+                if (uiState.cards.isNotEmpty()) {
+                    item {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 4.dp, vertical = 2.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "MY CREDIT CARDS",
+                                style = MaterialTheme.typography.labelMedium.copy(
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 1.2.sp
+                                ),
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = "Tap card for details",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                            )
+                        }
+                    }
+                }
+
+                // 3. Elevated Empty State or Card List
                 if (uiState.cards.isEmpty()) {
                     item {
                         com.example.cardmanager.feature.card.ui.components.EmptyCardsState(
