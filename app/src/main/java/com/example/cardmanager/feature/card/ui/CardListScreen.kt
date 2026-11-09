@@ -237,57 +237,13 @@ fun CardListScreen(
                     }
                 }
 
-                // 2. Enhanced Empty State with Vector Icon
+                // 2. Elevated Empty State
                 if (uiState.cards.isEmpty()) {
                     item {
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 24.dp),
-                            shape = RoundedCornerShape(cardCornerRadius),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
-                            )
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 40.dp, horizontal = 24.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(72.dp)
-                                        .background(
-                                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f),
-                                            shape = RoundedCornerShape(22.dp)
-                                        ),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.CreditCard,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(36.dp)
-                                    )
-                                }
-                                Spacer(Modifier.height(16.dp))
-                                Text(
-                                    text = "No Cards Added Yet",
-                                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                                Spacer(Modifier.height(6.dp))
-                                Text(
-                                    text = "Tap the + button below to add your first card, track statement deadlines, and organize expenses.",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    lineHeight = 18.sp,
-                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                                )
-                            }
-                        }
+                        com.example.cardmanager.feature.card.ui.components.EmptyCardsState(
+                            onAddCardClick = { showAddDialog = true },
+                            isMiui = isMiui
+                        )
                     }
                 } else {
                     items(uiState.cards, key = { it.id }) { card ->
