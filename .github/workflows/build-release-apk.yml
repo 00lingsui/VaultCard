@@ -2,7 +2,6 @@ name: Build & Sign Release APK
 
 on:
   push:
-    branches: [ main, master ]
     tags:
       - 'v*'
   workflow_dispatch:
@@ -56,16 +55,15 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "app/build/outputs/apk/release/*.apk"
-          tag: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'latest' }}
-          name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'VaultCard Latest Release' }}
+          tag: ${{ github.ref_name }}
+          name: VaultCard ${{ github.ref_name }}
           body: |
-            ### 💳 VaultCard Release
+            ### 💳 VaultCard Release ${{ github.ref_name }}
             
             - Built with Kotlin, Jetpack Compose, Material 3 & MIUIX theme
             - Room Database & Coroutines Flow
             - Biometric authentication & Calendar sync
             
             **Download and install the release APK below.**
-          allowUpdates: true
           makeLatest: true
           token: ${{ secrets.GITHUB_TOKEN }}
