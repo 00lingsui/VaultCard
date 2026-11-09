@@ -44,8 +44,9 @@ class MainActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val themeState = remember { ThemeState(AppThemeStyle.MIUIX) }
+            val themeState = rememberThemeState()
             val authState by authViewModel.authState.collectAsStateWithLifecycle()
+            var currentScreen by remember { mutableStateOf("cards") }
 
             LaunchedEffect(Unit) {
                 if (!authState.isAuthenticated) {
@@ -57,7 +58,15 @@ class MainActivity : FragmentActivity() {
                 AppDynamicTheme(themeState = themeState) {
                     Surface(modifier = Modifier.fillMaxSize()) {
                         if (authState.isAuthenticated) {
-                            CardListScreen()
+                            if (currentScreen == "settings") {
+                                com.example.cardmanager.feature.settings.SettingsScreen(
+                                    onNavigateBack = { currentScreen = "cards" }
+                                )
+                            } else {
+                                CardListScreen(
+                                    onNavigateToSettings = { currentScreen = "settings" }
+                                )
+                            }
                         } else {
                             BiometricLockScreen(
                                 errorMessage = authState.errorMessage,
@@ -88,9 +97,9 @@ fun BiometricLockScreen(
             modifier = Modifier.size(72.dp)
         )
         Spacer(Modifier.height(16.dp))
-        Text("VaultCard Locked", style = MaterialTheme.typography.headlineSmall)
+        Text(androidx.compose.ui.res.stringResource(R.string.locked_title), style = MaterialTheme.typography.headlineSmall)
         Text(
-            "Biometric verification required to access cards",
+            androidx.compose.ui.res.stringResource(R.string.locked_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -100,7 +109,7 @@ fun BiometricLockScreen(
         }
         Spacer(Modifier.height(24.dp))
         Button(onClick = onRetry) {
-            Text("Unlock with Biometrics")
+            Text(androidx.compose.ui.res.stringResource(R.string.unlock_button))
         }
     }
 }

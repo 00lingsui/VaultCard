@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">VaultCard 信用卡管家</string>
+    <string name="portfolio_overview">信用卡总览</string>
+    <string name="total_credit_limit">总信用额度</string>
+    <string name="total_outstanding">当前待还款总额</string>
+    <string name="cards_count">%1$d 张卡片</string>
+    <string name="no_cards_title">尚未添加信用卡</string>
+    <string name="no_cards_subtitle">点击下方 + 按钮登记您的第一张信用卡，开启智能还款倒计时与提醒。</string>
+    <string name="add_card">添加信用卡</string>
+    <string name="settings">设置</string>
+    <string name="theme_and_style">主题与样式定制</string>
+    <string name="ui_style">界面设计风格</string>
+    <string name="style_miuix">MIUIX (小米澎湃 HyperOS 风格)</string>
+    <string name="style_material3">Material 3 (原生设计)</string>
+    <string name="theme_mode">深色模式设置</string>
+    <string name="mode_system">跟随系统</string>
+    <string name="mode_light">浅色模式</string>
+    <string name="mode_dark">深色模式</string>
+    <string name="locked_title">VaultCard 已锁定</string>
+    <string name="locked_subtitle">需要生物识别指纹认证以访问信用卡数据</string>
+    <string name="unlock_button">指纹解锁</string>
+    <string name="update_available_title">发现新版本 v%1$s</string>
+    <string name="update_available_desc">VaultCard 有新的更新已发布至 GitHub。</string>
+    <string name="download_update">立即下载更新</string>
+    <string name="later">稍后再说</string>
+    <string name="back">返回</string>
+</resources>

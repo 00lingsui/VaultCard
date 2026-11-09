@@ -20,16 +20,39 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    val releaseKeystore = file(System.getenv("SIGNING_STORE_FILE") ?: "release-key.jks")
-    val hasReleaseKeystore = releaseKeystore.exists() && !System.getenv("SIGNING_KEY_ALIAS").isNullOrEmpty()
+    val keystorePath = System.getenv("SIGNING_STORE_FILE") ?: "release-key.jks"
+    val releaseKeystore = when {
+        file(keystorePath).exists() -> file(keystorePath)
+        rootProject.file(keystorePath).exists() -> rootProject.file(keystorePath)
+        file("release-key.jks").exists() -> file("release-key.jks")
+        else -> rootProject.file("app/release-key.jks")
+    }
+
+    val storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+        ?: (project.findProperty("SIGNING_STORE_PASSWORD") as? String)
+    val keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+        ?: (project.findProperty("SIGNING_KEY_ALIAS") as? String)
+    val keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+        ?: (project.findProperty("SIGNING_KEY_PASSWORD") as? String)
+
+    val hasReleaseKeystore = releaseKeystore.exists() && !keyAlias.isNullOrEmpty()
 
     signingConfigs {
-        if (hasReleaseKeystore) {
-            create("release") {
+        create("release") {
+            if (hasReleaseKeystore) {
                 storeFile = releaseKeystore
-                storePassword = System.getenv("SIGNING_STORE_PASSWORD")
-                keyAlias = System.getenv("SIGNING_KEY_ALIAS")
-                keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+                this.storePassword = storePassword
+                this.keyAlias = keyAlias
+                this.keyPassword = keyPassword
+            } else {
+                // If release keystore is absent in local dev, fallback gracefully to debug config
+                val debugKeystore = file("${System.getProperty("user.home")}/.android/debug.keystore")
+                if (debugKeystore.exists()) {
+                    storeFile = debugKeystore
+                    this.storePassword = "android"
+                    this.keyAlias = "androiddebugkey"
+                    this.keyPassword = "android"
+                }
             }
         }
     }
@@ -41,11 +64,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = if (hasReleaseKeystore) {
-                signingConfigs.getByName("release")
-            } else {
-                signingConfigs.getByName("debug")
-            }
+            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             applicationIdSuffix = ".debug"

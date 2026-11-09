@@ -1,3 +1,27 @@
 <resources>
     <string name="app_name">VaultCard</string>
+    <string name="portfolio_overview">PORTFOLIO OVERVIEW</string>
+    <string name="total_credit_limit">Total Credit Limit</string>
+    <string name="total_outstanding">Total Outstanding</string>
+    <string name="cards_count">%1$d Cards</string>
+    <string name="no_cards_title">No Cards Added Yet</string>
+    <string name="no_cards_subtitle">Tap the + button below to log your first credit card and enable smart repayment tracking.</string>
+    <string name="add_card">Add Credit Card</string>
+    <string name="settings">Settings</string>
+    <string name="theme_and_style">Theme &amp; Style Customization</string>
+    <string name="ui_style">UI Design Style</string>
+    <string name="style_miuix">MIUIX (HyperOS)</string>
+    <string name="style_material3">Material 3</string>
+    <string name="theme_mode">Theme Appearance</string>
+    <string name="mode_system">System Default</string>
+    <string name="mode_light">Light Mode</string>
+    <string name="mode_dark">Dark Mode</string>
+    <string name="locked_title">VaultCard Locked</string>
+    <string name="locked_subtitle">Biometric verification required to access cards</string>
+    <string name="unlock_button">Unlock with Biometrics</string>
+    <string name="update_available_title">New Version v%1$s Available</string>
+    <string name="update_available_desc">An updated release of VaultCard is available on GitHub.</string>
+    <string name="download_update">Download Update</string>
+    <string name="later">Later</string>
+    <string name="back">Back</string>
 </resources>

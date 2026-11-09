@@ -17,7 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.CreditCard
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -28,6 +28,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -46,11 +47,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.cardmanager.R
 import com.example.cardmanager.core.common.util.AlarmIntentHelper
 import com.example.cardmanager.core.common.util.CalendarSyncHelper
 import com.example.cardmanager.core.database.entity.CreditCardEntity
@@ -66,6 +69,7 @@ import java.util.Locale
 @Composable
 fun CardListScreen(
     viewModel: CardListViewModel = hiltViewModel(),
+    onNavigateToSettings: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -85,29 +89,25 @@ fun CardListScreen(
                 title = {
                     Column {
                         Text(
-                            text = "VaultCard",
+                            text = stringResource(R.string.app_name),
                             style = MaterialTheme.typography.titleLarge.copy(
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = if (isMiui) (-0.5).sp else 0.sp
                             )
                         )
                         Text(
-                            text = if (isMiui) "MIUIX HyperOS Style" else "Material 3 Style",
+                            text = if (isMiui) stringResource(R.string.style_miuix) else stringResource(R.string.style_material3),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
                 },
                 actions = {
-                    FilledTonalButton(
-                        onClick = { themeState.toggleStyle() },
-                        shape = RoundedCornerShape(if (isMiui) 16.dp else 10.dp),
-                        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 6.dp)
-                    ) {
-                        Text(
-                            text = if (isMiui) "Switch to M3" else "Switch to MIUIX",
-                            style = MaterialTheme.typography.labelSmall,
-                            fontWeight = FontWeight.SemiBold
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(
+                            imageVector = Icons.Outlined.Settings,
+                            contentDescription = stringResource(R.string.settings),
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
@@ -127,7 +127,7 @@ fun CardListScreen(
                     pressedElevation = 14.dp
                 )
             ) {
-                Icon(Icons.Default.Add, contentDescription = "Add Credit Card", modifier = Modifier.size(26.dp))
+                Icon(Icons.Default.Add, contentDescription = stringResource(R.string.add_card), modifier = Modifier.size(26.dp))
             }
         },
         modifier = modifier
@@ -178,7 +178,7 @@ fun CardListScreen(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Text(
-                                        text = "PORTFOLIO OVERVIEW",
+                                        text = stringResource(R.string.portfolio_overview),
                                         style = MaterialTheme.typography.labelSmall,
                                         color = Color.White.copy(alpha = 0.6f),
                                         letterSpacing = 1.2.sp,
@@ -189,7 +189,7 @@ fun CardListScreen(
                                         shape = RoundedCornerShape(10.dp)
                                     ) {
                                         Text(
-                                            text = "${uiState.cards.size} Cards",
+                                            text = stringResource(R.string.cards_count, uiState.cards.size),
                                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
                                             color = MaterialTheme.colorScheme.primary,
                                             style = MaterialTheme.typography.labelSmall,
@@ -204,7 +204,7 @@ fun CardListScreen(
                                 ) {
                                     Column {
                                         Text(
-                                            text = "Total Credit Limit",
+                                            text = stringResource(R.string.total_credit_limit),
                                             style = MaterialTheme.typography.labelSmall,
                                             color = Color.White.copy(alpha = 0.7f)
                                         )
@@ -221,7 +221,7 @@ fun CardListScreen(
 
                                     Column(horizontalAlignment = Alignment.End) {
                                         Text(
-                                            text = "Total Outstanding",
+                                            text = stringResource(R.string.total_outstanding),
                                             style = MaterialTheme.typography.labelSmall,
                                             color = Color.White.copy(alpha = 0.7f)
                                         )
@@ -305,11 +305,11 @@ fun CardListScreen(
     updateInfo?.let { update ->
         AlertDialog(
             onDismissRequest = { updateInfo = null },
-            title = { Text("New Version v${update.latestVersion} Available") },
+            title = { Text(stringResource(R.string.update_available_title, update.latestVersion)) },
             text = {
                 Column {
                     Text(
-                        "An updated release of VaultCard is available on GitHub.",
+                        stringResource(R.string.update_available_desc),
                         style = MaterialTheme.typography.bodyMedium
                     )
                     Spacer(Modifier.height(8.dp))
@@ -327,12 +327,12 @@ fun CardListScreen(
                         updateInfo = null
                     }
                 ) {
-                    Text("Download Update")
+                    Text(stringResource(R.string.download_update))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { updateInfo = null }) {
-                    Text("Later")
+                    Text(stringResource(R.string.later))
                 }
             }
         )

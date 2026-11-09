@@ -137,7 +137,7 @@ fun EmptyCardsState(
 
                 // 2. Strong Visual Hierarchy: Title & Subtitle
                 Text(
-                    text = "No Cards Added Yet",
+                    text = androidx.compose.ui.res.stringResource(com.example.cardmanager.R.string.no_cards_title),
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Bold,
                         letterSpacing = if (isMiui) (-0.5).sp else 0.sp
@@ -148,7 +148,7 @@ fun EmptyCardsState(
                 Spacer(Modifier.height(8.dp))
 
                 Text(
-                    text = "Tap the + button below to log your first credit card and enable smart repayment tracking.",
+                    text = androidx.compose.ui.res.stringResource(com.example.cardmanager.R.string.no_cards_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     lineHeight = 22.sp,
@@ -171,7 +171,7 @@ fun EmptyCardsState(
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        text = "Add Card",
+                        text = androidx.compose.ui.res.stringResource(com.example.cardmanager.R.string.add_card),
                         style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold)
                     )
                 }
