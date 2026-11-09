@@ -4,6 +4,10 @@ import com.example.cardmanager.core.database.dao.CreditCardDao
 import com.example.cardmanager.core.database.dao.TransactionDao
 import com.example.cardmanager.core.database.entity.CreditCardEntity
 import com.example.cardmanager.core.database.entity.TransactionEntity
+import dagger.Binds
+import dagger.Module
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -26,9 +30,10 @@ interface CreditCardRepository {
 @Singleton
 class CreditCardRepositoryImpl @Inject constructor(
     private val cardDao: CreditCardDao,
-    private val transactionDao: TransactionDao,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val transactionDao: TransactionDao
 ) : CreditCardRepository {
+
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 
     override fun getAllCards(): Flow<List<CreditCardEntity>> =
         cardDao.getAllCards().flowOn(ioDispatcher)
@@ -53,4 +58,15 @@ class CreditCardRepositoryImpl @Inject constructor(
 
     override suspend fun addTransaction(transaction: TransactionEntity): Long =
         withContext(ioDispatcher) { transactionDao.insertTransaction(transaction) }
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+abstract class RepositoryModule {
+
+    @Binds
+    @Singleton
+    abstract fun bindCreditCardRepository(
+        impl: CreditCardRepositoryImpl
+    ): CreditCardRepository
 }
