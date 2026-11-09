@@ -361,7 +361,7 @@ fun CreditCardItem(
                                     color = Color.White.copy(alpha = 0.65f)
                                 )
                                 Text(
-                                    text = "${card.statementDay}th of month",
+                                    text = "${card.billDay}th of month",
                                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                                     color = Color.White
                                 )
