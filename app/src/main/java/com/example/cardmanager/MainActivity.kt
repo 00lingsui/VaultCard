@@ -32,6 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.cardmanager.core.security.AuthViewModel
 import com.example.cardmanager.feature.card.ui.CardListScreen
 import com.example.cardmanager.feature.settings.SettingsScreen
+import com.example.cardmanager.feature.statistics.ui.StatisticsScreen
 import com.example.cardmanager.ui.theme.AppDynamicTheme
 import com.example.cardmanager.ui.theme.AppThemeStyle
 import com.example.cardmanager.ui.theme.LocalThemeState
@@ -69,13 +70,12 @@ class MainActivity : FragmentActivity() {
                 AppDynamicTheme(themeState = themeState) {
                     Surface(modifier = Modifier.fillMaxSize()) {
                         if (authState.isAuthenticated) {
-                            if (currentScreen == "settings") {
-                                SettingsScreen(
-                                    onNavigateBack = { currentScreen = "cards" }
-                                )
-                            } else {
-                                CardListScreen(
-                                    onNavigateToSettings = { currentScreen = "settings" }
+                            when (currentScreen) {
+                                "settings" -> SettingsScreen(onNavigateBack = { currentScreen = "cards" })
+                                "statistics" -> StatisticsScreen(onNavigateBack = { currentScreen = "cards" })
+                                else -> CardListScreen(
+                                    onNavigateToSettings = { currentScreen = "settings" },
+                                    onNavigateToStatistics = { currentScreen = "statistics" }
                                 )
                             }
                         } else {

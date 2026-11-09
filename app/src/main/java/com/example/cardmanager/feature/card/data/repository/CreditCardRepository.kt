@@ -23,6 +23,7 @@ interface CreditCardRepository {
     suspend fun updateCard(card: CreditCardEntity): Boolean
     suspend fun deleteCard(cardId: Long): Boolean
     fun getTransactions(cardId: Long): Flow<List<TransactionEntity>>
+    fun getAllTransactions(): Flow<List<TransactionEntity>>
     fun getTotalDebt(): Flow<Double>
     suspend fun addTransaction(transaction: TransactionEntity): Long
 }
@@ -52,6 +53,9 @@ class CreditCardRepositoryImpl @Inject constructor(
 
     override fun getTransactions(cardId: Long): Flow<List<TransactionEntity>> =
         transactionDao.getTransactionsByCard(cardId).flowOn(ioDispatcher)
+
+    override fun getAllTransactions(): Flow<List<TransactionEntity>> =
+        transactionDao.getAllTransactions().flowOn(ioDispatcher)
 
     override fun getTotalDebt(): Flow<Double> =
         transactionDao.getTotalDebt().flowOn(ioDispatcher)
