@@ -5,6 +5,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -46,3 +49,22 @@ jobs:
           name: release-apk
           path: app/build/outputs/apk/release/*.apk
           if-no-files-found: warn
+
+      - name: Publish to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0
+          name: "VaultCard v1.0.0"
+          body: |
+            ### 💳 VaultCard Release v1.0.0
+            
+            - Built with Kotlin, Jetpack Compose, Material 3 & MIUIX theme
+            - Room Database & Coroutines Flow
+            - Biometric authentication & Calendar sync
+            
+            **Download the APK file below to install on your Android device.**
+          draft: false
+          prerelease: false
+          files: app/build/outputs/apk/release/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
