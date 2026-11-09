@@ -52,7 +52,14 @@ class MainActivity : FragmentActivity() {
             val authState by authViewModel.authState.collectAsStateWithLifecycle()
             var currentScreen by remember { mutableStateOf("cards") }
 
+            val permissionLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
+                androidx.activity.result.contract.ActivityResultContracts.RequestPermission()
+            ) {}
+
             LaunchedEffect(Unit) {
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    permissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
+                }
                 if (!authState.isAuthenticated) {
                     authViewModel.authenticate(this@MainActivity)
                 }

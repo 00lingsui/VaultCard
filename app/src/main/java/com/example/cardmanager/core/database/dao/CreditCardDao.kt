@@ -16,6 +16,9 @@ interface CreditCardDao {
     @Query("SELECT * FROM credit_cards ORDER BY repayment_day ASC")
     fun getAllCards(): Flow<List<CreditCardEntity>>
 
+    @Query("SELECT * FROM credit_cards")
+    suspend fun getAllCardsList(): List<CreditCardEntity>
+
     @Query("SELECT * FROM credit_cards WHERE id = :id LIMIT 1")
     fun getCardById(id: Long): Flow<CreditCardEntity?>
 
