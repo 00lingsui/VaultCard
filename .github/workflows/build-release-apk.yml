@@ -17,6 +17,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Determine Release Tag
         id: release_tag
@@ -26,7 +28,7 @@ jobs:
           else
             VERSION=$(grep 'versionName = ' app/build.gradle.kts | head -n 1 | sed 's/.*"\(.*\)".*/\1/')
             if [ -z "$VERSION" ]; then
-              VERSION="1.0.2"
+              VERSION="1.0.3"
             fi
             TAG="v${VERSION}"
           fi
@@ -79,14 +81,7 @@ jobs:
           artifacts: "app/build/outputs/apk/release/*.apk"
           tag: ${{ steps.release_tag.outputs.tag }}
           name: VaultCard ${{ steps.release_tag.outputs.tag }}
-          body: |
-            ### 💳 VaultCard Release ${{ steps.release_tag.outputs.tag }}
-            
-            - Built with Kotlin, Jetpack Compose, Material 3 & MIUIX theme
-            - Room Database & Coroutines Flow
-            - Biometric authentication & Calendar sync
-            
-            **Download and install the release APK below.**
+          generateReleaseNotes: true
           allowUpdates: true
           makeLatest: true
           token: ${{ secrets.GITHUB_TOKEN }}

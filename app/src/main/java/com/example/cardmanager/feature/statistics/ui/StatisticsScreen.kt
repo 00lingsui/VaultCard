@@ -56,7 +56,7 @@ fun StatisticsScreen(
     val themeState = LocalThemeState.current
     val isMiui = themeState.currentStyle == AppThemeStyle.MIUIX
     val cardRadius = if (isMiui) 24.dp else 16.dp
-    val currencyFormat = NumberFormat.getCurrencyInstance(Locale.US)
+    val currencyFormat = remember { NumberFormat.getCurrencyInstance(Locale.US) }
 
     Scaffold(
         topBar = {

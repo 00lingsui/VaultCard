@@ -171,7 +171,7 @@ fun CardListScreen(
             ) {
                 // 1. Redesigned Premium Gradient Summary Card
                 item {
-                    val currencyFormat = NumberFormat.getCurrencyInstance(Locale.US)
+                    val currencyFormat = remember { NumberFormat.getCurrencyInstance(Locale.US) }
                     val totalLimit = uiState.totalCreditLimit
                     val totalDebt = uiState.totalDebt
                     val availableCredit = (totalLimit - totalDebt).coerceAtLeast(0.0)
