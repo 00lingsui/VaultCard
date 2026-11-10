@@ -2,7 +2,7 @@
 -keep class * extends androidx.room.RoomDatabase
 -keep @androidx.room.Entity class * { *; }
 -keep @androidx.room.Dao interface * { *; }
--dontwarn androidx.room.paging.**
+-dontwarn androidx.room.**
 -keep class com.example.cardmanager.core.database.entity.** { *; }
 
 # WorkManager Workers
@@ -13,8 +13,9 @@
 # Hilt & Dependency Injection
 -keep class * extends androidx.lifecycle.ViewModel { *; }
 -keep interface * extends dagger.hilt.internal.GeneratedComponent { *; }
+-keep class * extends dagger.hilt.android.internal.managers.ViewComponentManager$FragmentContextWrapper { *; }
 
-# Jetpack Compose runtime & animations
+# Jetpack Compose runtime & UI
 -keep class androidx.compose.** { *; }
 -dontwarn androidx.compose.**
 
@@ -22,10 +23,10 @@
 -dontwarn androidx.biometric.**
 -keep class androidx.biometric.** { *; }
 
-# Strip verbose/debug logs in release builds to reduce APK size
--assumenosideeffects class android.util.Log {
-    public static boolean isLoggable(java.lang.String, int);
-    public static int v(...);
-    public static int d(...);
-    public static int i(...);
-}
+# Suppress external library warnings in R8 full mode
+-dontwarn androidx.**
+-dontwarn dagger.**
+-dontwarn com.google.**
+-dontwarn javax.annotation.**
+-dontwarn org.jetbrains.**
+-ignorewarnings

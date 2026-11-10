@@ -63,10 +63,14 @@ jobs:
       - name: Assemble Release APK
         env:
           SIGNING_STORE_FILE: "release-key.jks"
-          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD || 'vaultcard123' }}
-          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS || 'vaultcard' }}
-          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD || 'vaultcard123' }}
-        run: ./gradlew assembleRelease --stacktrace
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        run: |
+          export SIGNING_STORE_PASSWORD="${SIGNING_STORE_PASSWORD:-vaultcard123}"
+          export SIGNING_KEY_ALIAS="${SIGNING_KEY_ALIAS:-vaultcard}"
+          export SIGNING_KEY_PASSWORD="${SIGNING_KEY_PASSWORD:-vaultcard123}"
+          ./gradlew assembleRelease --stacktrace
 
       - name: Upload Release APK Artifact
         uses: actions/upload-artifact@v4

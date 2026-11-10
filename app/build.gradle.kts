@@ -30,29 +30,38 @@ android {
     }
 
     val storePassword = System.getenv("SIGNING_STORE_PASSWORD")
+        ?.takeIf { it.isNotBlank() && it != "true" && it != "false" }
         ?: (project.findProperty("SIGNING_STORE_PASSWORD") as? String)
-    val keyAlias = System.getenv("SIGNING_KEY_ALIAS")
-        ?: (project.findProperty("SIGNING_KEY_ALIAS") as? String)
-    val keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
-        ?: (project.findProperty("SIGNING_KEY_PASSWORD") as? String)
+            ?.takeIf { it.isNotBlank() && it != "true" && it != "false" }
+        ?: "vaultcard123"
 
-    val hasReleaseKeystore = releaseKeystore.exists() && !keyAlias.isNullOrEmpty()
+    val keyAlias = System.getenv("SIGNING_KEY_ALIAS")
+        ?.takeIf { it.isNotBlank() && it != "true" && it != "false" }
+        ?: (project.findProperty("SIGNING_KEY_ALIAS") as? String)
+            ?.takeIf { it.isNotBlank() && it != "true" && it != "false" }
+        ?: "vaultcard"
+
+    val keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+        ?.takeIf { it.isNotBlank() && it != "true" && it != "false" }
+        ?: (project.findProperty("SIGNING_KEY_PASSWORD") as? String)
+            ?.takeIf { it.isNotBlank() && it != "true" && it != "false" }
+        ?: "vaultcard123"
+
+    val hasReleaseKeystore = releaseKeystore.exists() && keyAlias.isNotEmpty()
 
     signingConfigs {
-        if (hasReleaseKeystore) {
-            create("release") {
-                storeFile = releaseKeystore
-                this.storePassword = storePassword
-                this.keyAlias = keyAlias
-                this.keyPassword = keyPassword
-            }
+        create("release") {
+            storeFile = releaseKeystore
+            this.storePassword = storePassword
+            this.keyAlias = keyAlias
+            this.keyPassword = keyPassword
         }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = true
-            isShrinkResources = true
+            isShrinkResources = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
