@@ -280,7 +280,7 @@ fun SettingsScreen(
                             )
                         }
                         Text(
-                            text = "v1.0.2",
+                            text = "v1.0.3",
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.primary
