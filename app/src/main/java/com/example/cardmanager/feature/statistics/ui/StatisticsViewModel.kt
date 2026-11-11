@@ -46,7 +46,9 @@ class StatisticsViewModel @Inject constructor(
         repository.getAllTransactions(),
         repository.getTotalDebt()
     ) { cards, transactions, totalDebt ->
-        val totalLimit = cards.sumOf { it.creditLimit }
+        val totalLimit = cards.groupBy { it.bankName.trim() }
+            .values
+            .sumOf { bankCards -> bankCards.maxOfOrNull { it.creditLimit } ?: 0.0 }
         val available = (totalLimit - totalDebt).coerceAtLeast(0.0)
 
         // 1. Category aggregation

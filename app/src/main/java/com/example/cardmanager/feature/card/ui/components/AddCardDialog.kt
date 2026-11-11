@@ -53,7 +53,7 @@ fun AddCardDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Add Credit Card") },
+        title = { Text("添加信用卡") },
         text = {
             Column(
                 modifier = Modifier
@@ -68,7 +68,7 @@ fun AddCardDialog(
                 OutlinedTextField(
                     value = bankName,
                     onValueChange = { bankName = it },
-                    label = { Text("Bank Name (e.g. Chase)") },
+                    label = { Text("发卡银行 (如: 招商银行)") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -76,7 +76,7 @@ fun AddCardDialog(
                 OutlinedTextField(
                     value = cardAlias,
                     onValueChange = { cardAlias = it },
-                    label = { Text("Card Alias (e.g. Sapphire)") },
+                    label = { Text("卡片名称 (如: 经典白金卡)") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -85,7 +85,7 @@ fun AddCardDialog(
                     OutlinedTextField(
                         value = last4Digits,
                         onValueChange = { if (it.length <= 4) last4Digits = it.filter { ch -> ch.isDigit() } },
-                        label = { Text("Last 4") },
+                        label = { Text("卡号后4位") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
@@ -93,7 +93,7 @@ fun AddCardDialog(
                     OutlinedTextField(
                         value = creditLimit,
                         onValueChange = { creditLimit = it },
-                        label = { Text("Limit ($)") },
+                        label = { Text("信用额度 (元)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         singleLine = true,
                         modifier = Modifier.weight(1.5f)
@@ -104,7 +104,7 @@ fun AddCardDialog(
                     OutlinedTextField(
                         value = billDay,
                         onValueChange = { billDay = it.filter { ch -> ch.isDigit() } },
-                        label = { Text("Bill Day (1-31)") },
+                        label = { Text("账单日 (1-31日)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
@@ -112,14 +112,14 @@ fun AddCardDialog(
                     OutlinedTextField(
                         value = repaymentDay,
                         onValueChange = { repaymentDay = it.filter { ch -> ch.isDigit() } },
-                        label = { Text("Repay Day (1-31)") },
+                        label = { Text("还款日 (1-31日)") },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
                 }
 
-                Text("Card Theme", style = MaterialTheme.typography.labelMedium)
+                Text("卡面配色", style = MaterialTheme.typography.labelMedium)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -147,7 +147,7 @@ fun AddCardDialog(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("Sync to Calendar", style = MaterialTheme.typography.bodySmall)
+                    Text("同步还款日程至系统日历", style = MaterialTheme.typography.bodySmall)
                     Switch(checked = syncCalendar, onCheckedChange = { syncCalendar = it })
                 }
             }
@@ -160,11 +160,11 @@ fun AddCardDialog(
                     val rDay = repaymentDay.toIntOrNull()
 
                     when {
-                        bankName.isBlank() || cardAlias.isBlank() -> errorText = "Please fill in all name fields"
-                        last4Digits.length != 4 -> errorText = "Last 4 digits must be exactly 4 digits"
-                        limitVal == null || limitVal <= 0.0 -> errorText = "Limit must be a positive number"
-                        bDay == null || bDay !in 1..31 -> errorText = "Bill day must be 1..31"
-                        rDay == null || rDay !in 1..31 -> errorText = "Repay day must be 1..31"
+                        bankName.isBlank() || cardAlias.isBlank() -> errorText = "请填写银行名称与卡片备注"
+                        last4Digits.length != 4 -> errorText = "卡号后4位必须为4位数字"
+                        limitVal == null || limitVal <= 0.0 -> errorText = "额度必须为大于0的数字"
+                        bDay == null || bDay !in 1..31 -> errorText = "账单日必须在1至31之间"
+                        rDay == null || rDay !in 1..31 -> errorText = "还款日必须在1至31之间"
                         else -> {
                             onConfirm(
                                 CreditCardEntity(
@@ -182,11 +182,11 @@ fun AddCardDialog(
                     }
                 }
             ) {
-                Text("Save Card")
+                Text("保存卡片")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text("取消") }
         }
     )
 }

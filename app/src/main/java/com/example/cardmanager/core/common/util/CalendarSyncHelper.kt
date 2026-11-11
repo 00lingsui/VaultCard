@@ -18,10 +18,10 @@ object CalendarSyncHelper {
         val intent = Intent(Intent.ACTION_INSERT).apply {
             data = CalendarContract.Events.CONTENT_URI
             putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startMillis)
-            putExtra(CalendarContract.Events.TITLE, "Credit Card Due: ${card.bankName} (${card.cardAlias})")
+            putExtra(CalendarContract.Events.TITLE, "信用卡还款提醒: ${card.bankName} (${card.cardAlias})")
             putExtra(
                 CalendarContract.Events.DESCRIPTION,
-                "Repayment deadline for ${card.cardAlias} (•••• ${card.last4Digits}). Limit: $${card.creditLimit}"
+                "还款截止提醒：${card.cardAlias} (•••• ${card.last4Digits})。额度: ¥${card.creditLimit}"
             )
             putExtra(CalendarContract.Events.RRULE, "FREQ=MONTHLY;BYMONTHDAY=${card.repaymentDay}")
             putExtra(CalendarContract.Events.HAS_ALARM, 1)

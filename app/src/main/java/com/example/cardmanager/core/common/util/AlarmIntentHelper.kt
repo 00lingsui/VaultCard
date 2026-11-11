@@ -10,7 +10,7 @@ object AlarmIntentHelper {
 
     fun setRepaymentAlarm(context: Context, card: CreditCardEntity, hour: Int = 9, minute: Int = 0) {
         val intent = Intent(AlarmClock.ACTION_SET_ALARM).apply {
-            putExtra(AlarmClock.EXTRA_MESSAGE, "Pay Card: ${card.bankName} (${card.cardAlias})")
+            putExtra(AlarmClock.EXTRA_MESSAGE, "还款提醒: ${card.bankName} (${card.cardAlias})")
             putExtra(AlarmClock.EXTRA_HOUR, hour)
             putExtra(AlarmClock.EXTRA_MINUTES, minute)
             putExtra(AlarmClock.EXTRA_SKIP_UI, false)
@@ -20,7 +20,7 @@ object AlarmIntentHelper {
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
         } else {
-            Toast.makeText(context, "No Clock/Alarm app found", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "未找到系统时钟/闹钟应用", Toast.LENGTH_SHORT).show()
         }
     }
 }

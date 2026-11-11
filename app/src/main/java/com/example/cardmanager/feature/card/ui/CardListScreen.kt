@@ -122,8 +122,8 @@ fun CardListScreen(
         if (activity != null) {
             BiometricHelper.showBiometricPromptForAction(
                 activity = activity,
-                title = "Confirm Deletion",
-                subtitle = "Authenticate to delete this card",
+                title = "确认删除",
+                subtitle = "验证生物识别以删除此卡片",
                 onError = { _, _ ->
                     onCancelled?.invoke()
                 },
@@ -168,7 +168,7 @@ fun CardListScreen(
                     IconButton(onClick = onNavigateToStatistics) {
                         Icon(
                             imageVector = Icons.Outlined.Analytics,
-                            contentDescription = "Financial Analytics",
+                            contentDescription = "财务统计与分析",
                             tint = MaterialTheme.colorScheme.primary
                         )
                     }
@@ -330,7 +330,7 @@ fun CardListScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
-                                            text = "Available: ${currencyFormat.format(availableCredit)}",
+                                            text = "可用额度: ${currencyFormat.format(availableCredit)}",
                                             style = MaterialTheme.typography.labelSmall,
                                             color = Color.White.copy(alpha = 0.6f)
                                         )
@@ -351,7 +351,7 @@ fun CardListScreen(
                                                     .background(utilColor, CircleShape)
                                             )
                                             Text(
-                                                text = "$utilizationPct% Utilized",
+                                                text = "已使用 $utilizationPct%",
                                                 style = MaterialTheme.typography.labelSmall.copy(
                                                     fontWeight = FontWeight.SemiBold
                                                 ),
@@ -389,7 +389,7 @@ fun CardListScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "MY CREDIT CARDS",
+                                text = "我的信用卡",
                                 style = MaterialTheme.typography.labelMedium.copy(
                                     fontWeight = FontWeight.Bold,
                                     letterSpacing = 1.2.sp
@@ -397,7 +397,7 @@ fun CardListScreen(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = "Tap card for details",
+                                text = "点击卡片查看详情",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                             )
@@ -454,14 +454,14 @@ fun CardListScreen(
                                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                                     ) {
                                         Text(
-                                            text = "Delete",
+                                            text = "删除",
                                             color = Color.White,
                                             style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
                                             modifier = Modifier.scale(iconScale)
                                         )
                                         Icon(
                                             imageVector = Icons.Default.Delete,
-                                            contentDescription = "Delete Card",
+                                            contentDescription = "删除卡片",
                                             tint = Color.White,
                                             modifier = Modifier.scale(iconScale)
                                         )
@@ -558,13 +558,13 @@ fun CardListScreen(
                                     )
                                     Spacer(Modifier.height(16.dp))
                                     Text(
-                                        text = "Select a Card",
+                                        text = "请选择一张信用卡",
                                         style = MaterialTheme.typography.titleMedium,
                                         fontWeight = FontWeight.Bold
                                     )
                                     Spacer(Modifier.height(6.dp))
                                     Text(
-                                        text = "Choose any card from the left panel to inspect statement dates, edit credit limits, or manage transactions.",
+                                        text = "从左侧面板选择任意卡片以查看账单日、修改信用额度或管理交易。",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         textAlign = androidx.compose.ui.text.style.TextAlign.Center

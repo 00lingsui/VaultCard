@@ -103,14 +103,14 @@ fun CardDetailContent(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Card Details & Settings", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            Text("卡片详情与管理", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             Row {
                 IconButton(onClick = { showDeleteConfirm = true }) {
-                    Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error)
+                    Icon(Icons.Default.Delete, contentDescription = "删除", tint = MaterialTheme.colorScheme.error)
                 }
                 if (onClose != null) {
                     IconButton(onClick = onClose) {
-                        Icon(Icons.Default.Close, contentDescription = "Close")
+                        Icon(Icons.Default.Close, contentDescription = "关闭")
                     }
                 }
             }
@@ -119,7 +119,7 @@ fun CardDetailContent(
         OutlinedTextField(
             value = bankName,
             onValueChange = { bankName = it },
-            label = { Text("Bank Name") },
+            label = { Text("发卡银行") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
@@ -127,7 +127,7 @@ fun CardDetailContent(
         OutlinedTextField(
             value = cardAlias,
             onValueChange = { cardAlias = it },
-            label = { Text("Card Alias") },
+            label = { Text("卡片名称/备注") },
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
@@ -136,7 +136,7 @@ fun CardDetailContent(
             OutlinedTextField(
                 value = last4Digits,
                 onValueChange = { if (it.length <= 4) last4Digits = it.filter { ch -> ch.isDigit() } },
-                label = { Text("Last 4") },
+                label = { Text("卡号后4位") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true,
                 modifier = Modifier.weight(1f)
@@ -144,7 +144,7 @@ fun CardDetailContent(
             OutlinedTextField(
                 value = creditLimit,
                 onValueChange = { creditLimit = it },
-                label = { Text("Limit ($)") },
+                label = { Text("信用额度 (元)") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 singleLine = true,
                 modifier = Modifier.weight(1.5f)
@@ -155,7 +155,7 @@ fun CardDetailContent(
             OutlinedTextField(
                 value = billDay,
                 onValueChange = { billDay = it.filter { ch -> ch.isDigit() } },
-                label = { Text("Bill Day (1-31)") },
+                label = { Text("账单日 (1-31日)") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true,
                 modifier = Modifier.weight(1f)
@@ -163,14 +163,14 @@ fun CardDetailContent(
             OutlinedTextField(
                 value = repaymentDay,
                 onValueChange = { repaymentDay = it.filter { ch -> ch.isDigit() } },
-                label = { Text("Repay Day (1-31)") },
+                label = { Text("还款日 (1-31日)") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true,
                 modifier = Modifier.weight(1f)
             )
         }
 
-        Text("Card Theme Color", style = MaterialTheme.typography.labelMedium)
+        Text("卡片卡面颜色", style = MaterialTheme.typography.labelMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             colorPalette.forEach { hex ->
                 Box(
@@ -193,7 +193,7 @@ fun CardDetailContent(
         ) {
             Icon(Icons.Default.Alarm, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))
-            Text("Set Due Date Alarm in Clock App")
+            Text("在系统时钟中设置还款提醒闹钟")
         }
 
         Button(
@@ -218,15 +218,15 @@ fun CardDetailContent(
                 .fillMaxWidth()
                 .padding(top = 6.dp)
         ) {
-            Text("Save Changes")
+            Text("保存修改")
         }
     }
 
     if (showDeleteConfirm) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirm = false },
-            title = { Text("Delete Card?") },
-            text = { Text("Are you sure you want to remove '${card.cardAlias}'? This will also remove associated transactions.") },
+            title = { Text("确认删除卡片？") },
+            text = { Text("确定要删除卡片“${card.cardAlias}”吗？此操作将同时清除该卡的所有记录。") },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -234,11 +234,11 @@ fun CardDetailContent(
                         onDelete(card.id)
                     }
                 ) {
-                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                    Text("删除", color = MaterialTheme.colorScheme.error)
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showDeleteConfirm = false }) { Text("Cancel") }
+                TextButton(onClick = { showDeleteConfirm = false }) { Text("取消") }
             }
         )
     }

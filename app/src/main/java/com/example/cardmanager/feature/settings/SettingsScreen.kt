@@ -79,14 +79,14 @@ fun SettingsScreen(
     ) { uri ->
         uri?.let { destUri ->
             coroutineScope.launch {
-                snackbarHostState.showSnackbar("Exporting database backup...")
+                snackbarHostState.showSnackbar("正在导出数据备份...")
                 val result = backupManager.exportBackup(context, destUri)
                 result.fold(
                     onSuccess = { count ->
-                        snackbarHostState.showSnackbar("Export successful: $count records backed up")
+                        snackbarHostState.showSnackbar("备份导出成功：已备份 $count 条记录")
                     },
                     onFailure = { err ->
-                        snackbarHostState.showSnackbar("Export failed: ${err.localizedMessage ?: "Unknown error"}")
+                        snackbarHostState.showSnackbar("导出失败: ${err.localizedMessage ?: "未知错误"}")
                     }
                 )
             }
@@ -98,14 +98,14 @@ fun SettingsScreen(
     ) { uri ->
         uri?.let { sourceUri ->
             coroutineScope.launch {
-                snackbarHostState.showSnackbar("Restoring database backup...")
+                snackbarHostState.showSnackbar("正在恢复数据备份...")
                 val result = backupManager.importBackup(context, sourceUri)
                 result.fold(
                     onSuccess = { (cards, txs) ->
-                        snackbarHostState.showSnackbar("Restore complete: $cards cards, $txs transactions imported")
+                        snackbarHostState.showSnackbar("恢复成功：已导入 $cards 张卡片，$txs 条交易记录")
                     },
                     onFailure = { err ->
-                        snackbarHostState.showSnackbar("Import failed: ${err.localizedMessage ?: "Invalid backup file"}")
+                        snackbarHostState.showSnackbar("导入失败: ${err.localizedMessage ?: "备份文件无效"}")
                     }
                 )
             }
@@ -164,13 +164,13 @@ fun SettingsScreen(
                     Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                         StyleOptionRow(
                             title = stringResource(R.string.style_miuix),
-                            subtitle = "Smooth curves, generous padding & HyperOS minimalism",
+                            subtitle = "优雅圆角、充裕间距与 HyperOS 极简质感",
                             selected = themeState.currentStyle == AppThemeStyle.MIUIX,
                             onClick = { themeState.setStyle(AppThemeStyle.MIUIX) }
                         )
                         StyleOptionRow(
                             title = stringResource(R.string.style_material3),
-                            subtitle = "Expressive Material You typography & adaptive tokens",
+                            subtitle = "生动的 Material You 动态排版与自适应色彩",
                             selected = themeState.currentStyle == AppThemeStyle.MATERIAL3,
                             onClick = { themeState.setStyle(AppThemeStyle.MATERIAL3) }
                         )
@@ -218,7 +218,7 @@ fun SettingsScreen(
             // Section 3: Data Backup & Recovery
             item {
                 SectionHeader(
-                    title = "Data Backup & Recovery",
+                    title = "数据备份与恢复",
                     icon = Icons.Outlined.Storage
                 )
                 Spacer(Modifier.height(8.dp))
@@ -231,8 +231,8 @@ fun SettingsScreen(
                 ) {
                     Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                         SettingsActionRow(
-                            title = "Export Backup (JSON)",
-                            subtitle = "Save cards and transaction history into a local JSON file",
+                            title = "导出备份 (JSON)",
+                            subtitle = "将卡片信息与消费记录保存为本地 JSON 文件",
                             icon = Icons.Outlined.CloudUpload,
                             onClick = {
                                 val timestamp = java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault()).format(java.util.Date())
@@ -244,8 +244,8 @@ fun SettingsScreen(
                             color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                         )
                         SettingsActionRow(
-                            title = "Restore Backup (JSON)",
-                            subtitle = "Import and merge cards and transaction records from a file",
+                            title = "恢复备份 (JSON)",
+                            subtitle = "从文件导入并合并卡片与交易记录",
                             icon = Icons.Outlined.CloudDownload,
                             onClick = {
                                 importLauncher.launch(arrayOf("application/json", "*/*"))
@@ -274,7 +274,7 @@ fun SettingsScreen(
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                text = "Credit Card & Smart Repayment Manager",
+                                text = "智能信用卡与还款管理管家",
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )

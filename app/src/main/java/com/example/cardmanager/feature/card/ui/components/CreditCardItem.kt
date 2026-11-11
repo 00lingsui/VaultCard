@@ -215,10 +215,10 @@ fun CreditCardItem(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         val (badgeBg, dotColor, badgeText) = when {
-                            daysRemaining <= 0L -> Triple(Color(0xFFDC2626), Color(0xFFFF8A80), "Due Today!")
-                            daysRemaining <= 3L -> Triple(Color(0xFFEF4444), Color(0xFFFFB4AB), "$daysRemaining days left")
-                            daysRemaining <= 7L -> Triple(Color(0xFFD97706), Color(0xFFFFD54F), "$daysRemaining days left")
-                            else -> Triple(Color(0xFF059669), Color(0xFFA7F3D0), "$daysRemaining days left")
+                            daysRemaining <= 0L -> Triple(Color(0xFFDC2626), Color(0xFFFF8A80), "今日到期")
+                            daysRemaining <= 3L -> Triple(Color(0xFFEF4444), Color(0xFFFFB4AB), "还剩 ${daysRemaining} 天")
+                            daysRemaining <= 7L -> Triple(Color(0xFFD97706), Color(0xFFFFD54F), "还剩 ${daysRemaining} 天")
+                            else -> Triple(Color(0xFF059669), Color(0xFFA7F3D0), "还剩 ${daysRemaining} 天")
                         }
 
                         Surface(
@@ -249,7 +249,7 @@ fun CreditCardItem(
 
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = "Expand Card",
+                            contentDescription = "展开卡片",
                             tint = Color.White.copy(alpha = 0.75f),
                             modifier = Modifier
                                 .size(22.dp)
@@ -295,7 +295,7 @@ fun CreditCardItem(
                 ) {
                     Column {
                         Text(
-                            text = "CREDIT LIMIT",
+                            text = "信用额度",
                             style = MaterialTheme.typography.labelSmall.copy(
                                 letterSpacing = 1.sp,
                                 fontWeight = FontWeight.Medium
@@ -319,7 +319,7 @@ fun CreditCardItem(
                     ) {
                         Column(horizontalAlignment = Alignment.End) {
                             Text(
-                                text = "DUE DAY",
+                                text = "还款日",
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     letterSpacing = 0.8.sp,
                                     fontWeight = FontWeight.Medium
@@ -328,7 +328,7 @@ fun CreditCardItem(
                             )
                             Spacer(Modifier.height(2.dp))
                             Text(
-                                text = "${card.repaymentDay}th of month",
+                                text = "每月 ${card.repaymentDay} 日",
                                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
                                 color = Color.White.copy(alpha = 0.9f)
                             )
@@ -358,12 +358,12 @@ fun CreditCardItem(
                         ) {
                             Column {
                                 Text(
-                                    text = "STATEMENT DAY",
+                                    text = "账单日",
                                     style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.8.sp),
                                     color = Color.White.copy(alpha = 0.65f)
                                 )
                                 Text(
-                                    text = "${card.billDay}th of month",
+                                    text = "每月 ${card.billDay} 日",
                                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                                     color = Color.White
                                 )
@@ -371,12 +371,12 @@ fun CreditCardItem(
 
                             Column(horizontalAlignment = Alignment.End) {
                                 Text(
-                                    text = "BILLING CYCLE",
+                                    text = "账单周期",
                                     style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.8.sp),
                                     color = Color.White.copy(alpha = 0.65f)
                                 )
                                 Text(
-                                    text = "Active Cycle",
+                                    text = "免息还款期内",
                                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                                     color = Color(0xFF34D399)
                                 )
@@ -406,7 +406,7 @@ fun CreditCardItem(
                                 )
                                 Spacer(Modifier.width(8.dp))
                                 Text(
-                                    text = "Manage Card",
+                                    text = "管理卡片",
                                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold)
                                 )
                             }
@@ -423,7 +423,7 @@ fun CreditCardItem(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Delete,
-                                        contentDescription = "Delete Card",
+                                        contentDescription = "删除卡片",
                                         tint = Color(0xFFFF6B6B),
                                         modifier = Modifier.size(18.dp)
                                     )

@@ -30,9 +30,13 @@ class CardListViewModel @Inject constructor(
         repository.getAllCards(),
         repository.getTotalDebt()
     ) { cards, totalDebt ->
+        val sharedLimit = cards.groupBy { it.bankName.trim() }
+            .values
+            .sumOf { bankCards -> bankCards.maxOfOrNull { it.creditLimit } ?: 0.0 }
+
         CardListUiState(
             cards = cards,
-            totalCreditLimit = cards.sumOf { it.creditLimit },
+            totalCreditLimit = sharedLimit,
             totalDebt = totalDebt,
             isLoading = false
         )

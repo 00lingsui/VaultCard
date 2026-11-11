@@ -64,7 +64,7 @@ fun StatisticsScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Financial Statistics",
+                        text = "财务统计与分析",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold,
                             letterSpacing = if (isMiui) (-0.5).sp else 0.sp
@@ -75,7 +75,7 @@ fun StatisticsScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "返回"
                         )
                     }
                 },
@@ -109,14 +109,14 @@ fun StatisticsScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         KpiSummaryCard(
-                            title = "Total Debt",
+                            title = "待还款总额",
                             value = currencyFormat.format(uiState.totalDebt),
                             valueColor = if (uiState.totalDebt > 0) Color(0xFFFF5252) else Color(0xFF10B981),
                             modifier = Modifier.weight(1f),
                             shapeRadius = cardRadius
                         )
                         KpiSummaryCard(
-                            title = "Largest Bill",
+                            title = "单笔最大支出",
                             value = currencyFormat.format(uiState.largestExpense),
                             valueColor = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.weight(1f),
@@ -128,7 +128,7 @@ fun StatisticsScreen(
                 // 1. Credit Utilization Donut Chart
                 item {
                     ChartContainerCard(
-                        title = "Credit Limit vs Outstanding",
+                        title = "额度使用占比",
                         icon = Icons.Outlined.AccountBalanceWallet,
                         shapeRadius = cardRadius
                     ) {
@@ -145,7 +145,7 @@ fun StatisticsScreen(
                 // 2. Spending Trend Line Chart
                 item {
                     ChartContainerCard(
-                        title = "Expense History & Trend",
+                        title = "近期支出趋势",
                         icon = Icons.Outlined.ShowChart,
                         shapeRadius = cardRadius
                     ) {
@@ -161,7 +161,7 @@ fun StatisticsScreen(
                 // 3. Category Spending Breakdown Pie Chart
                 item {
                     ChartContainerCard(
-                        title = "Category Breakdown",
+                        title = "消费分类占比",
                         icon = Icons.Outlined.PieChart,
                         shapeRadius = cardRadius
                     ) {

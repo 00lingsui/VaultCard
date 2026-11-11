@@ -129,7 +129,7 @@ fun DonutChart(
                     color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text = "Utilized",
+                    text = "已使用",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -145,12 +145,12 @@ fun DonutChart(
         ) {
             ChartLegendItem(
                 color = debtColor,
-                label = "Outstanding",
+                label = "待还款",
                 value = currencyFormat.format(totalDebt)
             )
             ChartLegendItem(
                 color = availableColor,
-                label = "Available",
+                label = "可用额度",
                 value = currencyFormat.format(available)
             )
         }
@@ -170,7 +170,7 @@ fun LineChart(
             modifier = modifier.fillMaxWidth().height(160.dp),
             contentAlignment = Alignment.Center
         ) {
-            Text("No expense history recorded", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("暂无支出历史记录", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         return
     }
@@ -276,7 +276,7 @@ fun PieChart(
             modifier = modifier.fillMaxWidth().height(160.dp),
             contentAlignment = Alignment.Center
         ) {
-            Text("No category expenses logged", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Text("暂无消费分类记录", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         return
     }

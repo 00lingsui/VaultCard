@@ -76,8 +76,8 @@ class UpdateManager @Inject constructor() {
 
     fun startDownload(context: Context, downloadUrl: String, fileName: String = "VaultCard-update.apk") {
         val request = DownloadManager.Request(Uri.parse(downloadUrl)).apply {
-            setTitle("Downloading VaultCard Update")
-            setDescription("Downloading latest release from GitHub")
+            setTitle("正在下载 VaultCard 更新")
+            setDescription("正在从 GitHub 下载最新版本安装包")
             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
             setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
             setMimeType("application/vnd.android.package-archive")
