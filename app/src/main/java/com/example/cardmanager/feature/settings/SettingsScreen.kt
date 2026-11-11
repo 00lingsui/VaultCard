@@ -25,35 +25,55 @@ import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material.icons.outlined.Style
+import androidx.compose.material.icons.outlined.CloudSync
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cardmanager.R
 import com.example.cardmanager.core.backup.BackupManager
+import com.example.cardmanager.core.webdav.WebDavClient
+import com.example.cardmanager.core.webdav.WebDavConfig
+import com.example.cardmanager.core.webdav.WebDavPreferenceManager
+import com.example.cardmanager.core.worker.WebDavSyncWorker
 import com.example.cardmanager.ui.theme.AppThemeMode
 import com.example.cardmanager.ui.theme.AppThemeStyle
 import com.example.cardmanager.ui.theme.LocalThemeState
@@ -73,6 +93,35 @@ fun SettingsScreen(
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val backupManager = remember { BackupManager() }
+
+    var webDavConfig by remember { mutableStateOf(WebDavPreferenceManager.getConfig(context)) }
+    var serverUrl by remember { mutableStateOf(webDavConfig.serverUrl) }
+    var username by remember { mutableStateOf(webDavConfig.username) }
+    var password by remember { mutableStateOf(webDavConfig.password) }
+    var autoSyncEnabled by remember { mutableStateOf(webDavConfig.autoSyncEnabled) }
+    var passwordVisible by remember { mutableStateOf(false) }
+
+    var isTestingConnection by remember { mutableStateOf(false) }
+    var isBackingUpWebDav by remember { mutableStateOf(false) }
+    var isRestoringWebDav by remember { mutableStateOf(false) }
+    var showWebDavRestoreConfirm by remember { mutableStateOf(false) }
+
+    fun updateAndPersistWebDav(
+        newUrl: String = serverUrl,
+        newUsername: String = username,
+        newPassword: String = password,
+        newAutoSync: Boolean = autoSyncEnabled
+    ) {
+        val updated = webDavConfig.copy(
+            serverUrl = newUrl.trim(),
+            username = newUsername.trim(),
+            password = newPassword,
+            autoSyncEnabled = newAutoSync
+        )
+        webDavConfig = updated
+        WebDavPreferenceManager.saveConfig(context, updated)
+        WebDavSyncWorker.scheduleDailySync(context, newAutoSync)
+    }
 
     val exportLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument("application/json")
@@ -255,6 +304,196 @@ fun SettingsScreen(
                 }
             }
 
+            // Section: WebDAV Cloud Sync
+            item {
+                SectionHeader(
+                    title = "云端备份与同步 (WebDAV)",
+                    icon = Icons.Outlined.CloudSync
+                )
+                Spacer(Modifier.height(8.dp))
+                Card(
+                    shape = RoundedCornerShape(cardRadius),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = serverUrl,
+                            onValueChange = {
+                                serverUrl = it
+                                updateAndPersistWebDav(newUrl = it)
+                            },
+                            label = { Text("WebDAV 服务器地址") },
+                            placeholder = { Text("如: https://dav.jianguoyun.com/dav/VaultCard/") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        OutlinedTextField(
+                            value = username,
+                            onValueChange = {
+                                username = it
+                                updateAndPersistWebDav(newUsername = it)
+                            },
+                            label = { Text("用户名 / 账号邮箱") },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        OutlinedTextField(
+                            value = password,
+                            onValueChange = {
+                                password = it
+                                updateAndPersistWebDav(newPassword = it)
+                            },
+                            label = { Text("密码 / 应用授权码") },
+                            singleLine = true,
+                            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                            trailingIcon = {
+                                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                    Icon(
+                                        imageVector = if (passwordVisible) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
+                                        contentDescription = if (passwordVisible) "隐藏密码" else "显示密码"
+                                    )
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            OutlinedButton(
+                                onClick = {
+                                    updateAndPersistWebDav()
+                                    coroutineScope.launch {
+                                        isTestingConnection = true
+                                        val testResult = WebDavClient.testConnection(webDavConfig)
+                                        isTestingConnection = false
+                                        testResult.fold(
+                                            onSuccess = {
+                                                snackbarHostState.showSnackbar("WebDAV 连接成功，认证通过！")
+                                            },
+                                            onFailure = { err ->
+                                                snackbarHostState.showSnackbar("连接失败: ${err.localizedMessage ?: "未知错误"}")
+                                            }
+                                        )
+                                    }
+                                },
+                                enabled = !isTestingConnection && !isBackingUpWebDav && !isRestoringWebDav,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                if (isTestingConnection) {
+                                    CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+                                    Spacer(Modifier.width(6.dp))
+                                }
+                                Text("测试连接")
+                            }
+
+                            Button(
+                                onClick = {
+                                    updateAndPersistWebDav()
+                                    coroutineScope.launch {
+                                        isBackingUpWebDav = true
+                                        snackbarHostState.showSnackbar("正在上传云端备份...")
+                                        val jsonString = backupManager.createBackupJsonString(context)
+                                        val uploadResult = WebDavClient.uploadBackup(webDavConfig, jsonString)
+                                        isBackingUpWebDav = false
+                                        uploadResult.fold(
+                                            onSuccess = {
+                                                WebDavPreferenceManager.updateLastSyncTimestamp(context)
+                                                webDavConfig = WebDavPreferenceManager.getConfig(context)
+                                                snackbarHostState.showSnackbar("云端备份成功！")
+                                            },
+                                            onFailure = { err ->
+                                                snackbarHostState.showSnackbar("备份失败: ${err.localizedMessage ?: "未知错误"}")
+                                            }
+                                        )
+                                    }
+                                },
+                                enabled = !isTestingConnection && !isBackingUpWebDav && !isRestoringWebDav,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                if (isBackingUpWebDav) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(16.dp),
+                                        strokeWidth = 2.dp,
+                                        color = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                    Spacer(Modifier.width(6.dp))
+                                }
+                                Text("立即备份")
+                            }
+
+                            OutlinedButton(
+                                onClick = {
+                                    updateAndPersistWebDav()
+                                    showWebDavRestoreConfirm = true
+                                },
+                                enabled = !isTestingConnection && !isBackingUpWebDav && !isRestoringWebDav,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                if (isRestoringWebDav) {
+                                    CircularProgressIndicator(modifier = Modifier.size(16.dp), strokeWidth = 2.dp)
+                                    Spacer(Modifier.width(6.dp))
+                                }
+                                Text("恢复备份")
+                            }
+                        }
+
+                        HorizontalDivider(
+                            modifier = Modifier.padding(vertical = 4.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "每日自动云端备份",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                val syncInfo = if (webDavConfig.lastSyncTimestamp > 0L) {
+                                    val formattedDate = java.text.SimpleDateFormat(
+                                        "MM/dd HH:mm",
+                                        java.util.Locale.getDefault()
+                                    ).format(java.util.Date(webDavConfig.lastSyncTimestamp))
+                                    "上次自动同步：$formattedDate"
+                                } else {
+                                    "后台每24小时自动上传，需连接网络"
+                                }
+                                Text(
+                                    text = syncInfo,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Switch(
+                                checked = autoSyncEnabled,
+                                onCheckedChange = { isChecked ->
+                                    autoSyncEnabled = isChecked
+                                    updateAndPersistWebDav(newAutoSync = isChecked)
+                                    val msg = if (isChecked) "已开启每日自动备份" else "已关闭自动备份"
+                                    coroutineScope.launch { snackbarHostState.showSnackbar(msg) }
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
             // Section 4: App Version
             item {
                 Surface(
@@ -289,6 +528,51 @@ fun SettingsScreen(
                 }
             }
         }
+    }
+
+    if (showWebDavRestoreConfirm) {
+        AlertDialog(
+            onDismissRequest = { showWebDavRestoreConfirm = false },
+            title = { Text("确认恢复云端备份？") },
+            text = { Text("将从 WebDAV 云端下载 vaultcard_backup.json 并合并导入本地卡片与记录。") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showWebDavRestoreConfirm = false
+                        coroutineScope.launch {
+                            isRestoringWebDav = true
+                            snackbarHostState.showSnackbar("正在从 WebDAV 下载备份...")
+                            val downloadResult = WebDavClient.downloadBackup(webDavConfig)
+                            downloadResult.fold(
+                                onSuccess = { jsonContent ->
+                                    val restoreResult = backupManager.restoreFromJsonString(context, jsonContent)
+                                    isRestoringWebDav = false
+                                    restoreResult.fold(
+                                        onSuccess = { (cards, txs) ->
+                                            snackbarHostState.showSnackbar("云端恢复完成：已恢复 $cards 张卡片，$txs 条交易记录")
+                                        },
+                                        onFailure = { err ->
+                                            snackbarHostState.showSnackbar("数据恢复失败: ${err.localizedMessage ?: "数据格式错误"}")
+                                        }
+                                    )
+                                },
+                                onFailure = { err ->
+                                    isRestoringWebDav = false
+                                    snackbarHostState.showSnackbar("下载失败: ${err.localizedMessage ?: "未知错误"}")
+                                }
+                            )
+                        }
+                    }
+                ) {
+                    Text("开始恢复")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showWebDavRestoreConfirm = false }) {
+                    Text("取消")
+                }
+            }
+        )
     }
 }
 

@@ -38,7 +38,7 @@ class AuthViewModel @Inject constructor(
                     _authState.value = _authState.value.copy(errorMessage = result.message)
                 }
                 is BiometricAuthResult.Failed -> {
-                    _authState.value = _authState.value.copy(errorMessage = "Biometric check failed")
+                    _authState.value = _authState.value.copy(errorMessage = "生物识别认证失败，请重试")
                 }
             }
         }

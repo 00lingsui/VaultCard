@@ -15,8 +15,8 @@ import com.example.cardmanager.core.database.entity.CreditCardEntity
 object NotificationHelper {
 
     const val CHANNEL_ID = "vaultcard_repayment_reminders"
-    private const val CHANNEL_NAME = "VaultCard Reminders"
-    private const val CHANNEL_DESC = "Notifications for upcoming credit card repayment deadlines"
+    private const val CHANNEL_NAME = "VaultCard 还款提醒"
+    private const val CHANNEL_DESC = "信用卡到期还款日程与账单提醒通知"
 
     fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -53,12 +53,12 @@ object NotificationHelper {
         )
 
         val title = if (daysRemaining == 0L) {
-            "Bill Due Today: ${card.cardAlias}"
+            "今日还款截止：${card.cardAlias}"
         } else {
-            "Payment Due in $daysRemaining Days: ${card.cardAlias}"
+            "还款到期提醒 (还剩 $daysRemaining 天)：${card.cardAlias}"
         }
 
-        val message = "${card.bankName} (•••• ${card.last4Digits}) repayment day is on the ${card.repaymentDay}th."
+        val message = "${card.bankName} (•••• ${card.last4Digits}) 还款日为每月 ${card.repaymentDay} 日，请及时安排还款。"
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher)

@@ -30,15 +30,15 @@ fun AddTransactionDialog(
     onConfirm: (amount: Double, category: String, note: String) -> Unit
 ) {
     var amount by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf("Dining") }
+    var selectedCategory by remember { mutableStateOf("餐饮美食") }
     var note by remember { mutableStateOf("") }
     var categoryExpanded by remember { mutableStateOf(false) }
 
-    val categories = listOf("Dining", "Groceries", "Shopping", "Transport", "Bills", "Travel", "Other")
+    val categories = listOf("餐饮美食", "超市生鲜", "日常购物", "交通出行", "生活账单", "旅游休闲", "其他消费")
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Log Card Expense") },
+        title = { Text("记录消费支出") },
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -47,7 +47,7 @@ fun AddTransactionDialog(
                 OutlinedTextField(
                     value = amount,
                     onValueChange = { amount = it },
-                    label = { Text("Amount ($)") },
+                    label = { Text("消费金额 (元)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -61,7 +61,7 @@ fun AddTransactionDialog(
                         value = selectedCategory,
                         onValueChange = {},
                         readOnly = true,
-                        label = { Text("Category") },
+                        label = { Text("消费分类") },
                         trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = categoryExpanded) },
                         modifier = Modifier.menuAnchor(androidx.compose.material3.MenuAnchorType.PrimaryNotEditable).fillMaxWidth()
                     )
@@ -84,7 +84,7 @@ fun AddTransactionDialog(
                 OutlinedTextField(
                     value = note,
                     onValueChange = { note = it },
-                    label = { Text("Merchant / Note") },
+                    label = { Text("商户 / 交易备注") },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -99,11 +99,11 @@ fun AddTransactionDialog(
                     }
                 }
             ) {
-                Text("Log Expense")
+                Text("记录消费")
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
+            TextButton(onClick = onDismiss) { Text("取消") }
         }
     )
 }

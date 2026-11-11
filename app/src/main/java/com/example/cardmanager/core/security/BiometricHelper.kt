@@ -12,8 +12,8 @@ object BiometricHelper {
 
     fun showBiometricPromptForAction(
         activity: FragmentActivity,
-        title: String = "Confirm Deletion",
-        subtitle: String = "Authenticate to delete this card",
+        title: String = "确认删除",
+        subtitle: String = "验证生物识别以删除此卡片",
         onError: ((errorCode: Int, errString: String) -> Unit)? = null,
         onSuccess: () -> Unit
     ) {

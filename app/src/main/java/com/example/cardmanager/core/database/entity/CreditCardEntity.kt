@@ -39,11 +39,11 @@ data class CreditCardEntity(
     val cardColorHex: String = "#1E293B"
 ) {
     init {
-        require(billDay in 1..31) { "billDay must be between 1 and 31" }
-        require(repaymentDay in 1..31) { "repaymentDay must be between 1 and 31" }
+        require(billDay in 1..31) { "账单日必须在1到31日之间" }
+        require(repaymentDay in 1..31) { "还款日必须在1到31日之间" }
         require(last4Digits.length == 4 && last4Digits.all { it.isDigit() }) {
-            "last4Digits must be exactly 4 digits"
+            "卡号后4位必须为4位数字"
         }
-        require(creditLimit >= 0.0) { "creditLimit cannot be negative" }
+        require(creditLimit >= 0.0) { "信用额度不能为负数" }
     }
 }

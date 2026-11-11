@@ -41,7 +41,7 @@ class UpdateManager @Inject constructor() {
 
                 val rawTag = json.getString("tag_name")
                 val cleanTag = rawTag.removePrefix("v").removePrefix("V").trim()
-                val body = json.optString("body", "Bug fixes and performance improvements.")
+                val body = json.optString("body", "修复已知问题，提升性能与稳定性。")
 
                 var apkDownloadUrl = ""
                 val assets = json.optJSONArray("assets")

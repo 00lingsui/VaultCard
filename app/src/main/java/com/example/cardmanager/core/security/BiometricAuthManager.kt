@@ -27,8 +27,8 @@ interface BiometricAuthManager {
     fun checkBiometricAvailability(): BiometricStatus
     fun promptAuthentication(
         activity: FragmentActivity,
-        title: String = "Unlock VaultCard",
-        subtitle: String = "Authenticate to view sensitive card details",
+        title: String = "解锁 VaultCard",
+        subtitle: String = "验证生物识别或设备凭据以访问信用卡信息",
         onResult: (BiometricAuthResult) -> Unit
     )
 }

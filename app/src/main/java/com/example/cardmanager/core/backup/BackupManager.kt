@@ -17,69 +17,70 @@ import javax.inject.Singleton
 @Singleton
 class BackupManager @Inject constructor() {
 
+    suspend fun createBackupJsonString(context: Context): String = withContext(Dispatchers.IO) {
+        val db = AppDatabase.getInstance(context)
+        val cards = db.creditCardDao().getAllCardsList()
+        val transactions = db.transactionDao().getAllTransactionsList()
+
+        val rootJson = JSONObject().apply {
+            put("version", 1)
+            put("export_timestamp", System.currentTimeMillis())
+
+            val cardsArray = JSONArray()
+            cards.forEach { card ->
+                val cardObj = JSONObject().apply {
+                    put("id", card.id)
+                    put("bank_name", card.bankName)
+                    put("card_alias", card.cardAlias)
+                    put("last_4_digits", card.last4Digits)
+                    put("credit_limit", card.creditLimit)
+                    put("bill_day", card.billDay)
+                    put("repayment_day", card.repaymentDay)
+                    put("card_color_hex", card.cardColorHex)
+                }
+                cardsArray.put(cardObj)
+            }
+            put("cards", cardsArray)
+
+            val transactionsArray = JSONArray()
+            transactions.forEach { tx ->
+                val txObj = JSONObject().apply {
+                    put("id", tx.id)
+                    put("card_id", tx.cardId)
+                    put("amount", tx.amount)
+                    put("category", tx.category)
+                    put("note", tx.note)
+                    put("date_timestamp", tx.dateTimestamp)
+                }
+                transactionsArray.put(txObj)
+            }
+            put("transactions", transactionsArray)
+        }
+        rootJson.toString(2)
+    }
+
     suspend fun exportBackup(context: Context, destinationUri: Uri): kotlin.Result<Int> = withContext(Dispatchers.IO) {
         try {
-            val db = AppDatabase.getInstance(context)
-            val cards = db.creditCardDao().getAllCardsList()
-            val transactions = db.transactionDao().getAllTransactionsList()
-
-            val rootJson = JSONObject().apply {
-                put("version", 1)
-                put("export_timestamp", System.currentTimeMillis())
-
-                val cardsArray = JSONArray()
-                cards.forEach { card ->
-                    val cardObj = JSONObject().apply {
-                        put("id", card.id)
-                        put("bank_name", card.bankName)
-                        put("card_alias", card.cardAlias)
-                        put("last_4_digits", card.last4Digits)
-                        put("credit_limit", card.creditLimit)
-                        put("bill_day", card.billDay)
-                        put("repayment_day", card.repaymentDay)
-                        put("card_color_hex", card.cardColorHex)
-                    }
-                    cardsArray.put(cardObj)
-                }
-                put("cards", cardsArray)
-
-                val transactionsArray = JSONArray()
-                transactions.forEach { tx ->
-                    val txObj = JSONObject().apply {
-                        put("id", tx.id)
-                        put("card_id", tx.cardId)
-                        put("amount", tx.amount)
-                        put("category", tx.category)
-                        put("note", tx.note)
-                        put("date_timestamp", tx.dateTimestamp)
-                    }
-                    transactionsArray.put(txObj)
-                }
-                put("transactions", transactionsArray)
-            }
-
+            val jsonString = createBackupJsonString(context)
             context.contentResolver.openOutputStream(destinationUri)?.use { outputStream ->
                 outputStream.bufferedWriter().use { writer ->
-                    writer.write(rootJson.toString(2))
+                    writer.write(jsonString)
                 }
-            } ?: return@withContext kotlin.Result.failure(Exception("Unable to open output file stream"))
+            } ?: return@withContext kotlin.Result.failure(Exception("无法创建导出文件"))
 
-            kotlin.Result.success(cards.size + transactions.size)
+            val rootJson = JSONObject(jsonString)
+            val cardCount = rootJson.optJSONArray("cards")?.length() ?: 0
+            val txCount = rootJson.optJSONArray("transactions")?.length() ?: 0
+            kotlin.Result.success(cardCount + txCount)
         } catch (e: Exception) {
             e.printStackTrace()
             kotlin.Result.failure(e)
         }
     }
 
-    suspend fun importBackup(context: Context, sourceUri: Uri): kotlin.Result<Pair<Int, Int>> = withContext(Dispatchers.IO) {
+    suspend fun restoreFromJsonString(context: Context, jsonString: String): kotlin.Result<Pair<Int, Int>> = withContext(Dispatchers.IO) {
         try {
             val db = AppDatabase.getInstance(context)
-            val jsonString = context.contentResolver.openInputStream(sourceUri)?.use { inputStream ->
-                BufferedReader(InputStreamReader(inputStream)).use { reader ->
-                    reader.readText()
-                }
-            } ?: return@withContext kotlin.Result.failure(Exception("Unable to open input file stream"))
-
             val rootJson = JSONObject(jsonString)
             val cardsArray = rootJson.optJSONArray("cards") ?: JSONArray()
             val transactionsArray = rootJson.optJSONArray("transactions") ?: JSONArray()
@@ -90,8 +91,8 @@ class BackupManager @Inject constructor() {
                 cardsToInsert.add(
                     CreditCardEntity(
                         id = obj.optLong("id", 0L),
-                        bankName = obj.optString("bank_name", "Unknown Bank"),
-                        cardAlias = obj.optString("card_alias", "Credit Card"),
+                        bankName = obj.optString("bank_name", "未知银行"),
+                        cardAlias = obj.optString("card_alias", "信用卡"),
                         last4Digits = obj.optString("last_4_digits", "0000"),
                         creditLimit = obj.optDouble("credit_limit", 1000.0),
                         billDay = obj.optInt("bill_day", 1),
@@ -109,7 +110,7 @@ class BackupManager @Inject constructor() {
                         id = obj.optLong("id", 0L),
                         cardId = obj.optLong("card_id", 0L),
                         amount = obj.optDouble("amount", 0.0),
-                        category = obj.optString("category", "General"),
+                        category = obj.optString("category", "日常消费"),
                         note = obj.optString("note", ""),
                         dateTimestamp = obj.optLong("date_timestamp", System.currentTimeMillis())
                     )
@@ -124,6 +125,21 @@ class BackupManager @Inject constructor() {
             }
 
             kotlin.Result.success(Pair(cardsToInsert.size, transactionsToInsert.size))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            kotlin.Result.failure(e)
+        }
+    }
+
+    suspend fun importBackup(context: Context, sourceUri: Uri): kotlin.Result<Pair<Int, Int>> = withContext(Dispatchers.IO) {
+        try {
+            val jsonString = context.contentResolver.openInputStream(sourceUri)?.use { inputStream ->
+                BufferedReader(InputStreamReader(inputStream)).use { reader ->
+                    reader.readText()
+                }
+            } ?: return@withContext kotlin.Result.failure(Exception("无法打开备份文件"))
+
+            restoreFromJsonString(context, jsonString)
         } catch (e: Exception) {
             e.printStackTrace()
             kotlin.Result.failure(e)
