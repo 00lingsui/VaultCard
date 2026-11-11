@@ -51,6 +51,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -69,6 +70,9 @@ import com.example.cardmanager.R
 import com.example.cardmanager.core.common.util.AlarmIntentHelper
 import com.example.cardmanager.core.common.util.CalendarSyncHelper
 import com.example.cardmanager.core.database.entity.CreditCardEntity
+import com.example.cardmanager.core.security.BiometricHelper
+import com.example.cardmanager.core.security.findActivity
+import kotlinx.coroutines.launch
 import com.example.cardmanager.feature.card.ui.components.AddCardDialog
 import com.example.cardmanager.feature.card.ui.components.CardDetailBottomSheet
 import com.example.cardmanager.feature.card.ui.components.CreditCardItem
@@ -89,9 +93,35 @@ fun CardListScreen(
     val themeState = LocalThemeState.current
     val isMiui = themeState.currentStyle == AppThemeStyle.MIUIX
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     var showAddDialog by remember { mutableStateOf(false) }
     var selectedCardForDetail by remember { mutableStateOf<CreditCardEntity?>(null) }
+
+    fun requestCardDeletion(cardId: Long, onCancelled: (() -> Unit)? = null) {
+        val activity = context.findActivity()
+        if (activity != null) {
+            BiometricHelper.showBiometricPromptForAction(
+                activity = activity,
+                title = "Confirm Deletion",
+                subtitle = "Authenticate to delete this card",
+                onError = { _, _ ->
+                    onCancelled?.invoke()
+                },
+                onSuccess = {
+                    viewModel.deleteCard(cardId)
+                    if (selectedCardForDetail?.id == cardId) {
+                        selectedCardForDetail = null
+                    }
+                }
+            )
+        } else {
+            viewModel.deleteCard(cardId)
+            if (selectedCardForDetail?.id == cardId) {
+                selectedCardForDetail = null
+            }
+        }
+    }
 
     val cardCornerRadius = if (isMiui) 28.dp else 20.dp
     val fabCornerRadius = if (isMiui) 24.dp else 16.dp
@@ -370,8 +400,10 @@ fun CardListScreen(
                         val dismissState = rememberSwipeToDismissBoxState(
                             confirmValueChange = { dismissValue ->
                                 if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
-                                    viewModel.deleteCard(card.id)
-                                    true
+                                    requestCardDeletion(card.id) {
+                                        coroutineScope.launch { dismissState.reset() }
+                                    }
+                                    false
                                 } else {
                                     false
                                 }
@@ -420,7 +452,10 @@ fun CardListScreen(
                         ) {
                             CreditCardItem(
                                 card = card,
-                                onClick = { selectedCardForDetail = card }
+                                onClick = { selectedCardForDetail = card },
+                                onDeleteClick = {
+                                    requestCardDeletion(card.id, null)
+                                }
                             )
                         }
                     }
@@ -451,8 +486,7 @@ fun CardListScreen(
                 selectedCardForDetail = null
             },
             onDelete = { cardId ->
-                viewModel.deleteCard(cardId)
-                selectedCardForDetail = null
+                requestCardDeletion(cardId, null)
             },
             onSetAlarm = {
                 AlarmIntentHelper.setRepaymentAlarm(context, card)
