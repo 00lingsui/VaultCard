@@ -43,6 +43,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -414,18 +415,19 @@ fun CardListScreen(
                     }
                 } else {
                     items(uiState.cards, key = { it.id }) { card ->
+                        var dismissStateRef: SwipeToDismissBoxState? = null
                         val dismissState = rememberSwipeToDismissBoxState(
                             confirmValueChange = { dismissValue ->
                                 if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
                                     requestCardDeletion(card.id) {
-                                        coroutineScope.launch { dismissState.reset() }
+                                        coroutineScope.launch { dismissStateRef?.reset() }
                                     }
                                     false
                                 } else {
                                     false
                                 }
                             }
-                        )
+                        ).also { dismissStateRef = it }
 
                         SwipeToDismissBox(
                             state = dismissState,
