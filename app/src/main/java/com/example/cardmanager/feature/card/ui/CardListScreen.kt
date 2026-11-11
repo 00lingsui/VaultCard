@@ -617,8 +617,9 @@ fun CardListScreen(
     var updateInfo by remember { mutableStateOf<com.example.cardmanager.core.update.AppUpdateInfo?>(null) }
 
     LaunchedEffect(Unit) {
-        val info = updateManager.checkForUpdates("1.0.3")
-        if (info?.isUpdateAvailable == true) {
+        val currentVersion = com.example.cardmanager.BuildConfig.VERSION_NAME
+        val info = updateManager.checkForUpdates(currentVersion)
+        if (info?.isUpdateAvailable == true && updateManager.isNewerVersion(currentVersion, info.latestVersion)) {
             updateInfo = info
         }
     }

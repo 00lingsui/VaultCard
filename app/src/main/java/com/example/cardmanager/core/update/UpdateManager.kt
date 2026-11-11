@@ -4,6 +4,7 @@ import android.app.DownloadManager
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
+import com.example.cardmanager.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -23,7 +24,7 @@ data class AppUpdateInfo(
 class UpdateManager @Inject constructor() {
 
     suspend fun checkForUpdates(
-        currentVersionName: String = "1.0.2"
+        currentVersionName: String = BuildConfig.VERSION_NAME
     ): AppUpdateInfo? = withContext(Dispatchers.IO) {
         try {
             val url = URL("https://api.github.com/repos/00lingsui/VaultCard/releases/latest")
@@ -38,24 +39,28 @@ class UpdateManager @Inject constructor() {
                 val jsonStr = connection.inputStream.bufferedReader().use { it.readText() }
                 val json = JSONObject(jsonStr)
 
-                val tagName = json.getString("tag_name").removePrefix("v").trim()
-                val body = json.optString("body", "Bug fixes and stability improvements.")
+                val rawTag = json.getString("tag_name")
+                val cleanTag = rawTag.removePrefix("v").removePrefix("V").trim()
+                val body = json.optString("body", "Bug fixes and performance improvements.")
 
                 var apkDownloadUrl = ""
-                val assets = json.getJSONArray("assets")
-                for (i in 0 until assets.length()) {
-                    val asset = assets.getJSONObject(i)
-                    val name = asset.getString("name")
-                    if (name.endsWith(".apk")) {
-                        apkDownloadUrl = asset.getString("browser_download_url")
-                        break
+                val assets = json.optJSONArray("assets")
+                if (assets != null) {
+                    for (i in 0 until assets.length()) {
+                        val asset = assets.getJSONObject(i)
+                        val name = asset.getString("name")
+                        if (name.endsWith(".apk", ignoreCase = true)) {
+                            apkDownloadUrl = asset.getString("browser_download_url")
+                            break
+                        }
                     }
                 }
 
-                val isAvailable = isNewerVersion(currentVersionName, tagName) && apkDownloadUrl.isNotEmpty()
+                val isStrictlyNewer = isNewerVersion(currentVersionName, cleanTag)
+                val isAvailable = isStrictlyNewer && apkDownloadUrl.isNotEmpty()
 
                 AppUpdateInfo(
-                    latestVersion = tagName,
+                    latestVersion = cleanTag,
                     releaseNotes = body,
                     downloadUrl = apkDownloadUrl,
                     isUpdateAvailable = isAvailable
@@ -82,9 +87,16 @@ class UpdateManager @Inject constructor() {
         manager.enqueue(request)
     }
 
-    private fun isNewerVersion(current: String, latest: String): Boolean {
-        val currentParts = current.split(".").mapNotNull { it.toIntOrNull() }
-        val latestParts = latest.split(".").mapNotNull { it.toIntOrNull() }
+    fun isNewerVersion(current: String, latest: String): Boolean {
+        val cleanCurrent = current.removePrefix("v").removePrefix("V").substringBefore("-").trim()
+        val cleanLatest = latest.removePrefix("v").removePrefix("V").substringBefore("-").trim()
+
+        val currentParts = cleanCurrent.split(".").mapNotNull { it.toIntOrNull() }
+        val latestParts = cleanLatest.split(".").mapNotNull { it.toIntOrNull() }
+
+        if (currentParts.isEmpty() || latestParts.isEmpty()) {
+            return false
+        }
 
         val length = maxOf(currentParts.size, latestParts.size)
         for (i in 0 until length) {

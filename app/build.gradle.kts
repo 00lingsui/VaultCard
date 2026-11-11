@@ -47,14 +47,14 @@ android {
             ?.takeIf { it.isNotBlank() && it != "true" && it != "false" }
         ?: "vaultcard123"
 
-    val hasReleaseKeystore = releaseKeystore.exists() && keyAlias.isNotEmpty()
-
     signingConfigs {
         create("release") {
             storeFile = releaseKeystore
             this.storePassword = storePassword
             this.keyAlias = keyAlias
             this.keyPassword = keyPassword
+            enableV1Signing = true
+            enableV2Signing = true
         }
     }
 
@@ -66,11 +66,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = if (hasReleaseKeystore) {
-                signingConfigs.getByName("release")
-            } else {
-                signingConfigs.getByName("debug")
-            }
+            signingConfig = signingConfigs.getByName("release")
         }
         debug {
             applicationIdSuffix = ".debug"
