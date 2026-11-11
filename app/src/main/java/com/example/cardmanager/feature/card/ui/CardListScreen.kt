@@ -478,8 +478,9 @@ fun CardListScreen(
                     }
                 }
             }
+        }
 
-            if (isWideScreen) {
+        if (isWideScreen) {
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
