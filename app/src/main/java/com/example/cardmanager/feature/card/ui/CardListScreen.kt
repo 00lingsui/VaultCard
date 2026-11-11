@@ -483,11 +483,11 @@ fun CardListScreen(
         }
 
         if (isWideScreen) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+            ) {
                     Box(
                         modifier = Modifier
                             .weight(1.15f)
