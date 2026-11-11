@@ -45,6 +45,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.cardmanager.core.database.entity.CreditCardEntity
 
+import androidx.compose.material.icons.filled.Close
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CardDetailBottomSheet(
@@ -53,6 +55,30 @@ fun CardDetailBottomSheet(
     onUpdate: (CreditCardEntity) -> Unit,
     onDelete: (Long) -> Unit,
     onSetAlarm: () -> Unit
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    ) {
+        CardDetailContent(
+            card = card,
+            onUpdate = onUpdate,
+            onDelete = onDelete,
+            onSetAlarm = onSetAlarm,
+            onClose = onDismiss,
+            modifier = Modifier.padding(bottom = 32.dp)
+        )
+    }
+}
+
+@Composable
+fun CardDetailContent(
+    card: CreditCardEntity,
+    onUpdate: (CreditCardEntity) -> Unit,
+    onDelete: (Long) -> Unit,
+    onSetAlarm: () -> Unit,
+    modifier: Modifier = Modifier,
+    onClose: (() -> Unit)? = null
 ) {
     var bankName by remember(card) { mutableStateOf(card.bankName) }
     var cardAlias by remember(card) { mutableStateOf(card.cardAlias) }
@@ -65,133 +91,134 @@ fun CardDetailBottomSheet(
 
     val colorPalette = listOf("#1E3A8A", "#0F172A", "#B45309", "#0284C7", "#059669", "#7C3AED")
 
-    ModalBottomSheet(
-        onDismissRequest = onDismiss,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-                .padding(bottom = 32.dp)
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("Card Details & Settings", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            Text("Card Details & Settings", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            Row {
                 IconButton(onClick = { showDeleteConfirm = true }) {
                     Icon(Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error)
                 }
-            }
-
-            OutlinedTextField(
-                value = bankName,
-                onValueChange = { bankName = it },
-                label = { Text("Bank Name") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            OutlinedTextField(
-                value = cardAlias,
-                onValueChange = { cardAlias = it },
-                label = { Text("Card Alias") },
-                singleLine = true,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedTextField(
-                    value = last4Digits,
-                    onValueChange = { if (it.length <= 4) last4Digits = it.filter { ch -> ch.isDigit() } },
-                    label = { Text("Last 4") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true,
-                    modifier = Modifier.weight(1f)
-                )
-                OutlinedTextField(
-                    value = creditLimit,
-                    onValueChange = { creditLimit = it },
-                    label = { Text("Limit ($)") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    singleLine = true,
-                    modifier = Modifier.weight(1.5f)
-                )
-            }
-
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                OutlinedTextField(
-                    value = billDay,
-                    onValueChange = { billDay = it.filter { ch -> ch.isDigit() } },
-                    label = { Text("Bill Day (1-31)") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true,
-                    modifier = Modifier.weight(1f)
-                )
-                OutlinedTextField(
-                    value = repaymentDay,
-                    onValueChange = { repaymentDay = it.filter { ch -> ch.isDigit() } },
-                    label = { Text("Repay Day (1-31)") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    singleLine = true,
-                    modifier = Modifier.weight(1f)
-                )
-            }
-
-            Text("Card Theme Color", style = MaterialTheme.typography.labelMedium)
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                colorPalette.forEach { hex ->
-                    Box(
-                        modifier = Modifier
-                            .size(34.dp)
-                            .clip(CircleShape)
-                            .background(Color(android.graphics.Color.parseColor(hex)))
-                            .clickable { selectedCardColor = hex }
-                            .then(
-                                if (hex == selectedCardColor) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                                else Modifier
-                            )
-                    )
+                if (onClose != null) {
+                    IconButton(onClick = onClose) {
+                        Icon(Icons.Default.Close, contentDescription = "Close")
+                    }
                 }
             }
+        }
 
-            OutlinedButton(
-                onClick = onSetAlarm,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Icon(Icons.Default.Alarm, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(8.dp))
-                Text("Set Due Date Alarm in Clock App")
-            }
+        OutlinedTextField(
+            value = bankName,
+            onValueChange = { bankName = it },
+            label = { Text("Bank Name") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
 
-            Button(
-                onClick = {
-                    val limit = creditLimit.toDoubleOrNull() ?: card.creditLimit
-                    val bDay = billDay.toIntOrNull()?.coerceIn(1, 31) ?: card.billDay
-                    val rDay = repaymentDay.toIntOrNull()?.coerceIn(1, 31) ?: card.repaymentDay
+        OutlinedTextField(
+            value = cardAlias,
+            onValueChange = { cardAlias = it },
+            label = { Text("Card Alias") },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth()
+        )
 
-                    onUpdate(
-                        card.copy(
-                            bankName = bankName.trim(),
-                            cardAlias = cardAlias.trim(),
-                            last4Digits = last4Digits.takeIf { it.length == 4 } ?: card.last4Digits,
-                            creditLimit = limit,
-                            billDay = bDay,
-                            repaymentDay = rDay,
-                            cardColorHex = selectedCardColor
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            OutlinedTextField(
+                value = last4Digits,
+                onValueChange = { if (it.length <= 4) last4Digits = it.filter { ch -> ch.isDigit() } },
+                label = { Text("Last 4") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true,
+                modifier = Modifier.weight(1f)
+            )
+            OutlinedTextField(
+                value = creditLimit,
+                onValueChange = { creditLimit = it },
+                label = { Text("Limit ($)") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                singleLine = true,
+                modifier = Modifier.weight(1.5f)
+            )
+        }
+
+        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            OutlinedTextField(
+                value = billDay,
+                onValueChange = { billDay = it.filter { ch -> ch.isDigit() } },
+                label = { Text("Bill Day (1-31)") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true,
+                modifier = Modifier.weight(1f)
+            )
+            OutlinedTextField(
+                value = repaymentDay,
+                onValueChange = { repaymentDay = it.filter { ch -> ch.isDigit() } },
+                label = { Text("Repay Day (1-31)") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true,
+                modifier = Modifier.weight(1f)
+            )
+        }
+
+        Text("Card Theme Color", style = MaterialTheme.typography.labelMedium)
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            colorPalette.forEach { hex ->
+                Box(
+                    modifier = Modifier
+                        .size(34.dp)
+                        .clip(CircleShape)
+                        .background(Color(android.graphics.Color.parseColor(hex)))
+                        .clickable { selectedCardColor = hex }
+                        .then(
+                            if (hex == selectedCardColor) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                            else Modifier
                         )
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 6.dp)
-            ) {
-                Text("Save Changes")
+                )
             }
+        }
+
+        OutlinedButton(
+            onClick = onSetAlarm,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Icon(Icons.Default.Alarm, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(8.dp))
+            Text("Set Due Date Alarm in Clock App")
+        }
+
+        Button(
+            onClick = {
+                val limit = creditLimit.toDoubleOrNull() ?: card.creditLimit
+                val bDay = billDay.toIntOrNull()?.coerceIn(1, 31) ?: card.billDay
+                val rDay = repaymentDay.toIntOrNull()?.coerceIn(1, 31) ?: card.repaymentDay
+
+                onUpdate(
+                    card.copy(
+                        bankName = bankName.trim(),
+                        cardAlias = cardAlias.trim(),
+                        last4Digits = last4Digits.takeIf { it.length == 4 } ?: card.last4Digits,
+                        creditLimit = limit,
+                        billDay = bDay,
+                        repaymentDay = rDay,
+                        cardColorHex = selectedCardColor
+                    )
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 6.dp)
+        ) {
+            Text("Save Changes")
         }
     }
 

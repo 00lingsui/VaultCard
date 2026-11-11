@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.animation.core.animateFloatAsState
@@ -23,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.Analytics
+import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -46,12 +49,14 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,6 +80,7 @@ import com.example.cardmanager.core.security.findActivity
 import kotlinx.coroutines.launch
 import com.example.cardmanager.feature.card.ui.components.AddCardDialog
 import com.example.cardmanager.feature.card.ui.components.CardDetailBottomSheet
+import com.example.cardmanager.feature.card.ui.components.CardDetailContent
 import com.example.cardmanager.feature.card.ui.components.CreditCardItem
 import com.example.cardmanager.ui.theme.AppThemeStyle
 import com.example.cardmanager.ui.theme.LocalThemeState
@@ -85,6 +91,7 @@ import java.util.Locale
 @Composable
 fun CardListScreen(
     viewModel: CardListViewModel = hiltViewModel(),
+    widthSizeClass: WindowWidthSizeClass = WindowWidthSizeClass.Compact,
     onNavigateToSettings: () -> Unit = {},
     onNavigateToStatistics: () -> Unit = {},
     modifier: Modifier = Modifier
@@ -96,7 +103,18 @@ fun CardListScreen(
     val coroutineScope = rememberCoroutineScope()
 
     var showAddDialog by remember { mutableStateOf(false) }
-    var selectedCardForDetail by remember { mutableStateOf<CreditCardEntity?>(null) }
+    var selectedCardId by rememberSaveable { mutableStateOf<Long?>(null) }
+    val isWideScreen = widthSizeClass != WindowWidthSizeClass.Compact
+
+    val selectedCardForDetail = remember(selectedCardId, uiState.cards) {
+        uiState.cards.find { it.id == selectedCardId }
+    }
+
+    LaunchedEffect(isWideScreen, uiState.cards) {
+        if (isWideScreen && selectedCardId == null && uiState.cards.isNotEmpty()) {
+            selectedCardId = uiState.cards.first().id
+        }
+    }
 
     fun requestCardDeletion(cardId: Long, onCancelled: (() -> Unit)? = null) {
         val activity = context.findActivity()
@@ -110,15 +128,15 @@ fun CardListScreen(
                 },
                 onSuccess = {
                     viewModel.deleteCard(cardId)
-                    if (selectedCardForDetail?.id == cardId) {
-                        selectedCardForDetail = null
+                    if (selectedCardId == cardId) {
+                        selectedCardId = null
                     }
                 }
             )
         } else {
             viewModel.deleteCard(cardId)
-            if (selectedCardForDetail?.id == cardId) {
-                selectedCardForDetail = null
+            if (selectedCardId == cardId) {
+                selectedCardId = null
             }
         }
     }
@@ -192,13 +210,12 @@ fun CardListScreen(
                 CircularProgressIndicator(strokeWidth = 3.dp)
             }
         } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
+            val cardListPane = @Composable { listModifier: Modifier ->
+                LazyColumn(
+                    modifier = listModifier.fillMaxSize(),
+                    contentPadding = PaddingValues(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
                 // 1. Redesigned Premium Gradient Summary Card
                 item {
                     val currencyFormat = remember { NumberFormat.getCurrencyInstance(Locale.US) }
@@ -452,13 +469,115 @@ fun CardListScreen(
                         ) {
                             CreditCardItem(
                                 card = card,
-                                onClick = { selectedCardForDetail = card },
+                                onClick = { selectedCardId = card.id },
                                 onDeleteClick = {
                                     requestCardDeletion(card.id, null)
                                 }
                             )
                         }
                     }
+                }
+            }
+
+            if (isWideScreen) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .weight(1.15f)
+                            .fillMaxHeight()
+                    ) {
+                        cardListPane(Modifier)
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .width(1.dp)
+                            .fillMaxHeight()
+                            .background(MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f))
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .padding(16.dp)
+                    ) {
+                        if (selectedCardForDetail != null) {
+                            Card(
+                                modifier = Modifier.fillMaxSize(),
+                                shape = RoundedCornerShape(cardCornerRadius),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surface
+                                ),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                            ) {
+                                CardDetailContent(
+                                    card = selectedCardForDetail,
+                                    onUpdate = { updatedCard ->
+                                        viewModel.updateCard(updatedCard)
+                                    },
+                                    onDelete = { cardId ->
+                                        requestCardDeletion(cardId, null)
+                                    },
+                                    onSetAlarm = {
+                                        AlarmIntentHelper.setRepaymentAlarm(context, selectedCardForDetail)
+                                    },
+                                    onClose = {
+                                        selectedCardId = null
+                                    },
+                                    modifier = Modifier.padding(vertical = 16.dp)
+                                )
+                            }
+                        } else {
+                            Card(
+                                modifier = Modifier.fillMaxSize(),
+                                shape = RoundedCornerShape(cardCornerRadius),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+                                )
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(24.dp),
+                                    verticalArrangement = Arrangement.Center,
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.CreditCard,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+                                        modifier = Modifier.size(64.dp)
+                                    )
+                                    Spacer(Modifier.height(16.dp))
+                                    Text(
+                                        text = "Select a Card",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Spacer(Modifier.height(6.dp))
+                                    Text(
+                                        text = "Choose any card from the left panel to inspect statement dates, edit credit limits, or manage transactions.",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                ) {
+                    cardListPane(Modifier)
                 }
             }
         }
@@ -477,19 +596,19 @@ fun CardListScreen(
         )
     }
 
-    selectedCardForDetail?.let { card ->
+    if (!isWideScreen && selectedCardForDetail != null) {
         CardDetailBottomSheet(
-            card = card,
-            onDismiss = { selectedCardForDetail = null },
+            card = selectedCardForDetail,
+            onDismiss = { selectedCardId = null },
             onUpdate = { updatedCard ->
                 viewModel.updateCard(updatedCard)
-                selectedCardForDetail = null
+                selectedCardId = null
             },
             onDelete = { cardId ->
                 requestCardDeletion(cardId, null)
             },
             onSetAlarm = {
-                AlarmIntentHelper.setRepaymentAlarm(context, card)
+                AlarmIntentHelper.setRepaymentAlarm(context, selectedCardForDetail)
             }
         )
     }
@@ -498,7 +617,7 @@ fun CardListScreen(
     var updateInfo by remember { mutableStateOf<com.example.cardmanager.core.update.AppUpdateInfo?>(null) }
 
     LaunchedEffect(Unit) {
-        val info = updateManager.checkForUpdates("1.0.2")
+        val info = updateManager.checkForUpdates("1.0.3")
         if (info?.isUpdateAvailable == true) {
             updateInfo = info
         }

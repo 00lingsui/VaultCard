@@ -27,6 +27,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.cardmanager.core.security.AuthViewModel
@@ -40,6 +42,7 @@ import com.example.cardmanager.ui.theme.ThemeState
 import com.example.cardmanager.ui.theme.rememberThemeState
 import dagger.hilt.android.AndroidEntryPoint
 
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
 
@@ -49,6 +52,8 @@ class MainActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
+            val windowSizeClass = calculateWindowSizeClass(this)
+            val widthSizeClass = windowSizeClass.widthSizeClass
             val themeState = rememberThemeState()
             val authState by authViewModel.authState.collectAsStateWithLifecycle()
             var currentScreen by remember { mutableStateOf("cards") }
@@ -74,6 +79,7 @@ class MainActivity : FragmentActivity() {
                                 "settings" -> SettingsScreen(onNavigateBack = { currentScreen = "cards" })
                                 "statistics" -> StatisticsScreen(onNavigateBack = { currentScreen = "cards" })
                                 else -> CardListScreen(
+                                    widthSizeClass = widthSizeClass,
                                     onNavigateToSettings = { currentScreen = "settings" },
                                     onNavigateToStatistics = { currentScreen = "statistics" }
                                 )
