@@ -87,6 +87,9 @@ fun CardDetailContent(
     var billDay by remember(card) { mutableStateOf(card.billDay.toString()) }
     var repaymentDay by remember(card) { mutableStateOf(card.repaymentDay.toString()) }
     var selectedCardColor by remember(card) { mutableStateOf(card.cardColorHex) }
+    var hasAnnualFee by remember(card) { mutableStateOf(card.hasAnnualFee) }
+    var annualFeeAmount by remember(card) { mutableStateOf(if (card.annualFeeAmount > 0) card.annualFeeAmount.toString() else "") }
+    var annualFeeWaiverCount by remember(card) { mutableStateOf(if (card.annualFeeWaiverCount > 0) card.annualFeeWaiverCount.toString() else "") }
     var showDeleteConfirm by remember { mutableStateOf(false) }
 
     val colorPalette = listOf("#1E3A8A", "#0F172A", "#B45309", "#0284C7", "#059669", "#7C3AED")
@@ -170,6 +173,45 @@ fun CardDetailContent(
             )
         }
 
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text("卡片年费设置", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                Text(
+                    text = if (hasAnnualFee) "已启用年费及免年费条件管理" else "该卡免年费",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            androidx.compose.material3.Switch(checked = hasAnnualFee, onCheckedChange = { hasAnnualFee = it })
+        }
+
+        if (hasAnnualFee) {
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(
+                    value = annualFeeAmount,
+                    onValueChange = { annualFeeAmount = it },
+                    label = { Text("年费金额 (元/年)") },
+                    placeholder = { Text("如: 300") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    singleLine = true,
+                    modifier = Modifier.weight(1f)
+                )
+                OutlinedTextField(
+                    value = annualFeeWaiverCount,
+                    onValueChange = { annualFeeWaiverCount = it.filter { ch -> ch.isDigit() } },
+                    label = { Text("免年费刷卡笔数 (次)") },
+                    placeholder = { Text("0为刚性年费") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true,
+                    modifier = Modifier.weight(1.2f)
+                )
+            }
+        }
+
         Text("卡片卡面颜色", style = MaterialTheme.typography.labelMedium)
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             colorPalette.forEach { hex ->
@@ -201,6 +243,8 @@ fun CardDetailContent(
                 val limit = creditLimit.toDoubleOrNull() ?: card.creditLimit
                 val bDay = billDay.toIntOrNull()?.coerceIn(1, 31) ?: card.billDay
                 val rDay = repaymentDay.toIntOrNull()?.coerceIn(1, 31) ?: card.repaymentDay
+                val feeAmt = if (hasAnnualFee) (annualFeeAmount.toDoubleOrNull() ?: 0.0) else 0.0
+                val waiverCount = if (hasAnnualFee) (annualFeeWaiverCount.toIntOrNull() ?: 0) else 0
 
                 onUpdate(
                     card.copy(
@@ -210,7 +254,10 @@ fun CardDetailContent(
                         creditLimit = limit,
                         billDay = bDay,
                         repaymentDay = rDay,
-                        cardColorHex = selectedCardColor
+                        cardColorHex = selectedCardColor,
+                        hasAnnualFee = hasAnnualFee,
+                        annualFeeAmount = feeAmt,
+                        annualFeeWaiverCount = waiverCount
                     )
                 )
             },

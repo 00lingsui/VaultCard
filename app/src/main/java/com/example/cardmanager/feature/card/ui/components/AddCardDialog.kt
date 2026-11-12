@@ -46,6 +46,9 @@ fun AddCardDialog(
     var billDay by remember { mutableStateOf("") }
     var repaymentDay by remember { mutableStateOf("") }
     var selectedCardColor by remember { mutableStateOf("#1E3A8A") }
+    var hasAnnualFee by remember { mutableStateOf(false) }
+    var annualFeeAmount by remember { mutableStateOf("") }
+    var annualFeeWaiverCount by remember { mutableStateOf("") }
     var syncCalendar by remember { mutableStateOf(true) }
     var errorText by remember { mutableStateOf<String?>(null) }
 
@@ -119,6 +122,47 @@ fun AddCardDialog(
                     )
                 }
 
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("卡片收取年费", style = MaterialTheme.typography.bodyMedium)
+                        Text(
+                            text = if (hasAnnualFee) "已开启年费追踪与免年费刷卡管理" else "该卡免年费或无需管理年费",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Switch(checked = hasAnnualFee, onCheckedChange = { hasAnnualFee = it })
+                }
+
+                if (hasAnnualFee) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(
+                            value = annualFeeAmount,
+                            onValueChange = { annualFeeAmount = it },
+                            label = { Text("年费金额 (元/年)") },
+                            placeholder = { Text("如: 300") },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                            singleLine = true,
+                            modifier = Modifier.weight(1f)
+                        )
+                        OutlinedTextField(
+                            value = annualFeeWaiverCount,
+                            onValueChange = { annualFeeWaiverCount = it.filter { ch -> ch.isDigit() } },
+                            label = { Text("刷卡免年费笔数 (次)") },
+                            placeholder = { Text("0为刚性年费") },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            singleLine = true,
+                            modifier = Modifier.weight(1.2f)
+                        )
+                    }
+                }
+
                 Text("卡面配色", style = MaterialTheme.typography.labelMedium)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -158,6 +202,8 @@ fun AddCardDialog(
                     val limitVal = creditLimit.toDoubleOrNull()
                     val bDay = billDay.toIntOrNull()
                     val rDay = repaymentDay.toIntOrNull()
+                    val feeAmt = if (hasAnnualFee) (annualFeeAmount.toDoubleOrNull() ?: 0.0) else 0.0
+                    val waiverCount = if (hasAnnualFee) (annualFeeWaiverCount.toIntOrNull() ?: 0) else 0
 
                     when {
                         bankName.isBlank() || cardAlias.isBlank() -> errorText = "请填写银行名称与卡片备注"
@@ -165,6 +211,8 @@ fun AddCardDialog(
                         limitVal == null || limitVal <= 0.0 -> errorText = "额度必须为大于0的数字"
                         bDay == null || bDay !in 1..31 -> errorText = "账单日必须在1至31之间"
                         rDay == null || rDay !in 1..31 -> errorText = "还款日必须在1至31之间"
+                        hasAnnualFee && feeAmt < 0.0 -> errorText = "年费金额不能为负数"
+                        hasAnnualFee && waiverCount < 0 -> errorText = "刷卡免年费笔数不能为负数"
                         else -> {
                             onConfirm(
                                 CreditCardEntity(
@@ -174,7 +222,10 @@ fun AddCardDialog(
                                     creditLimit = limitVal,
                                     billDay = bDay,
                                     repaymentDay = rDay,
-                                    cardColorHex = selectedCardColor
+                                    cardColorHex = selectedCardColor,
+                                    hasAnnualFee = hasAnnualFee,
+                                    annualFeeAmount = feeAmt,
+                                    annualFeeWaiverCount = waiverCount
                                 ),
                                 syncCalendar
                             )

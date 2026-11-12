@@ -57,6 +57,22 @@ class MainActivity : FragmentActivity() {
             val themeState = rememberThemeState()
             val authState by authViewModel.authState.collectAsStateWithLifecycle()
             var currentScreen by remember { mutableStateOf("cards") }
+            var lastBackPressTimestamp by remember { mutableStateOf(0L) }
+            val context = androidx.compose.ui.platform.LocalContext.current
+
+            androidx.activity.compose.BackHandler(enabled = true) {
+                if (currentScreen != "cards") {
+                    currentScreen = "cards"
+                } else {
+                    val currentTime = System.currentTimeMillis()
+                    if (currentTime - lastBackPressTimestamp < 2000L) {
+                        (context as? android.app.Activity)?.finish()
+                    } else {
+                        lastBackPressTimestamp = currentTime
+                        android.widget.Toast.makeText(context, "再按一次退出应用", android.widget.Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
 
             val permissionLauncher = androidx.activity.compose.rememberLauncherForActivityResult(
                 androidx.activity.result.contract.ActivityResultContracts.RequestPermission()

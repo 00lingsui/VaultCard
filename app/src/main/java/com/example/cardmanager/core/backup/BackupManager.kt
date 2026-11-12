@@ -37,6 +37,9 @@ class BackupManager @Inject constructor() {
                     put("bill_day", card.billDay)
                     put("repayment_day", card.repaymentDay)
                     put("card_color_hex", card.cardColorHex)
+                    put("has_annual_fee", card.hasAnnualFee)
+                    put("annual_fee_amount", card.annualFeeAmount)
+                    put("annual_fee_waiver_count", card.annualFeeWaiverCount)
                 }
                 cardsArray.put(cardObj)
             }
@@ -97,7 +100,10 @@ class BackupManager @Inject constructor() {
                         creditLimit = obj.optDouble("credit_limit", 1000.0),
                         billDay = obj.optInt("bill_day", 1),
                         repaymentDay = obj.optInt("repayment_day", 15),
-                        cardColorHex = obj.optString("card_color_hex", "#1E293B")
+                        cardColorHex = obj.optString("card_color_hex", "#1E293B"),
+                        hasAnnualFee = obj.optBoolean("has_annual_fee", false),
+                        annualFeeAmount = obj.optDouble("annual_fee_amount", 0.0),
+                        annualFeeWaiverCount = obj.optInt("annual_fee_waiver_count", 0)
                     )
                 )
             }

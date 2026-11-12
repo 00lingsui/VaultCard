@@ -381,6 +381,52 @@ fun CreditCardItem(
                                     color = Color(0xFF34D399)
                                 )
                             }
+                        Spacer(Modifier.height(10.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column {
+                                Text(
+                                    text = "年费政策",
+                                    style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.8.sp),
+                                    color = Color.White.copy(alpha = 0.65f)
+                                )
+                                val feePolicyText = if (card.hasAnnualFee) {
+                                    val feeStr = if (card.annualFeeAmount % 1.0 == 0.0) card.annualFeeAmount.toInt().toString() else card.annualFeeAmount.toString()
+                                    if (card.annualFeeWaiverCount > 0) {
+                                        "¥$feeStr/年 (年刷${card.annualFeeWaiverCount}次免)"
+                                    } else {
+                                        "¥$feeStr/年 (刚性年费)"
+                                    }
+                                } else {
+                                    "免年费"
+                                }
+                                Text(
+                                    text = feePolicyText,
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                                    color = if (card.hasAnnualFee) Color(0xFFFBBF24) else Color(0xFF6EE7B7)
+                                )
+                            }
+
+                            Column(horizontalAlignment = Alignment.End) {
+                                Text(
+                                    text = "年费免除要求",
+                                    style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.8.sp),
+                                    color = Color.White.copy(alpha = 0.65f)
+                                )
+                                val waiverDetailText = if (card.hasAnnualFee) {
+                                    if (card.annualFeeWaiverCount > 0) "消费满 ${card.annualFeeWaiverCount} 笔减免" else "不可减免"
+                                } else {
+                                    "无需刷卡自动减免"
+                                }
+                                Text(
+                                    text = waiverDetailText,
+                                    style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
+                                    color = Color.White.copy(alpha = 0.9f)
+                                )
+                            }
                         }
 
                         Spacer(Modifier.height(14.dp))
