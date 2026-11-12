@@ -135,7 +135,7 @@ fun SettingsScreen(
                         snackbarHostState.showSnackbar("备份导出成功：已备份 $count 条记录")
                     },
                     onFailure = { err ->
-                        snackbarHostState.showSnackbar("导出失败: ${err.localizedMessage ?: "未知错误"}")
+                        snackbarHostState.showSnackbar("导出失败: ${formatErrorMessage(err)}")
                     }
                 )
             }
@@ -154,7 +154,7 @@ fun SettingsScreen(
                         snackbarHostState.showSnackbar("恢复成功：已导入 $cards 张卡片，$txs 条交易记录")
                     },
                     onFailure = { err ->
-                        snackbarHostState.showSnackbar("导入失败: ${err.localizedMessage ?: "备份文件无效"}")
+                        snackbarHostState.showSnackbar("导入失败: ${formatErrorMessage(err)}")
                     }
                 )
             }
@@ -373,6 +373,14 @@ fun SettingsScreen(
                         ) {
                             OutlinedButton(
                                 onClick = {
+                                    if (serverUrl.isBlank()) {
+                                        coroutineScope.launch { snackbarHostState.showSnackbar("请输入 WebDAV 服务器地址") }
+                                        return@OutlinedButton
+                                    }
+                                    if (username.isBlank()) {
+                                        coroutineScope.launch { snackbarHostState.showSnackbar("请输入用户名或账号") }
+                                        return@OutlinedButton
+                                    }
                                     updateAndPersistWebDav()
                                     coroutineScope.launch {
                                         isTestingConnection = true
@@ -383,7 +391,7 @@ fun SettingsScreen(
                                                 snackbarHostState.showSnackbar("WebDAV 连接成功，认证通过！")
                                             },
                                             onFailure = { err ->
-                                                snackbarHostState.showSnackbar("连接失败: ${err.localizedMessage ?: "未知错误"}")
+                                                snackbarHostState.showSnackbar("连接失败: ${formatErrorMessage(err)}")
                                             }
                                         )
                                     }
@@ -400,23 +408,36 @@ fun SettingsScreen(
 
                             Button(
                                 onClick = {
+                                    if (serverUrl.isBlank()) {
+                                        coroutineScope.launch { snackbarHostState.showSnackbar("请输入 WebDAV 服务器地址") }
+                                        return@Button
+                                    }
+                                    if (username.isBlank()) {
+                                        coroutineScope.launch { snackbarHostState.showSnackbar("请输入用户名或账号") }
+                                        return@Button
+                                    }
                                     updateAndPersistWebDav()
                                     coroutineScope.launch {
                                         isBackingUpWebDav = true
                                         snackbarHostState.showSnackbar("正在上传云端备份...")
-                                        val jsonString = backupManager.createBackupJsonString(context)
-                                        val uploadResult = WebDavClient.uploadBackup(webDavConfig, jsonString)
-                                        isBackingUpWebDav = false
-                                        uploadResult.fold(
-                                            onSuccess = {
-                                                WebDavPreferenceManager.updateLastSyncTimestamp(context)
-                                                webDavConfig = WebDavPreferenceManager.getConfig(context)
-                                                snackbarHostState.showSnackbar("云端备份成功！")
-                                            },
-                                            onFailure = { err ->
-                                                snackbarHostState.showSnackbar("备份失败: ${err.localizedMessage ?: "未知错误"}")
-                                            }
-                                        )
+                                        try {
+                                            val jsonString = backupManager.createBackupJsonString(context)
+                                            val uploadResult = WebDavClient.uploadBackup(webDavConfig, jsonString)
+                                            isBackingUpWebDav = false
+                                            uploadResult.fold(
+                                                onSuccess = {
+                                                    WebDavPreferenceManager.updateLastSyncTimestamp(context)
+                                                    webDavConfig = WebDavPreferenceManager.getConfig(context)
+                                                    snackbarHostState.showSnackbar("云端备份成功！")
+                                                },
+                                                onFailure = { err ->
+                                                    snackbarHostState.showSnackbar("备份失败: ${formatErrorMessage(err)}")
+                                                }
+                                            )
+                                        } catch (e: Exception) {
+                                            isBackingUpWebDav = false
+                                            snackbarHostState.showSnackbar("备份失败: ${formatErrorMessage(e)}")
+                                        }
                                     }
                                 },
                                 enabled = !isTestingConnection && !isBackingUpWebDav && !isRestoringWebDav,
@@ -435,6 +456,14 @@ fun SettingsScreen(
 
                             OutlinedButton(
                                 onClick = {
+                                    if (serverUrl.isBlank()) {
+                                        coroutineScope.launch { snackbarHostState.showSnackbar("请先配置 WebDAV 服务器地址") }
+                                        return@OutlinedButton
+                                    }
+                                    if (username.isBlank()) {
+                                        coroutineScope.launch { snackbarHostState.showSnackbar("请先配置用户名或账号") }
+                                        return@OutlinedButton
+                                    }
                                     updateAndPersistWebDav()
                                     showWebDavRestoreConfirm = true
                                 },
@@ -532,9 +561,20 @@ fun SettingsScreen(
 
     if (showWebDavRestoreConfirm) {
         AlertDialog(
-            onDismissRequest = { showWebDavRestoreConfirm = false },
-            title = { Text("确认恢复云端备份？") },
-            text = { Text("将从 WebDAV 云端下载 vaultcard_backup.json 并合并导入本地卡片与记录。") },
+            onDismissRequest = {
+                if (!isRestoringWebDav) {
+                    showWebDavRestoreConfirm = false
+                }
+            },
+            title = {
+                Text(
+                    text = "确认恢复云端备份？",
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text("将从 WebDAV 下载云端备份 (vaultcard_backup.json) 并恢复卡片与消费记录。\n\n注意：此操作将覆盖或合并现有本地卡片数据。建议在此之前先完成本地备份，确认继续？")
+            },
             confirmButton = {
                 Button(
                     onClick = {
@@ -545,30 +585,38 @@ fun SettingsScreen(
                             val downloadResult = WebDavClient.downloadBackup(webDavConfig)
                             downloadResult.fold(
                                 onSuccess = { jsonContent ->
-                                    val restoreResult = backupManager.restoreFromJsonString(context, jsonContent)
-                                    isRestoringWebDav = false
-                                    restoreResult.fold(
-                                        onSuccess = { (cards, txs) ->
-                                            snackbarHostState.showSnackbar("云端恢复完成：已恢复 $cards 张卡片，$txs 条交易记录")
-                                        },
-                                        onFailure = { err ->
-                                            snackbarHostState.showSnackbar("数据恢复失败: ${err.localizedMessage ?: "数据格式错误"}")
-                                        }
-                                    )
+                                    try {
+                                        val restoreResult = backupManager.restoreFromJsonString(context, jsonContent)
+                                        isRestoringWebDav = false
+                                        restoreResult.fold(
+                                            onSuccess = { (cards, txs) ->
+                                                snackbarHostState.showSnackbar("云端恢复完成：已恢复 $cards 张卡片，$txs 条交易记录")
+                                            },
+                                            onFailure = { err ->
+                                                snackbarHostState.showSnackbar("数据恢复失败: ${formatErrorMessage(err)}")
+                                            }
+                                        )
+                                    } catch (e: Exception) {
+                                        isRestoringWebDav = false
+                                        snackbarHostState.showSnackbar("解析错误: ${formatErrorMessage(e)}")
+                                    }
                                 },
                                 onFailure = { err ->
                                     isRestoringWebDav = false
-                                    snackbarHostState.showSnackbar("下载失败: ${err.localizedMessage ?: "未知错误"}")
+                                    snackbarHostState.showSnackbar("下载备份失败: ${formatErrorMessage(err)}")
                                 }
                             )
                         }
                     }
                 ) {
-                    Text("开始恢复")
+                    Text("确认恢复")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { showWebDavRestoreConfirm = false }) {
+                TextButton(
+                    onClick = { showWebDavRestoreConfirm = false },
+                    enabled = !isRestoringWebDav
+                ) {
                     Text("取消")
                 }
             }
@@ -706,6 +754,21 @@ private fun SettingsActionRow(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+        }
+    }
+}
+
+private fun formatErrorMessage(err: Throwable): String {
+    return when (err) {
+        is java.net.UnknownHostException -> "无法解析服务器地址，请检查网络连接或网址"
+        is java.net.SocketTimeoutException -> "网络连接超时，请检查网络状况后重试"
+        is java.net.ConnectException -> "连接服务器失败，请检查服务器地址与端口"
+        is javax.net.ssl.SSLException -> "SSL安全握手失败，请检查服务器证书或协议"
+        is org.json.JSONException -> "备份文件解析失败，数据格式损坏或不兼容"
+        is java.io.FileNotFoundException -> "云端未找到备份文件 (vaultcard_backup.json)"
+        else -> {
+            val msg = err.localizedMessage
+            if (msg.isNullOrBlank()) "操作失败，请检查配置与网络" else msg
         }
     }
 }
