@@ -381,6 +381,8 @@ fun CreditCardItem(
                                     color = Color(0xFF34D399)
                                 )
                             }
+                        }
+
                         Spacer(Modifier.height(10.dp))
 
                         Row(
