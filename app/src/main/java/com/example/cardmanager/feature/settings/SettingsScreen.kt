@@ -519,7 +519,7 @@ fun SettingsScreen(
                             )
                         }
                         Text(
-                            text = "v1.0.3",
+                            text = "v${com.example.cardmanager.BuildConfig.VERSION_NAME}",
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.primary
