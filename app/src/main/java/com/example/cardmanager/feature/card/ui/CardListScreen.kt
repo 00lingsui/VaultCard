@@ -149,20 +149,13 @@ fun CardListScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Column {
-                        Text(
-                            text = stringResource(R.string.app_name),
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.Bold,
-                                letterSpacing = if (isMiui) (-0.5).sp else 0.sp
-                            )
+                    Text(
+                        text = stringResource(R.string.app_name),
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = if (isMiui) (-0.5).sp else 0.sp
                         )
-                        Text(
-                            text = if (isMiui) stringResource(R.string.style_miuix) else stringResource(R.string.style_material3),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
+                    )
                 },
                 actions = {
                     IconButton(onClick = onNavigateToStatistics) {

@@ -12,6 +12,7 @@ class CardManagerApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        com.example.cardmanager.core.language.LanguageManager.applySavedLanguage(this)
         NotificationHelper.createNotificationChannel(this)
         RepaymentWorker.scheduleDailyReminder(this)
 

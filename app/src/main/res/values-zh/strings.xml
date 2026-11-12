@@ -16,6 +16,11 @@
     <string name="mode_system">跟随系统</string>
     <string name="mode_light">浅色模式</string>
     <string name="mode_dark">深色模式</string>
+    <string name="language_settings">应用语言 / Language</string>
+    <string name="language_system">跟随系统</string>
+    <string name="language_zh_cn">简体中文</string>
+    <string name="language_zh_tw">繁體中文</string>
+    <string name="language_en">English (英语)</string>
     <string name="locked_title">VaultCard 已锁定</string>
     <string name="locked_subtitle">需要生物识别指纹认证以访问信用卡数据</string>
     <string name="unlock_button">指纹解锁</string>

@@ -26,9 +26,12 @@ import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material.icons.outlined.Style
 import androidx.compose.material.icons.outlined.CloudSync
+import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.foundation.layout.width
+import com.example.cardmanager.core.language.AppLanguage
+import com.example.cardmanager.core.language.LanguageManager
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -95,6 +98,7 @@ fun SettingsScreen(
     val backupManager = remember { BackupManager() }
 
     var webDavConfig by remember { mutableStateOf(WebDavPreferenceManager.getConfig(context)) }
+    var currentLanguage by remember { mutableStateOf(LanguageManager.getCurrentLanguage(context)) }
     var serverUrl by remember { mutableStateOf(webDavConfig.serverUrl) }
     var username by remember { mutableStateOf(webDavConfig.username) }
     var password by remember { mutableStateOf(webDavConfig.password) }
@@ -264,7 +268,74 @@ fun SettingsScreen(
                 }
             }
 
-            // Section 3: Data Backup & Recovery
+            // Section 3: App Language Settings
+            item {
+                SectionHeader(
+                    title = stringResource(R.string.language_settings),
+                    icon = Icons.Outlined.Translate
+                )
+                Spacer(Modifier.height(8.dp))
+                Card(
+                    shape = RoundedCornerShape(cardRadius),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                        LanguageOptionRow(
+                            title = stringResource(R.string.language_system),
+                            subtitle = "跟随系统语言 / Follow System",
+                            selected = currentLanguage == AppLanguage.SYSTEM,
+                            onClick = {
+                                currentLanguage = AppLanguage.SYSTEM
+                                LanguageManager.setLanguage(context, AppLanguage.SYSTEM)
+                            }
+                        )
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        )
+                        LanguageOptionRow(
+                            title = stringResource(R.string.language_zh_cn),
+                            subtitle = "中文（简体）",
+                            selected = currentLanguage == AppLanguage.SIMPLIFIED_CHINESE,
+                            onClick = {
+                                currentLanguage = AppLanguage.SIMPLIFIED_CHINESE
+                                LanguageManager.setLanguage(context, AppLanguage.SIMPLIFIED_CHINESE)
+                            }
+                        )
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        )
+                        LanguageOptionRow(
+                            title = stringResource(R.string.language_zh_tw),
+                            subtitle = "中文（繁體）",
+                            selected = currentLanguage == AppLanguage.TRADITIONAL_CHINESE,
+                            onClick = {
+                                currentLanguage = AppLanguage.TRADITIONAL_CHINESE
+                                LanguageManager.setLanguage(context, AppLanguage.TRADITIONAL_CHINESE)
+                            }
+                        )
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        )
+                        LanguageOptionRow(
+                            title = stringResource(R.string.language_en),
+                            subtitle = "English",
+                            selected = currentLanguage == AppLanguage.ENGLISH,
+                            onClick = {
+                                currentLanguage = AppLanguage.ENGLISH
+                                LanguageManager.setLanguage(context, AppLanguage.ENGLISH)
+                            }
+                        )
+                    }
+                }
+            }
+
+            // Section 4: Data Backup & Recovery
             item {
                 SectionHeader(
                     title = "数据备份与恢复",
@@ -719,6 +790,40 @@ private fun ThemeModeOptionRow(
                 modifier = Modifier.size(20.dp)
             )
         }
+    }
+}
+
+@Composable
+private fun LanguageOptionRow(
+    title: String,
+    subtitle: String,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
+            )
+            Text(
+                text = subtitle,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        RadioButton(
+            selected = selected,
+            onClick = onClick
+        )
     }
 }
 

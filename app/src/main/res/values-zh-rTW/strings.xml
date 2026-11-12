@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">VaultCard 信用卡管家</string>
+    <string name="portfolio_overview">信用卡總覽</string>
+    <string name="total_credit_limit">總信用額度</string>
+    <string name="total_outstanding">目前待繳總額</string>
+    <string name="cards_count">%1$d 張卡片</string>
+    <string name="no_cards_title">尚未新增信用卡</string>
+    <string name="no_cards_subtitle">點擊下方 + 按鈕登記您的第一張信用卡，開啟智慧還款倒數與提醒。</string>
+    <string name="add_card">新增信用卡</string>
+    <string name="settings">設定</string>
+    <string name="theme_and_style">主題與樣式自訂</string>
+    <string name="ui_style">介面設計風格</string>
+    <string name="style_miuix">MIUIX (小米澎湃 HyperOS 風格)</string>
+    <string name="style_material3">Material 3 (原生設計)</string>
+    <string name="theme_mode">深色模式設定</string>
+    <string name="mode_system">跟隨系統</string>
+    <string name="mode_light">淺色模式</string>
+    <string name="mode_dark">深色模式</string>
+    <string name="language_settings">應用語言 / Language</string>
+    <string name="language_system">跟隨系統</string>
+    <string name="language_zh_cn">簡體中文</string>
+    <string name="language_zh_tw">繁體中文</string>
+    <string name="language_en">English (英語)</string>
+    <string name="locked_title">VaultCard 已鎖定</string>
+    <string name="locked_subtitle">需要生物辨識指紋驗證以存取信用卡資料</string>
+    <string name="unlock_button">指紋解鎖</string>
+    <string name="update_available_title">發現新版本 v%1$s</string>
+    <string name="update_available_desc">VaultCard 有新的更新已發布至 GitHub。</string>
+    <string name="download_update">立即下載更新</string>
+    <string name="later">稍後再說</string>
+    <string name="back">返回</string>
+</resources>
