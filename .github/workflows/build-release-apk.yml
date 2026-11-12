@@ -47,20 +47,27 @@ jobs:
       - name: Grant Execute Permission to Gradle Wrapper
         run: chmod +x gradlew
 
-      - name: Decode Persistent Release Keystore
+      - name: Prepare Persistent Release Keystore
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
         run: |
-          if [ -z "$KEYSTORE_BASE64" ]; then
-            echo "::error::KEYSTORE_BASE64 secret is missing! A persistent release keystore is required to prevent signature mismatch on app updates."
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 --decode > app/release-key.jks
+            echo "Persistent release keystore decoded from KEYSTORE_BASE64 secret."
+          elif [ -s "app/release-key.jks.base64" ]; then
+            base64 --decode app/release-key.jks.base64 > app/release-key.jks
+            echo "Persistent release keystore restored from persistent repository base64."
+          elif [ -s "app/release-key.jks" ]; then
+            echo "Persistent release keystore found in repository."
+          else
+            echo "::error::No persistent release keystore found! Provide KEYSTORE_BASE64 secret or keep app/release-key.jks."
             exit 1
           fi
-          echo "$KEYSTORE_BASE64" | base64 --decode > app/release-key.jks
           if [ ! -s "app/release-key.jks" ]; then
-            echo "::error::Decoded keystore file 'app/release-key.jks' is empty or invalid!"
+            echo "::error::Release keystore file 'app/release-key.jks' is empty or invalid!"
             exit 1
           fi
-          echo "Persistent release keystore successfully decoded."
+          echo "Persistent release keystore is ready."
 
       - name: Assemble Release APK
         env:
