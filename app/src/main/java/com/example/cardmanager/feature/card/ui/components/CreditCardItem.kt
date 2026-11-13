@@ -394,25 +394,26 @@ fun CreditCardItem(
 
                         Spacer(Modifier.height(10.dp))
 
+                        val feeStr = if (card.annualFeeAmount % 1.0 == 0.0) {
+                            card.annualFeeAmount.toInt().toString()
+                        } else {
+                            card.annualFeeAmount.toString()
+                        }
+
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Column {
+                            Column(modifier = Modifier.weight(1f)) {
                                 Text(
                                     text = stringResource(R.string.annual_fee_policy_label),
                                     style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.8.sp),
                                     color = secondaryText
                                 )
-                                val feeStr = if (card.annualFeeAmount % 1.0 == 0.0) {
-                                    card.annualFeeAmount.toInt().toString()
+                                val feePolicyText = if (card.hasAnnualFee) {
+                                    "¥$feeStr"
                                 } else {
-                                    card.annualFeeAmount.toString()
-                                }
-                                val feePolicyText = when {
-                                    !card.hasAnnualFee -> stringResource(R.string.annual_fee_free_badge)
-                                    card.annualFeeWaiverCount > 0 -> stringResource(R.string.annual_fee_waivable_summary, feeStr, card.annualFeeWaiverCount)
-                                    else -> stringResource(R.string.annual_fee_rigid_summary, feeStr)
+                                    stringResource(R.string.annual_fee_free_badge)
                                 }
                                 val feeColor = when {
                                     card.hasAnnualFee && isLightSurface -> Color(0xFFB45309)
@@ -427,7 +428,10 @@ fun CreditCardItem(
                                 )
                             }
 
-                            Column(horizontalAlignment = Alignment.End) {
+                            Column(
+                                modifier = Modifier.weight(1.4f),
+                                horizontalAlignment = Alignment.End
+                            ) {
                                 Text(
                                     text = stringResource(R.string.annual_fee_waiver_req_label),
                                     style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.8.sp),
@@ -436,7 +440,7 @@ fun CreditCardItem(
                                 val waiverDetailText = when {
                                     !card.hasAnnualFee -> stringResource(R.string.annual_fee_free_desc)
                                     card.annualFeeWaiverCount > 0 -> stringResource(R.string.annual_fee_waivable_summary, feeStr, card.annualFeeWaiverCount)
-                                    else -> stringResource(R.string.annual_fee_waiver_hint)
+                                    else -> stringResource(R.string.annual_fee_rigid_summary, feeStr)
                                 }
                                 Text(
                                     text = waiverDetailText,
