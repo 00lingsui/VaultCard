@@ -35,6 +35,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -48,9 +49,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.cardmanager.R
 import com.example.cardmanager.core.database.entity.CardNetwork
 import com.example.cardmanager.core.database.entity.CardStylePreset
 import com.example.cardmanager.core.database.entity.CreditCardEntity
@@ -99,7 +102,9 @@ fun CardDetailContent(
         mutableStateOf(CardStylePreset.resolve(card.cardStyle, card.cardColorHex))
     }
     var selectedNetwork by remember(card) { mutableStateOf(card.cardNetwork) }
-    var hasManuallySelectedNetwork by remember(card) { mutableStateOf(false) }
+    var hasManuallySelectedNetwork by remember(card) {
+        mutableStateOf(card.cardNetwork != CardNetwork.OTHER)
+    }
     var hasAnnualFee by remember(card) { mutableStateOf(card.hasAnnualFee) }
     var annualFeeAmount by remember(card) { mutableStateOf(if (card.annualFeeAmount > 0) card.annualFeeAmount.toString() else "") }
     var annualFeeWaiverCount by remember(card) { mutableStateOf(if (card.annualFeeWaiverCount > 0) card.annualFeeWaiverCount.toString() else "") }
@@ -207,7 +212,7 @@ fun CardDetailContent(
             )
         }
 
-        Text("卡组织 / 双标选择", style = MaterialTheme.typography.labelMedium)
+        Text(stringResource(R.string.card_network_selector_title), style = MaterialTheme.typography.labelMedium)
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -219,12 +224,12 @@ fun CardDetailContent(
                         selectedNetwork = network
                         hasManuallySelectedNetwork = true
                     },
-                    label = { Text(network.displayName) }
+                    label = { Text(network.localizedName()) }
                 )
             }
         }
 
-        Text("卡面主题配色", style = MaterialTheme.typography.labelMedium)
+        Text(stringResource(R.string.card_style_selector_title), style = MaterialTheme.typography.labelMedium)
         LazyRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -261,12 +266,44 @@ fun CardDetailContent(
                     }
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        text = preset.displayName,
+                        text = preset.localizedName(),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                         color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
+            }
+        }
+
+        val previewFeeAmt = if (hasAnnualFee) (annualFeeAmount.toDoubleOrNull() ?: card.annualFeeAmount) else 0.0
+        val previewWaiver = if (hasAnnualFee) (annualFeeWaiverCount.toIntOrNull() ?: card.annualFeeWaiverCount) else 0
+        val feeAmtDisplay = if (previewFeeAmt % 1.0 == 0.0) previewFeeAmt.toInt().toString() else previewFeeAmt.toString()
+        val annualFeeSummary = when {
+            !hasAnnualFee -> stringResource(R.string.annual_fee_free_summary)
+            previewWaiver > 0 -> stringResource(R.string.annual_fee_waivable_summary, feeAmtDisplay, previewWaiver)
+            else -> stringResource(R.string.annual_fee_rigid_summary, feeAmtDisplay)
+        }
+
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.surfaceContainerHigh
+        ) {
+            Column(
+                modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = stringResource(R.string.annual_fee_policy_label),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = annualFeeSummary,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = if (hasAnnualFee) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+                )
             }
         }
 
@@ -276,9 +313,9 @@ fun CardDetailContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("卡片年费设置", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
+                Text(stringResource(R.string.annual_fee_section_title), style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.SemiBold)
                 Text(
-                    text = if (hasAnnualFee) "已启用年费及免年费条件管理" else "该卡免年费",
+                    text = if (hasAnnualFee) stringResource(R.string.annual_fee_enabled_desc) else stringResource(R.string.annual_fee_free_desc),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -291,8 +328,8 @@ fun CardDetailContent(
                 OutlinedTextField(
                     value = annualFeeAmount,
                     onValueChange = { annualFeeAmount = it },
-                    label = { Text("年费金额 (元/年)") },
-                    placeholder = { Text("如: 300") },
+                    label = { Text(stringResource(R.string.annual_fee_amount_label)) },
+                    placeholder = { Text("300") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
                     modifier = Modifier.weight(1f)
@@ -300,8 +337,8 @@ fun CardDetailContent(
                 OutlinedTextField(
                     value = annualFeeWaiverCount,
                     onValueChange = { annualFeeWaiverCount = it.filter { ch -> ch.isDigit() } },
-                    label = { Text("免年费刷卡笔数 (次)") },
-                    placeholder = { Text("0为刚性年费") },
+                    label = { Text(stringResource(R.string.annual_fee_waiver_count_label)) },
+                    placeholder = { Text(stringResource(R.string.annual_fee_waiver_hint)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     singleLine = true,
                     modifier = Modifier.weight(1.2f)
@@ -320,16 +357,16 @@ fun CardDetailContent(
 
         Button(
             onClick = {
-                val limit = creditLimit.toDoubleOrNull() ?: card.creditLimit
+                val limit = (creditLimit.toDoubleOrNull() ?: card.creditLimit).coerceAtLeast(0.0)
                 val bDay = billDay.toIntOrNull()?.coerceIn(1, 31) ?: card.billDay
                 val rDay = repaymentDay.toIntOrNull()?.coerceIn(1, 31) ?: card.repaymentDay
-                val feeAmt = if (hasAnnualFee) (annualFeeAmount.toDoubleOrNull() ?: 0.0) else 0.0
-                val waiverCount = if (hasAnnualFee) (annualFeeWaiverCount.toIntOrNull() ?: 0) else 0
+                val feeAmt = if (hasAnnualFee) (annualFeeAmount.toDoubleOrNull() ?: 0.0).coerceAtLeast(0.0) else 0.0
+                val waiverCount = if (hasAnnualFee) (annualFeeWaiverCount.toIntOrNull() ?: 0).coerceAtLeast(0) else 0
 
                 onUpdate(
                     card.copy(
-                        bankName = bankName.trim(),
-                        cardAlias = cardAlias.trim(),
+                        bankName = bankName.trim().ifBlank { card.bankName },
+                        cardAlias = cardAlias.trim().ifBlank { card.cardAlias },
                         last4Digits = extractedLast4,
                         creditLimit = limit,
                         billDay = bDay,

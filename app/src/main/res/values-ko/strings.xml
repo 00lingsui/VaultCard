@@ -30,4 +30,41 @@
     <string name="download_update">업데이트 다운로드</string>
     <string name="later">나중에</string>
     <string name="back">뒤로</string>
+
+    <!-- Annual Fee -->
+    <string name="annual_fee_section_title">연회비 설정</string>
+    <string name="annual_fee_toggle_title">연회비 있음</string>
+    <string name="annual_fee_enabled_desc">연회비 및 면제 조건 관리 활성화됨</string>
+    <string name="annual_fee_free_desc">연회비 면제 카드</string>
+    <string name="annual_fee_amount_label">연회비 금액 (연간)</string>
+    <string name="annual_fee_waiver_count_label">면제 기준 결제 횟수</string>
+    <string name="annual_fee_waiver_hint">0 = 면제 불가</string>
+    <string name="annual_fee_policy_label">연회비 정책</string>
+    <string name="annual_fee_waiver_req_label">연회비 면제 조건</string>
+    <string name="annual_fee_free_badge">연회비 없음</string>
+    <string name="annual_fee_rigid_summary">고정 연회비: ¥%1$s/년 · 면제 불가</string>
+    <string name="annual_fee_waivable_summary">연회비: ¥%1$s/년 · %2$d회 결제 시 면제</string>
+    <string name="annual_fee_free_summary">연회비 없음 · 실적 조건 없음</string>
+
+    <!-- Card Networks -->
+    <string name="card_network_selector_title">카드 브랜드 / 듀얼</string>
+    <string name="network_unionpay">유니온페이 (UnionPay)</string>
+    <string name="network_visa">VISA</string>
+    <string name="network_mastercard">Mastercard</string>
+    <string name="network_amex">American Express</string>
+    <string name="network_jcb">JCB</string>
+    <string name="network_unionpay_visa">유니온페이 + VISA</string>
+    <string name="network_unionpay_mastercard">유니온페이 + Mastercard</string>
+    <string name="network_other">기타</string>
+
+    <!-- Card Surface Presets -->
+    <string name="card_style_selector_title">카드 테마 색상</string>
+    <string name="card_style_pearl_white">펄 화이트</string>
+    <string name="card_style_glacier_mist">글래시어 미스트</string>
+    <string name="card_style_sakura_blush">사쿠라 블러쉬</string>
+    <string name="card_style_mint_breeze">민트 브리즈</string>
+    <string name="card_style_champagne_gold">샴페인 골드</string>
+    <string name="card_style_aurora_violet">오로라 바이올렛</string>
+    <string name="card_style_deep_ocean">딥 오션</string>
+    <string name="card_style_obsidian_titanium">옵시디언 티타늄</string>
 </resources>

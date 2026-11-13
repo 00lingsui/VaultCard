@@ -30,4 +30,41 @@
     <string name="download_update">Descargar</string>
     <string name="later">Más tarde</string>
     <string name="back">Volver</string>
+
+    <!-- Annual Fee -->
+    <string name="annual_fee_section_title">Configuración de cuota anual</string>
+    <string name="annual_fee_toggle_title">La tarjeta tiene cuota anual</string>
+    <string name="annual_fee_enabled_desc">Seguimiento de cuota anual y exención activado</string>
+    <string name="annual_fee_free_desc">Sin cuota anual</string>
+    <string name="annual_fee_amount_label">Cuota anual (por año)</string>
+    <string name="annual_fee_waiver_count_label">Pagos para exención</string>
+    <string name="annual_fee_waiver_hint">0 = No eximible</string>
+    <string name="annual_fee_policy_label">Política de cuota anual</string>
+    <string name="annual_fee_waiver_req_label">Requisito de exención</string>
+    <string name="annual_fee_free_badge">Sin cuota</string>
+    <string name="annual_fee_rigid_summary">Cuota fija: ¥%1$s/año · No eximible</string>
+    <string name="annual_fee_waivable_summary">Cuota: ¥%1$s/año · Exenta tras %2$d pagos</string>
+    <string name="annual_fee_free_summary">Sin cuota anual · Sin requisito de uso</string>
+
+    <!-- Card Networks -->
+    <string name="card_network_selector_title">Red de tarjeta / Dual</string>
+    <string name="network_unionpay">UnionPay</string>
+    <string name="network_visa">VISA</string>
+    <string name="network_mastercard">Mastercard</string>
+    <string name="network_amex">American Express</string>
+    <string name="network_jcb">JCB</string>
+    <string name="network_unionpay_visa">UnionPay + VISA</string>
+    <string name="network_unionpay_mastercard">UnionPay + Mastercard</string>
+    <string name="network_other">Otra</string>
+
+    <!-- Card Surface Presets -->
+    <string name="card_style_selector_title">Tema de tarjeta</string>
+    <string name="card_style_pearl_white">Blanco Perla</string>
+    <string name="card_style_glacier_mist">Niebla Glaciar</string>
+    <string name="card_style_sakura_blush">Rosa Sakura</string>
+    <string name="card_style_mint_breeze">Brisa Menta</string>
+    <string name="card_style_champagne_gold">Oro Champán</string>
+    <string name="card_style_aurora_violet">Violeta Aurora</string>
+    <string name="card_style_deep_ocean">Océano Profundo</string>
+    <string name="card_style_obsidian_titanium">Titanio Obsidiana</string>
 </resources>

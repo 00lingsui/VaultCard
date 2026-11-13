@@ -30,4 +30,41 @@
     <string name="download_update">アップデートをダウンロード</string>
     <string name="later">後で</string>
     <string name="back">戻る</string>
+
+    <!-- Annual Fee -->
+    <string name="annual_fee_section_title">年会費設定</string>
+    <string name="annual_fee_toggle_title">年会費あり</string>
+    <string name="annual_fee_enabled_desc">年会費・免除条件の追跡を有効化</string>
+    <string name="annual_fee_free_desc">年会費無料カード</string>
+    <string name="annual_fee_amount_label">年会費 (年額)</string>
+    <string name="annual_fee_waiver_count_label">免除に必要な決済回数</string>
+    <string name="annual_fee_waiver_hint">0 = 免除不可</string>
+    <string name="annual_fee_policy_label">年会費ポリシー</string>
+    <string name="annual_fee_waiver_req_label">免除条件</string>
+    <string name="annual_fee_free_badge">年会費無料</string>
+    <string name="annual_fee_rigid_summary">固定年会費：¥%1$s/年 · 免除不可</string>
+    <string name="annual_fee_waivable_summary">年会費：¥%1$s/年 · %2$d回利用で免除</string>
+    <string name="annual_fee_free_summary">年会費無料 · 利用回数条件なし</string>
+
+    <!-- Card Networks -->
+    <string name="card_network_selector_title">国際ブランド / デュアル</string>
+    <string name="network_unionpay">銀聯 (UnionPay)</string>
+    <string name="network_visa">VISA</string>
+    <string name="network_mastercard">Mastercard</string>
+    <string name="network_amex">American Express</string>
+    <string name="network_jcb">JCB</string>
+    <string name="network_unionpay_visa">銀聯 + VISA</string>
+    <string name="network_unionpay_mastercard">銀聯 + Mastercard</string>
+    <string name="network_other">その他</string>
+
+    <!-- Card Surface Presets -->
+    <string name="card_style_selector_title">カード券面テーマ</string>
+    <string name="card_style_pearl_white">パールホワイト</string>
+    <string name="card_style_glacier_mist">グレイシャーミスト</string>
+    <string name="card_style_sakura_blush">サクラブラッシュ</string>
+    <string name="card_style_mint_breeze">ミントブリーズ</string>
+    <string name="card_style_champagne_gold">シャンパンゴールド</string>
+    <string name="card_style_aurora_violet">オーロラバイオレット</string>
+    <string name="card_style_deep_ocean">ディープオーシャン</string>
+    <string name="card_style_obsidian_titanium">オブシディアンチタン</string>
 </resources>

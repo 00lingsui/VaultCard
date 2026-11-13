@@ -40,9 +40,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.cardmanager.R
 import com.example.cardmanager.core.database.entity.CardNetwork
 import com.example.cardmanager.core.database.entity.CardStylePreset
 import com.example.cardmanager.core.database.entity.CreditCardEntity
@@ -159,7 +161,7 @@ fun AddCardDialog(
                     )
                 }
 
-                Text("卡组织 / 双标选择", style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(R.string.card_network_selector_title), style = MaterialTheme.typography.labelMedium)
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -171,12 +173,12 @@ fun AddCardDialog(
                                 selectedNetwork = network
                                 hasManuallySelectedNetwork = true
                             },
-                            label = { Text(network.displayName) }
+                            label = { Text(network.localizedName()) }
                         )
                     }
                 }
 
-                Text("卡面主题配色", style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(R.string.card_style_selector_title), style = MaterialTheme.typography.labelMedium)
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -213,7 +215,7 @@ fun AddCardDialog(
                             }
                             Spacer(Modifier.height(4.dp))
                             Text(
-                                text = preset.displayName,
+                                text = preset.localizedName(),
                                 style = MaterialTheme.typography.labelSmall,
                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                 color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
@@ -230,9 +232,9 @@ fun AddCardDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text("卡片收取年费", style = MaterialTheme.typography.bodyMedium)
+                        Text(stringResource(R.string.annual_fee_toggle_title), style = MaterialTheme.typography.bodyMedium)
                         Text(
-                            text = if (hasAnnualFee) "已开启年费追踪与免年费刷卡管理" else "该卡免年费或无需管理年费",
+                            text = if (hasAnnualFee) stringResource(R.string.annual_fee_enabled_desc) else stringResource(R.string.annual_fee_free_desc),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -245,8 +247,8 @@ fun AddCardDialog(
                         OutlinedTextField(
                             value = annualFeeAmount,
                             onValueChange = { annualFeeAmount = it },
-                            label = { Text("年费金额 (元/年)") },
-                            placeholder = { Text("如: 300") },
+                            label = { Text(stringResource(R.string.annual_fee_amount_label)) },
+                            placeholder = { Text("300") },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                             singleLine = true,
                             modifier = Modifier.weight(1f)
@@ -254,8 +256,8 @@ fun AddCardDialog(
                         OutlinedTextField(
                             value = annualFeeWaiverCount,
                             onValueChange = { annualFeeWaiverCount = it.filter { ch -> ch.isDigit() } },
-                            label = { Text("刷卡免年费笔数 (次)") },
-                            placeholder = { Text("0为刚性年费") },
+                            label = { Text(stringResource(R.string.annual_fee_waiver_count_label)) },
+                            placeholder = { Text(stringResource(R.string.annual_fee_waiver_hint)) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             singleLine = true,
                             modifier = Modifier.weight(1.2f)

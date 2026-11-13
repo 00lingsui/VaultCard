@@ -93,26 +93,46 @@ class BackupManager @Inject constructor() {
             val cardsToInsert = mutableListOf<CreditCardEntity>()
             for (i in 0 until cardsArray.length()) {
                 val obj = cardsArray.getJSONObject(i)
+                val sanitizedLast4 = obj.optString("last_4_digits", "0000")
+                    .filter { it.isDigit() }
+                    .let { digits ->
+                        when {
+                            digits.length >= 4 -> digits.takeLast(4)
+                            digits.isEmpty() -> "0000"
+                            else -> digits.padStart(4, '0')
+                        }
+                    }
+                val safeLimit = obj.optDouble("credit_limit", 1000.0)
+                    .let { if (it.isNaN() || it < 0.0) 1000.0 else it }
+                val safeBillDay = obj.optInt("bill_day", 1).coerceIn(1, 31)
+                val safeRepaymentDay = obj.optInt("repayment_day", 15).coerceIn(1, 31)
+                val safeFeeAmount = obj.optDouble("annual_fee_amount", 0.0)
+                    .let { if (it.isNaN() || it < 0.0) 0.0 else it }
+                val safeWaiverCount = obj.optInt("annual_fee_waiver_count", 0).coerceAtLeast(0)
+                val safeColorHex = obj.optString("card_color_hex", "#1E3A8A")
+                    .ifBlank { "#1E3A8A" }
+                val resolvedPreset = com.example.cardmanager.core.database.entity.CardStylePreset.resolve(
+                    obj.optString("card_style", ""),
+                    safeColorHex
+                )
+
                 cardsToInsert.add(
                     CreditCardEntity(
                         id = obj.optLong("id", 0L),
-                        bankName = obj.optString("bank_name", "未知银行"),
-                        cardAlias = obj.optString("card_alias", "信用卡"),
-                        last4Digits = obj.optString("last_4_digits", "0000"),
-                        creditLimit = obj.optDouble("credit_limit", 1000.0),
-                        billDay = obj.optInt("bill_day", 1),
-                        repaymentDay = obj.optInt("repayment_day", 15),
-                        cardColorHex = obj.optString("card_color_hex", "#1E3A8A"),
+                        bankName = obj.optString("bank_name", "未知银行").ifBlank { "未知银行" },
+                        cardAlias = obj.optString("card_alias", "信用卡").ifBlank { "信用卡" },
+                        last4Digits = sanitizedLast4,
+                        creditLimit = safeLimit,
+                        billDay = safeBillDay,
+                        repaymentDay = safeRepaymentDay,
+                        cardColorHex = safeColorHex,
                         cardNetwork = com.example.cardmanager.core.database.entity.CardNetwork.fromString(
                             obj.optString("card_network", "UNIONPAY")
                         ),
-                        cardStyle = com.example.cardmanager.core.database.entity.CardStylePreset.resolve(
-                            obj.optString("card_style", ""),
-                            obj.optString("card_color_hex", "#1E3A8A")
-                        ).name,
+                        cardStyle = resolvedPreset.name,
                         hasAnnualFee = obj.optBoolean("has_annual_fee", false),
-                        annualFeeAmount = obj.optDouble("annual_fee_amount", 0.0),
-                        annualFeeWaiverCount = obj.optInt("annual_fee_waiver_count", 0)
+                        annualFeeAmount = safeFeeAmount,
+                        annualFeeWaiverCount = safeWaiverCount
                     )
                 )
             }

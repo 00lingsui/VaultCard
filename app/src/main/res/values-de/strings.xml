@@ -30,4 +30,41 @@
     <string name="download_update">Update herunterladen</string>
     <string name="later">Später</string>
     <string name="back">Zurück</string>
+
+    <!-- Annual Fee -->
+    <string name="annual_fee_section_title">Jahresgebühr-Einstellungen</string>
+    <string name="annual_fee_toggle_title">Karte hat Jahresgebühr</string>
+    <string name="annual_fee_enabled_desc">Verfolgung von Jahresgebühr &amp; Befreiung aktiv</string>
+    <string name="annual_fee_free_desc">Keine Jahresgebühr erforderlich</string>
+    <string name="annual_fee_amount_label">Jahresgebühr (pro Jahr)</string>
+    <string name="annual_fee_waiver_count_label">Umsätze zur Befreiung</string>
+    <string name="annual_fee_waiver_hint">0 = Nicht erlassbar</string>
+    <string name="annual_fee_policy_label">Gebührenmodell</string>
+    <string name="annual_fee_waiver_req_label">Befreiungsbedingung</string>
+    <string name="annual_fee_free_badge">Gebührenfrei</string>
+    <string name="annual_fee_rigid_summary">Feste Gebühr: ¥%1$s/Jahr · Nicht erlassbar</string>
+    <string name="annual_fee_waivable_summary">Gebühr: ¥%1$s/Jahr · Erlass ab %2$d Zahlungen</string>
+    <string name="annual_fee_free_summary">Keine Jahresgebühr · Kein Mindestumsatz</string>
+
+    <!-- Card Networks -->
+    <string name="card_network_selector_title">Kartennetzwerk / Dual-Brand</string>
+    <string name="network_unionpay">UnionPay</string>
+    <string name="network_visa">VISA</string>
+    <string name="network_mastercard">Mastercard</string>
+    <string name="network_amex">American Express</string>
+    <string name="network_jcb">JCB</string>
+    <string name="network_unionpay_visa">UnionPay + VISA</string>
+    <string name="network_unionpay_mastercard">UnionPay + Mastercard</string>
+    <string name="network_other">Sonstige</string>
+
+    <!-- Card Surface Presets -->
+    <string name="card_style_selector_title">Kartendesign-Thema</string>
+    <string name="card_style_pearl_white">Perlweiß</string>
+    <string name="card_style_glacier_mist">Gletschernebel</string>
+    <string name="card_style_sakura_blush">Sakura-Rosé</string>
+    <string name="card_style_mint_breeze">Minzbrise</string>
+    <string name="card_style_champagne_gold">Champagnergold</string>
+    <string name="card_style_aurora_violet">Aurora-Violett</string>
+    <string name="card_style_deep_ocean">Tiefsee</string>
+    <string name="card_style_obsidian_titanium">Obsidian-Titan</string>
 </resources>

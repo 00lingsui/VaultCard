@@ -30,4 +30,41 @@
     <string name="download_update">Download Update</string>
     <string name="later">Later</string>
     <string name="back">Back</string>
+
+    <!-- Annual Fee -->
+    <string name="annual_fee_section_title">Annual Fee Settings</string>
+    <string name="annual_fee_toggle_title">Card Has Annual Fee</string>
+    <string name="annual_fee_enabled_desc">Annual fee &amp; waiver tracking enabled</string>
+    <string name="annual_fee_free_desc">No annual fee required</string>
+    <string name="annual_fee_amount_label">Annual Fee (per year)</string>
+    <string name="annual_fee_waiver_count_label">Waiver Swipes (txns)</string>
+    <string name="annual_fee_waiver_hint">0 = Non-waivable</string>
+    <string name="annual_fee_policy_label">Annual Fee Policy</string>
+    <string name="annual_fee_waiver_req_label">Waiver Requirement</string>
+    <string name="annual_fee_free_badge">Fee Free</string>
+    <string name="annual_fee_rigid_summary">Rigid Fee: ¥%1$s/yr · Non-waivable</string>
+    <string name="annual_fee_waivable_summary">Fee: ¥%1$s/yr · Waived after %2$d swipes</string>
+    <string name="annual_fee_free_summary">Annual Fee Free · No swipe requirement</string>
+
+    <!-- Card Networks -->
+    <string name="card_network_selector_title">Card Network / Dual-Brand</string>
+    <string name="network_unionpay">UnionPay</string>
+    <string name="network_visa">VISA</string>
+    <string name="network_mastercard">Mastercard</string>
+    <string name="network_amex">American Express</string>
+    <string name="network_jcb">JCB</string>
+    <string name="network_unionpay_visa">UnionPay + VISA</string>
+    <string name="network_unionpay_mastercard">UnionPay + Mastercard</string>
+    <string name="network_other">Other</string>
+
+    <!-- Card Surface Presets -->
+    <string name="card_style_selector_title">Card Surface Theme</string>
+    <string name="card_style_pearl_white">Pearl White</string>
+    <string name="card_style_glacier_mist">Glacier Mist</string>
+    <string name="card_style_sakura_blush">Sakura Blush</string>
+    <string name="card_style_mint_breeze">Mint Breeze</string>
+    <string name="card_style_champagne_gold">Champagne Gold</string>
+    <string name="card_style_aurora_violet">Aurora Violet</string>
+    <string name="card_style_deep_ocean">Deep Ocean</string>
+    <string name="card_style_obsidian_titanium">Obsidian Titanium</string>
 </resources>

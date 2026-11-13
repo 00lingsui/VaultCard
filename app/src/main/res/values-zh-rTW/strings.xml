@@ -30,4 +30,41 @@
     <string name="download_update">立即下載更新</string>
     <string name="later">稍後再說</string>
     <string name="back">返回</string>
+
+    <!-- Annual Fee -->
+    <string name="annual_fee_section_title">卡片年費設定</string>
+    <string name="annual_fee_toggle_title">卡片收取年費</string>
+    <string name="annual_fee_enabled_desc">已啟用年費及免年費刷卡條件管理</string>
+    <string name="annual_fee_free_desc">該卡免年費</string>
+    <string name="annual_fee_amount_label">年費金額 (元/年)</string>
+    <string name="annual_fee_waiver_count_label">免年費刷卡筆數 (次)</string>
+    <string name="annual_fee_waiver_hint">0為剛性年費</string>
+    <string name="annual_fee_policy_label">年費政策</string>
+    <string name="annual_fee_waiver_req_label">年費減免條件</string>
+    <string name="annual_fee_free_badge">免年費</string>
+    <string name="annual_fee_rigid_summary">剛性年費：¥%1$s/年 · 不可刷卡減免</string>
+    <string name="annual_fee_waivable_summary">年費：¥%1$s/年 · 刷卡滿 %2$d 筆免年費</string>
+    <string name="annual_fee_free_summary">免年費 · 無需刷卡自動減免</string>
+
+    <!-- Card Networks -->
+    <string name="card_network_selector_title">卡組織 / 雙標選擇</string>
+    <string name="network_unionpay">銀聯</string>
+    <string name="network_visa">VISA</string>
+    <string name="network_mastercard">萬事達</string>
+    <string name="network_amex">美國運通</string>
+    <string name="network_jcb">JCB</string>
+    <string name="network_unionpay_visa">銀聯 + VISA</string>
+    <string name="network_unionpay_mastercard">銀聯 + 萬事達</string>
+    <string name="network_other">其他</string>
+
+    <!-- Card Surface Presets -->
+    <string name="card_style_selector_title">卡面主題配色</string>
+    <string name="card_style_pearl_white">珍珠白</string>
+    <string name="card_style_glacier_mist">冰川霧藍</string>
+    <string name="card_style_sakura_blush">櫻花淺粉</string>
+    <string name="card_style_mint_breeze">薄荷清風</string>
+    <string name="card_style_champagne_gold">香檳流金</string>
+    <string name="card_style_aurora_violet">極光幻紫</string>
+    <string name="card_style_deep_ocean">深海靜謐</string>
+    <string name="card_style_obsidian_titanium">曜石黑鈦</string>
 </resources>

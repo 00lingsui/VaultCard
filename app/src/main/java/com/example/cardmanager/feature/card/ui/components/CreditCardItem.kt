@@ -58,10 +58,12 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.cardmanager.R
 import com.example.cardmanager.core.common.util.calculateDaysUntilRepayment
 import com.example.cardmanager.core.database.entity.CardNetwork
 import com.example.cardmanager.core.database.entity.CardStylePreset
@@ -383,7 +385,7 @@ fun CreditCardItem(
                                     color = secondaryText
                                 )
                                 Text(
-                                    text = card.cardNetwork.displayName,
+                                    text = card.cardNetwork.localizedName(),
                                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                                     color = primaryText
                                 )
@@ -398,19 +400,19 @@ fun CreditCardItem(
                         ) {
                             Column {
                                 Text(
-                                    text = "年费政策",
+                                    text = stringResource(R.string.annual_fee_policy_label),
                                     style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.8.sp),
                                     color = secondaryText
                                 )
-                                val feePolicyText = if (card.hasAnnualFee) {
-                                    val feeStr = if (card.annualFeeAmount % 1.0 == 0.0) card.annualFeeAmount.toInt().toString() else card.annualFeeAmount.toString()
-                                    if (card.annualFeeWaiverCount > 0) {
-                                        "¥$feeStr/年 (年刷${card.annualFeeWaiverCount}次免)"
-                                    } else {
-                                        "¥$feeStr/年 (刚性年费)"
-                                    }
+                                val feeStr = if (card.annualFeeAmount % 1.0 == 0.0) {
+                                    card.annualFeeAmount.toInt().toString()
                                 } else {
-                                    "免年费"
+                                    card.annualFeeAmount.toString()
+                                }
+                                val feePolicyText = when {
+                                    !card.hasAnnualFee -> stringResource(R.string.annual_fee_free_badge)
+                                    card.annualFeeWaiverCount > 0 -> stringResource(R.string.annual_fee_waivable_summary, feeStr, card.annualFeeWaiverCount)
+                                    else -> stringResource(R.string.annual_fee_rigid_summary, feeStr)
                                 }
                                 val feeColor = when {
                                     card.hasAnnualFee && isLightSurface -> Color(0xFFB45309)
@@ -427,14 +429,14 @@ fun CreditCardItem(
 
                             Column(horizontalAlignment = Alignment.End) {
                                 Text(
-                                    text = "年费免除要求",
+                                    text = stringResource(R.string.annual_fee_waiver_req_label),
                                     style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.8.sp),
                                     color = secondaryText
                                 )
-                                val waiverDetailText = if (card.hasAnnualFee) {
-                                    if (card.annualFeeWaiverCount > 0) "消费满 ${card.annualFeeWaiverCount} 笔减免" else "不可减免"
-                                } else {
-                                    "无需刷卡自动减免"
+                                val waiverDetailText = when {
+                                    !card.hasAnnualFee -> stringResource(R.string.annual_fee_free_desc)
+                                    card.annualFeeWaiverCount > 0 -> stringResource(R.string.annual_fee_waivable_summary, feeStr, card.annualFeeWaiverCount)
+                                    else -> stringResource(R.string.annual_fee_waiver_hint)
                                 }
                                 Text(
                                     text = waiverDetailText,
