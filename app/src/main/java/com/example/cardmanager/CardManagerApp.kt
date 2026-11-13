@@ -12,13 +12,18 @@ class CardManagerApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        com.example.cardmanager.core.language.LanguageManager.applySavedLanguage(this)
-        NotificationHelper.createNotificationChannel(this)
-        RepaymentWorker.scheduleDailyReminder(this)
-
-        val config = WebDavPreferenceManager.getConfig(this)
-        if (config.autoSyncEnabled) {
-            WebDavSyncWorker.scheduleDailySync(this, true)
+        runCatching {
+            com.example.cardmanager.core.language.LanguageManager.applySavedLanguage(this)
+        }
+        runCatching {
+            NotificationHelper.createNotificationChannel(this)
+            RepaymentWorker.scheduleDailyReminder(this)
+        }
+        runCatching {
+            val config = WebDavPreferenceManager.getConfig(this)
+            if (config.autoSyncEnabled) {
+                WebDavSyncWorker.scheduleDailySync(this, true)
+            }
         }
     }
 }

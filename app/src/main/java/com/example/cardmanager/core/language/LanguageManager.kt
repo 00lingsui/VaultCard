@@ -30,21 +30,33 @@ object LanguageManager {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit().putString(KEY_LANGUAGE, language.code).apply()
 
-        val localeList = if (language.tag.isBlank()) {
-            LocaleListCompat.getEmptyLocaleList()
-        } else {
-            LocaleListCompat.forLanguageTags(language.tag)
+        try {
+            val localeList = if (language.tag.isBlank()) {
+                LocaleListCompat.getEmptyLocaleList()
+            } else {
+                LocaleListCompat.forLanguageTags(language.tag)
+            }
+            AppCompatDelegate.setApplicationLocales(localeList)
+        } catch (_: Exception) {
+            // Fallback gracefully if platform locale service is unavailable
         }
-        AppCompatDelegate.setApplicationLocales(localeList)
     }
 
     fun applySavedLanguage(context: Context) {
-        val current = getCurrentLanguage(context)
-        val localeList = if (current.tag.isBlank()) {
-            LocaleListCompat.getEmptyLocaleList()
-        } else {
-            LocaleListCompat.forLanguageTags(current.tag)
+        try {
+            val current = getCurrentLanguage(context)
+            if (current == AppLanguage.SYSTEM) {
+                if (!AppCompatDelegate.getApplicationLocales().isEmpty) {
+                    AppCompatDelegate.setApplicationLocales(LocaleListCompat.getEmptyLocaleList())
+                }
+                return
+            }
+            val targetLocales = LocaleListCompat.forLanguageTags(current.tag)
+            if (AppCompatDelegate.getApplicationLocales() != targetLocales) {
+                AppCompatDelegate.setApplicationLocales(targetLocales)
+            }
+        } catch (_: Exception) {
+            // Prevent startup crash if locale application fails
         }
-        AppCompatDelegate.setApplicationLocales(localeList)
     }
 }

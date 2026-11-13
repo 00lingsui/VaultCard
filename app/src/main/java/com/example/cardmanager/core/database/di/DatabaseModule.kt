@@ -1,7 +1,6 @@
 package com.example.cardmanager.core.database.di
 
 import android.content.Context
-import androidx.room.Room
 import com.example.cardmanager.core.database.AppDatabase
 import com.example.cardmanager.core.database.dao.CreditCardDao
 import com.example.cardmanager.core.database.dao.TransactionDao
@@ -21,13 +20,7 @@ object DatabaseModule {
     fun provideAppDatabase(
         @ApplicationContext context: Context
     ): AppDatabase {
-        return Room.databaseBuilder(
-            context,
-            AppDatabase::class.java,
-            AppDatabase.DATABASE_NAME
-        )
-            .fallbackToDestructiveMigration()
-            .build()
+        return AppDatabase.getInstance(context)
     }
 
     @Provides

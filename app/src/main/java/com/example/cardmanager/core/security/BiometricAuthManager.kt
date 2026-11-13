@@ -41,11 +41,15 @@ class BiometricAuthManagerImpl @Inject constructor(
     private val authenticators = BIOMETRIC_STRONG or DEVICE_CREDENTIAL
 
     override fun checkBiometricAvailability(): BiometricStatus {
-        val biometricManager = BiometricManager.from(context)
-        return when (biometricManager.canAuthenticate(authenticators)) {
-            BiometricManager.BIOMETRIC_SUCCESS -> BiometricStatus.Ready
-            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> BiometricStatus.NotEnrolled
-            else -> BiometricStatus.NotAvailable
+        return try {
+            val biometricManager = BiometricManager.from(context)
+            when (biometricManager.canAuthenticate(authenticators)) {
+                BiometricManager.BIOMETRIC_SUCCESS -> BiometricStatus.Ready
+                BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> BiometricStatus.NotEnrolled
+                else -> BiometricStatus.NotAvailable
+            }
+        } catch (_: Exception) {
+            BiometricStatus.NotAvailable
         }
     }
 
@@ -55,32 +59,36 @@ class BiometricAuthManagerImpl @Inject constructor(
         subtitle: String,
         onResult: (BiometricAuthResult) -> Unit
     ) {
-        val executor = ContextCompat.getMainExecutor(activity)
+        try {
+            val executor = ContextCompat.getMainExecutor(activity)
 
-        val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle(title)
-            .setSubtitle(subtitle)
-            .setAllowedAuthenticators(authenticators)
-            .build()
+            val promptInfo = BiometricPrompt.PromptInfo.Builder()
+                .setTitle(title)
+                .setSubtitle(subtitle)
+                .setAllowedAuthenticators(authenticators)
+                .build()
 
-        val biometricPrompt = BiometricPrompt(
-            activity,
-            executor,
-            object : BiometricPrompt.AuthenticationCallback() {
-                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    onResult(BiometricAuthResult.Success)
+            val biometricPrompt = BiometricPrompt(
+                activity,
+                executor,
+                object : BiometricPrompt.AuthenticationCallback() {
+                    override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+                        onResult(BiometricAuthResult.Success)
+                    }
+
+                    override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                        onResult(BiometricAuthResult.Error(errorCode, errString.toString()))
+                    }
+
+                    override fun onAuthenticationFailed() {
+                        onResult(BiometricAuthResult.Failed)
+                    }
                 }
+            )
 
-                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                    onResult(BiometricAuthResult.Error(errorCode, errString.toString()))
-                }
-
-                override fun onAuthenticationFailed() {
-                    onResult(BiometricAuthResult.Failed)
-                }
-            }
-        )
-
-        biometricPrompt.authenticate(promptInfo)
+            biometricPrompt.authenticate(promptInfo)
+        } catch (e: Exception) {
+            onResult(BiometricAuthResult.Error(-1, e.localizedMessage ?: "生物识别初始化失败"))
+        }
     }
 }
