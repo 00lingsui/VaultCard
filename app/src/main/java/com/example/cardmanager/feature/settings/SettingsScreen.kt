@@ -2,8 +2,11 @@ package com.example.cardmanager.feature.settings
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,24 +15,31 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.BrightnessAuto
 import androidx.compose.material.icons.outlined.CloudDownload
+import androidx.compose.material.icons.outlined.CloudSync
 import androidx.compose.material.icons.outlined.CloudUpload
+import androidx.compose.material.icons.outlined.ColorLens
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material.icons.outlined.Style
-import androidx.compose.material.icons.outlined.CloudSync
 import androidx.compose.material.icons.outlined.Translate
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
-import androidx.compose.foundation.layout.width
 import com.example.cardmanager.core.language.AppLanguage
 import com.example.cardmanager.core.language.LanguageManager
 import androidx.compose.material3.AlertDialog
@@ -37,7 +47,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -63,21 +72,25 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cardmanager.R
 import com.example.cardmanager.core.backup.BackupManager
 import com.example.cardmanager.core.webdav.WebDavClient
-import com.example.cardmanager.core.webdav.WebDavConfig
 import com.example.cardmanager.core.webdav.WebDavPreferenceManager
 import com.example.cardmanager.core.worker.WebDavSyncWorker
 import com.example.cardmanager.ui.theme.AppThemeMode
+import com.example.cardmanager.ui.theme.AppThemePalette
 import com.example.cardmanager.ui.theme.AppThemeStyle
 import com.example.cardmanager.ui.theme.LocalThemeState
 import kotlinx.coroutines.launch
@@ -99,6 +112,7 @@ fun SettingsScreen(
 
     var webDavConfig by remember { mutableStateOf(WebDavPreferenceManager.getConfig(context)) }
     var currentLanguage by remember { mutableStateOf(LanguageManager.getCurrentLanguage(context)) }
+    var showLanguageDialog by remember { mutableStateOf(false) }
     var serverUrl by remember { mutableStateOf(webDavConfig.serverUrl) }
     var username by remember { mutableStateOf(webDavConfig.username) }
     var password by remember { mutableStateOf(webDavConfig.password) }
@@ -231,7 +245,91 @@ fun SettingsScreen(
                 }
             }
 
-            // Section 2: Theme Appearance Mode
+            // Section 2: Color Theme Preset (works for both MIUIX & Material 3)
+            item {
+                SectionHeader(
+                    title = stringResource(R.string.theme_palette),
+                    icon = Icons.Outlined.ColorLens
+                )
+                Spacer(Modifier.height(8.dp))
+                Card(
+                    shape = RoundedCornerShape(cardRadius),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 14.dp)
+                    ) {
+                        LazyRow(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp)
+                        ) {
+                            items(AppThemePalette.entries) { palette ->
+                                val isSelected = themeState.currentPalette == palette
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(14.dp))
+                                        .clickable { themeState.setPalette(palette) }
+                                        .padding(horizontal = 6.dp, vertical = 4.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(44.dp)
+                                            .clip(CircleShape)
+                                            .background(
+                                                Brush.linearGradient(
+                                                    colors = listOf(palette.primaryColor, palette.secondaryColor)
+                                                )
+                                            )
+                                            .then(
+                                                if (isSelected) {
+                                                    Modifier.border(
+                                                        width = 3.dp,
+                                                        color = MaterialTheme.colorScheme.onSurface,
+                                                        shape = CircleShape
+                                                    )
+                                                } else {
+                                                    Modifier.border(
+                                                        width = 1.dp,
+                                                        color = MaterialTheme.colorScheme.outlineVariant,
+                                                        shape = CircleShape
+                                                    )
+                                                }
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        if (isSelected) {
+                                            Icon(
+                                                imageVector = Icons.Default.Check,
+                                                contentDescription = null,
+                                                tint = Color.White,
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                        }
+                                    }
+                                    Spacer(Modifier.height(6.dp))
+                                    Text(
+                                        text = palette.displayNameZh,
+                                        style = MaterialTheme.typography.labelSmall,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Section 3: Theme Appearance Mode
             item {
                 SectionHeader(
                     title = stringResource(R.string.theme_mode),
@@ -268,7 +366,7 @@ fun SettingsScreen(
                 }
             }
 
-            // Section 3: App Language Settings
+            // Section 4: App Language Settings (Compact Dialog Trigger)
             item {
                 SectionHeader(
                     title = stringResource(R.string.language_settings),
@@ -282,54 +380,30 @@ fun SettingsScreen(
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
-                    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
-                        LanguageOptionRow(
-                            title = stringResource(R.string.language_system),
-                            subtitle = "跟随系统语言 / Follow System",
-                            selected = currentLanguage == AppLanguage.SYSTEM,
-                            onClick = {
-                                currentLanguage = AppLanguage.SYSTEM
-                                LanguageManager.setLanguage(context, AppLanguage.SYSTEM)
-                            }
-                        )
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                        )
-                        LanguageOptionRow(
-                            title = stringResource(R.string.language_zh_cn),
-                            subtitle = "中文（简体）",
-                            selected = currentLanguage == AppLanguage.SIMPLIFIED_CHINESE,
-                            onClick = {
-                                currentLanguage = AppLanguage.SIMPLIFIED_CHINESE
-                                LanguageManager.setLanguage(context, AppLanguage.SIMPLIFIED_CHINESE)
-                            }
-                        )
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                        )
-                        LanguageOptionRow(
-                            title = stringResource(R.string.language_zh_tw),
-                            subtitle = "中文（繁體）",
-                            selected = currentLanguage == AppLanguage.TRADITIONAL_CHINESE,
-                            onClick = {
-                                currentLanguage = AppLanguage.TRADITIONAL_CHINESE
-                                LanguageManager.setLanguage(context, AppLanguage.TRADITIONAL_CHINESE)
-                            }
-                        )
-                        HorizontalDivider(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-                        )
-                        LanguageOptionRow(
-                            title = stringResource(R.string.language_en),
-                            subtitle = "English",
-                            selected = currentLanguage == AppLanguage.ENGLISH,
-                            onClick = {
-                                currentLanguage = AppLanguage.ENGLISH
-                                LanguageManager.setLanguage(context, AppLanguage.ENGLISH)
-                            }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { showLanguageDialog = true }
+                            .padding(horizontal = 16.dp, vertical = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.language_settings),
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Text(
+                                text = "${currentLanguage.displayName} (${currentLanguage.nativeName})",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -689,6 +763,48 @@ fun SettingsScreen(
                     enabled = !isRestoringWebDav
                 ) {
                     Text("取消")
+                }
+            }
+        )
+    }
+
+    if (showLanguageDialog) {
+        AlertDialog(
+            onDismissRequest = { showLanguageDialog = false },
+            title = {
+                Text(
+                    text = stringResource(R.string.language_settings),
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    AppLanguage.entries.forEachIndexed { index, language ->
+                        LanguageOptionRow(
+                            title = language.displayName,
+                            subtitle = language.nativeName,
+                            selected = currentLanguage == language,
+                            onClick = {
+                                currentLanguage = language
+                                LanguageManager.setLanguage(context, language)
+                                showLanguageDialog = false
+                            }
+                        )
+                        if (index < AppLanguage.entries.lastIndex) {
+                            HorizontalDivider(
+                                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showLanguageDialog = false }) {
+                    Text("关闭")
                 }
             }
         )

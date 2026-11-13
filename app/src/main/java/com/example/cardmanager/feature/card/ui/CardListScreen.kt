@@ -158,13 +158,6 @@ fun CardListScreen(
                     )
                 },
                 actions = {
-                    IconButton(onClick = onNavigateToStatistics) {
-                        Icon(
-                            imageVector = Icons.Outlined.Analytics,
-                            contentDescription = "财务统计与分析",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
-                    }
                     IconButton(onClick = onNavigateToSettings) {
                         Icon(
                             imageVector = Icons.Outlined.Settings,

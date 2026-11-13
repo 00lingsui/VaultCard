@@ -4,8 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
@@ -28,7 +26,8 @@ enum class AppThemeMode {
 class ThemeState(
     private val prefs: SharedPreferences? = null,
     initialStyle: AppThemeStyle = AppThemeStyle.MIUIX,
-    initialMode: AppThemeMode = AppThemeMode.SYSTEM
+    initialMode: AppThemeMode = AppThemeMode.SYSTEM,
+    initialPalette: AppThemePalette = AppThemePalette.OCEAN_BLUE
 ) {
     var currentStyle by mutableStateOf(
         prefs?.getString("pref_theme_style", null)?.let {
@@ -44,6 +43,13 @@ class ThemeState(
     )
         private set
 
+    var currentPalette by mutableStateOf(
+        prefs?.getString("pref_theme_palette", null)?.let {
+            runCatching { AppThemePalette.valueOf(it) }.getOrNull()
+        } ?: initialPalette
+    )
+        private set
+
     fun setStyle(style: AppThemeStyle) {
         currentStyle = style
         prefs?.edit()?.putString("pref_theme_style", style.name)?.apply()
@@ -52,6 +58,11 @@ class ThemeState(
     fun setMode(mode: AppThemeMode) {
         currentMode = mode
         prefs?.edit()?.putString("pref_theme_mode", mode.name)?.apply()
+    }
+
+    fun setPalette(palette: AppThemePalette) {
+        currentPalette = palette
+        prefs?.edit()?.putString("pref_theme_palette", palette.name)?.apply()
     }
 
     fun toggleStyle() {
@@ -85,9 +96,14 @@ fun AppDynamicTheme(
     }
 
     when (themeState.currentStyle) {
-        AppThemeStyle.MIUIX -> MIUIXTheme(darkTheme = isDark, content = content)
+        AppThemeStyle.MIUIX -> MIUIXTheme(
+            darkTheme = isDark,
+            palette = themeState.currentPalette,
+            content = content
+        )
         AppThemeStyle.MATERIAL3 -> MaterialTheme(
-            colorScheme = if (isDark) darkColorScheme() else lightColorScheme(),
+            colorScheme = buildMaterial3ColorScheme(darkTheme = isDark, palette = themeState.currentPalette),
+            shapes = Md3Shapes,
             content = content
         )
     }

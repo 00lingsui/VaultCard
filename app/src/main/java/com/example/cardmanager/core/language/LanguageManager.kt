@@ -11,9 +11,14 @@ enum class AppLanguage(
     val nativeName: String
 ) {
     SYSTEM("system", "", "跟随系统", "System Default"),
-    SIMPLIFIED_CHINESE("zh_cn", "zh-CN", "简体中文", "Simplified Chinese"),
-    TRADITIONAL_CHINESE("zh_tw", "zh-TW", "繁體中文", "Traditional Chinese"),
-    ENGLISH("en", "en", "English", "英语")
+    SIMPLIFIED_CHINESE("zh_cn", "zh-CN", "简体中文", "中文（简体）"),
+    TRADITIONAL_CHINESE("zh_tw", "zh-TW", "繁體中文", "中文（繁體）"),
+    ENGLISH("en", "en", "English", "English"),
+    JAPANESE("ja", "ja", "日本語", "日本語"),
+    KOREAN("ko", "ko", "한국어", "한국어"),
+    FRENCH("fr", "fr", "Français", "Français"),
+    GERMAN("de", "de", "Deutsch", "Deutsch"),
+    SPANISH("es", "es", "Español", "Español")
 }
 
 object LanguageManager {

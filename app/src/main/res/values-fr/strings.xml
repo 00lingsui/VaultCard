@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">VaultCard</string>
+    <string name="portfolio_overview">APERÇU DU PORTEFEUILLE</string>
+    <string name="total_credit_limit">Plafond de crédit total</string>
+    <string name="total_outstanding">Solde dû total</string>
+    <string name="cards_count">%1$d cartes</string>
+    <string name="no_cards_title">Aucune carte ajoutée</string>
+    <string name="no_cards_subtitle">Appuyez sur le bouton + ci-dessous pour enregistrer votre première carte bancaire.</string>
+    <string name="add_card">Ajouter une carte</string>
+    <string name="settings">Paramètres</string>
+    <string name="theme_and_style">Thème et style</string>
+    <string name="ui_style">Style d\'interface</string>
+    <string name="style_miuix">MIUIX (HyperOS)</string>
+    <string name="style_material3">Material 3</string>
+    <string name="theme_mode">Apparence</string>
+    <string name="mode_system">Système par défaut</string>
+    <string name="mode_light">Mode clair</string>
+    <string name="mode_dark">Mode sombre</string>
+    <string name="theme_palette">Palette de couleurs</string>
+    <string name="language_settings">Langue / Language</string>
+    <string name="language_system">Système par défaut</string>
+    <string name="language_zh_cn">Chinois simplifié (简体中文)</string>
+    <string name="language_zh_tw">Chinois traditionnel (繁體中文)</string>
+    <string name="language_en">English</string>
+    <string name="locked_title">VaultCard verrouillé</string>
+    <string name="locked_subtitle">Authentification biométrique requise pour accéder aux cartes</string>
+    <string name="unlock_button">Déverrouiller par biométrie</string>
+    <string name="update_available_title">Nouvelle version v%1$s disponible</string>
+    <string name="update_available_desc">Une mise à jour de VaultCard est disponible sur GitHub.</string>
+    <string name="download_update">Télécharger</string>
+    <string name="later">Plus tard</string>
+    <string name="back">Retour</string>
+</resources>

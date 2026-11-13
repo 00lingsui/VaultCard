@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">VaultCard</string>
+    <string name="portfolio_overview">RESUMEN DE CARTERA</string>
+    <string name="total_credit_limit">Límite de crédito total</string>
+    <string name="total_outstanding">Saldo pendiente total</string>
+    <string name="cards_count">%1$d tarjetas</string>
+    <string name="no_cards_title">Aún no hay tarjetas</string>
+    <string name="no_cards_subtitle">Toca el botón + abajo para registrar tu primera tarjeta de crédito.</string>
+    <string name="add_card">Añadir tarjeta</string>
+    <string name="settings">Ajustes</string>
+    <string name="theme_and_style">Tema y estilo</string>
+    <string name="ui_style">Estilo de interfaz</string>
+    <string name="style_miuix">MIUIX (HyperOS)</string>
+    <string name="style_material3">Material 3</string>
+    <string name="theme_mode">Apariencia</string>
+    <string name="mode_system">Predeterminado del sistema</string>
+    <string name="mode_light">Modo claro</string>
+    <string name="mode_dark">Modo oscuro</string>
+    <string name="theme_palette">Paleta de colores</string>
+    <string name="language_settings">Idioma / Language</string>
+    <string name="language_system">Predeterminado del sistema</string>
+    <string name="language_zh_cn">Chino simplificado (简体中文)</string>
+    <string name="language_zh_tw">Chino tradicional (繁體中文)</string>
+    <string name="language_en">English</string>
+    <string name="locked_title">VaultCard bloqueado</string>
+    <string name="locked_subtitle">Se requiere autenticación biométrica para acceder a tus tarjetas</string>
+    <string name="unlock_button">Desbloquear con biometría</string>
+    <string name="update_available_title">Nueva versión v%1$s disponible</string>
+    <string name="update_available_desc">Hay una nueva versión de VaultCard disponible en GitHub.</string>
+    <string name="download_update">Descargar</string>
+    <string name="later">Más tarde</string>
+    <string name="back">Volver</string>
+</resources>
