@@ -36,7 +36,13 @@ data class CreditCardEntity(
     val repaymentDay: Int,
 
     @ColumnInfo(name = "card_color_hex")
-    val cardColorHex: String = "#1E293B",
+    val cardColorHex: String = "#1E3A8A",
+
+    @ColumnInfo(name = "card_network", defaultValue = "'UNIONPAY'")
+    val cardNetwork: CardNetwork = CardNetwork.UNIONPAY,
+
+    @ColumnInfo(name = "card_style", defaultValue = "'DEEP_OCEAN'")
+    val cardStyle: String = CardStylePreset.DEEP_OCEAN.name,
 
     @ColumnInfo(name = "has_annual_fee", defaultValue = "0")
     val hasAnnualFee: Boolean = false,

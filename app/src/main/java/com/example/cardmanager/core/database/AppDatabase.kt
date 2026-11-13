@@ -4,18 +4,20 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.cardmanager.core.database.dao.CreditCardDao
 import com.example.cardmanager.core.database.dao.TransactionDao
 import com.example.cardmanager.core.database.entity.CreditCardEntity
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.cardmanager.core.database.entity.TransactionEntity
 
 @Database(
     entities = [CreditCardEntity::class, TransactionEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
+@TypeConverters(CardConverters::class)
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun creditCardDao(): CreditCardDao
@@ -32,6 +34,13 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE credit_cards ADD COLUMN card_network TEXT NOT NULL DEFAULT 'UNIONPAY'")
+                db.execSQL("ALTER TABLE credit_cards ADD COLUMN card_style TEXT NOT NULL DEFAULT 'DEEP_OCEAN'")
+            }
+        }
+
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
@@ -42,7 +51,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     DATABASE_NAME
                 )
-                    .addMigrations(MIGRATION_1_2)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                     .fallbackToDestructiveMigration()
                     .build()
                     .also { INSTANCE = it }

@@ -31,7 +31,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.ReceiptLong
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -64,6 +63,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cardmanager.core.common.util.calculateDaysUntilRepayment
+import com.example.cardmanager.core.database.entity.CardNetwork
+import com.example.cardmanager.core.database.entity.CardStylePreset
 import com.example.cardmanager.core.database.entity.CreditCardEntity
 import com.example.cardmanager.ui.theme.AppThemeStyle
 import com.example.cardmanager.ui.theme.LocalThemeState
@@ -85,13 +86,14 @@ fun CreditCardItem(
     var expanded by remember { mutableStateOf(initiallyExpanded) }
 
     val daysRemaining = card.calculateDaysUntilRepayment()
-    val baseColor = try {
-        Color(android.graphics.Color.parseColor(card.cardColorHex))
-    } catch (_: Exception) {
-        Color(0xFF2563EB)
+    val stylePreset = remember(card.cardStyle, card.cardColorHex) {
+        CardStylePreset.resolve(card.cardStyle, card.cardColorHex)
     }
+    val isLightSurface = stylePreset.isLightSurface
+    val primaryText = stylePreset.primaryTextColor
+    val secondaryText = stylePreset.secondaryTextColor
+    val gradientColors = stylePreset.gradientColors
 
-    // Micro-interaction: tactile scale bounce on touch down
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
 
@@ -121,12 +123,6 @@ fun CreditCardItem(
         label = "arrowRotation"
     )
 
-    val gradientColors = listOf(
-        baseColor,
-        baseColor.copy(alpha = 0.88f),
-        Color(0xFF0F172A)
-    )
-
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -145,11 +141,19 @@ fun CreditCardItem(
         border = BorderStroke(
             1.dp,
             Brush.linearGradient(
-                colors = listOf(
-                    Color.White.copy(alpha = if (expanded) 0.5f else 0.35f),
-                    Color.White.copy(alpha = 0.08f),
-                    Color.Black.copy(alpha = 0.25f)
-                ),
+                colors = if (isLightSurface) {
+                    listOf(
+                        Color.White.copy(alpha = 0.9f),
+                        Color(0xFF94A3B8).copy(alpha = 0.35f),
+                        Color(0xFF64748B).copy(alpha = 0.25f)
+                    )
+                } else {
+                    listOf(
+                        Color.White.copy(alpha = if (expanded) 0.5f else 0.35f),
+                        Color.White.copy(alpha = 0.08f),
+                        Color.Black.copy(alpha = 0.25f)
+                    )
+                },
                 start = Offset(0f, 0f),
                 end = Offset(400f, 400f)
             )
@@ -168,12 +172,12 @@ fun CreditCardItem(
         ) {
             Canvas(modifier = Modifier.matchParentSize()) {
                 drawCircle(
-                    color = Color.White.copy(alpha = 0.05f),
+                    color = if (isLightSurface) Color.White.copy(alpha = 0.35f) else Color.White.copy(alpha = 0.06f),
                     radius = size.width * 0.45f,
                     center = Offset(size.width * 0.95f, size.height * 0.15f)
                 )
                 drawCircle(
-                    color = Color.Black.copy(alpha = 0.12f),
+                    color = if (isLightSurface) Color(0xFF0F172A).copy(alpha = 0.04f) else Color.Black.copy(alpha = 0.12f),
                     radius = size.width * 0.5f,
                     center = Offset(size.width * 0.1f, size.height * 1.1f)
                 )
@@ -197,7 +201,7 @@ fun CreditCardItem(
                                 letterSpacing = 1.6.sp,
                                 fontWeight = FontWeight.Bold
                             ),
-                            color = Color.White.copy(alpha = 0.8f)
+                            color = secondaryText
                         )
                         Spacer(Modifier.height(2.dp))
                         Text(
@@ -206,7 +210,7 @@ fun CreditCardItem(
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = if (isMiui) (-0.4).sp else 0.sp
                             ),
-                            color = Color.White
+                            color = primaryText
                         )
                     }
 
@@ -222,7 +226,7 @@ fun CreditCardItem(
                         }
 
                         Surface(
-                            color = badgeBg.copy(alpha = 0.88f),
+                            color = badgeBg.copy(alpha = 0.9f),
                             shape = RoundedCornerShape(14.dp),
                             border = BorderStroke(1.dp, Color.White.copy(alpha = 0.25f))
                         ) {
@@ -250,7 +254,7 @@ fun CreditCardItem(
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowDown,
                             contentDescription = "展开卡片",
-                            tint = Color.White.copy(alpha = 0.75f),
+                            tint = secondaryText,
                             modifier = Modifier
                                 .size(22.dp)
                                 .rotate(arrowRotation)
@@ -271,23 +275,23 @@ fun CreditCardItem(
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         EmvChipGraphic()
-                        ContactlessWavesGraphic()
+                        ContactlessWavesGraphic(waveColor = secondaryText)
                     }
 
                     Text(
                         text = "••••  ••••  ••••  ${card.last4Digits}",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontFamily = FontFamily.Monospace,
-                            letterSpacing = 2.8.sp,
+                            letterSpacing = 2.6.sp,
                             fontWeight = FontWeight.SemiBold
                         ),
-                        color = Color.White.copy(alpha = 0.95f)
+                        color = primaryText
                     )
                 }
 
                 Spacer(Modifier.height(24.dp))
 
-                // Bottom Row: Credit Limit and Due Day + Payment Network
+                // Bottom Row: Credit Limit and Due Day + Dynamic Card Network Badge
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -300,16 +304,16 @@ fun CreditCardItem(
                                 letterSpacing = 1.sp,
                                 fontWeight = FontWeight.Medium
                             ),
-                            color = Color.White.copy(alpha = 0.65f)
+                            color = secondaryText
                         )
                         Spacer(Modifier.height(2.dp))
                         Text(
-                            text = NumberFormat.getCurrencyInstance(Locale.US).format(card.creditLimit),
+                            text = NumberFormat.getCurrencyInstance(Locale.CHINA).format(card.creditLimit),
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = (-0.3).sp
                             ),
-                            color = Color.White
+                            color = primaryText
                         )
                     }
 
@@ -324,17 +328,20 @@ fun CreditCardItem(
                                     letterSpacing = 0.8.sp,
                                     fontWeight = FontWeight.Medium
                                 ),
-                                color = Color.White.copy(alpha = 0.65f)
+                                color = secondaryText
                             )
                             Spacer(Modifier.height(2.dp))
                             Text(
                                 text = "每月 ${card.repaymentDay} 日",
                                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.SemiBold),
-                                color = Color.White.copy(alpha = 0.9f)
+                                color = primaryText
                             )
                         }
 
-                        PaymentNetworkGraphic()
+                        CardNetworkBadge(
+                            network = card.cardNetwork,
+                            isLightSurface = isLightSurface
+                        )
                     }
                 }
 
@@ -346,7 +353,7 @@ fun CreditCardItem(
                 ) {
                     Column(modifier = Modifier.padding(top = 18.dp)) {
                         HorizontalDivider(
-                            color = Color.White.copy(alpha = 0.15f),
+                            color = if (isLightSurface) Color(0xFF0F172A).copy(alpha = 0.12f) else Color.White.copy(alpha = 0.16f),
                             thickness = 1.dp
                         )
 
@@ -360,25 +367,25 @@ fun CreditCardItem(
                                 Text(
                                     text = "账单日",
                                     style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.8.sp),
-                                    color = Color.White.copy(alpha = 0.65f)
+                                    color = secondaryText
                                 )
                                 Text(
                                     text = "每月 ${card.billDay} 日",
                                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                                    color = Color.White
+                                    color = primaryText
                                 )
                             }
 
                             Column(horizontalAlignment = Alignment.End) {
                                 Text(
-                                    text = "账单周期",
+                                    text = "卡组织网络",
                                     style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.8.sp),
-                                    color = Color.White.copy(alpha = 0.65f)
+                                    color = secondaryText
                                 )
                                 Text(
-                                    text = "免息还款期内",
+                                    text = card.cardNetwork.displayName,
                                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                                    color = Color(0xFF34D399)
+                                    color = primaryText
                                 )
                             }
                         }
@@ -393,7 +400,7 @@ fun CreditCardItem(
                                 Text(
                                     text = "年费政策",
                                     style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.8.sp),
-                                    color = Color.White.copy(alpha = 0.65f)
+                                    color = secondaryText
                                 )
                                 val feePolicyText = if (card.hasAnnualFee) {
                                     val feeStr = if (card.annualFeeAmount % 1.0 == 0.0) card.annualFeeAmount.toInt().toString() else card.annualFeeAmount.toString()
@@ -405,10 +412,16 @@ fun CreditCardItem(
                                 } else {
                                     "免年费"
                                 }
+                                val feeColor = when {
+                                    card.hasAnnualFee && isLightSurface -> Color(0xFFB45309)
+                                    card.hasAnnualFee -> Color(0xFFFBBF24)
+                                    isLightSurface -> Color(0xFF047857)
+                                    else -> Color(0xFF6EE7B7)
+                                }
                                 Text(
                                     text = feePolicyText,
                                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                                    color = if (card.hasAnnualFee) Color(0xFFFBBF24) else Color(0xFF6EE7B7)
+                                    color = feeColor
                                 )
                             }
 
@@ -416,7 +429,7 @@ fun CreditCardItem(
                                 Text(
                                     text = "年费免除要求",
                                     style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 0.8.sp),
-                                    color = Color.White.copy(alpha = 0.65f)
+                                    color = secondaryText
                                 )
                                 val waiverDetailText = if (card.hasAnnualFee) {
                                     if (card.annualFeeWaiverCount > 0) "消费满 ${card.annualFeeWaiverCount} 笔减免" else "不可减免"
@@ -426,7 +439,7 @@ fun CreditCardItem(
                                 Text(
                                     text = waiverDetailText,
                                     style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
-                                    color = Color.White.copy(alpha = 0.9f)
+                                    color = primaryText
                                 )
                             }
                         }
@@ -443,8 +456,8 @@ fun CreditCardItem(
                                 modifier = Modifier.weight(1f),
                                 shape = RoundedCornerShape(12.dp),
                                 colors = ButtonDefaults.filledTonalButtonColors(
-                                    containerColor = Color.White.copy(alpha = 0.2f),
-                                    contentColor = Color.White
+                                    containerColor = stylePreset.subtleSurfaceOverlay,
+                                    contentColor = primaryText
                                 )
                             ) {
                                 Icon(
@@ -464,7 +477,7 @@ fun CreditCardItem(
                                     onClick = onDeleteClick,
                                     modifier = Modifier
                                         .background(
-                                            color = Color(0xFFDC2626).copy(alpha = 0.28f),
+                                            color = Color(0xFFDC2626).copy(alpha = if (isLightSurface) 0.14f else 0.28f),
                                             shape = RoundedCornerShape(12.dp)
                                         )
                                         .size(40.dp)
@@ -472,13 +485,96 @@ fun CreditCardItem(
                                     Icon(
                                         imageVector = Icons.Default.Delete,
                                         contentDescription = "删除卡片",
-                                        tint = Color(0xFFFF6B6B),
+                                        tint = if (isLightSurface) Color(0xFFDC2626) else Color(0xFFFF6B6B),
                                         modifier = Modifier.size(18.dp)
                                     )
                                 }
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CardPreviewBanner(
+    bankName: String,
+    cardAlias: String,
+    last4Digits: String,
+    creditLimit: Double,
+    repaymentDay: Int,
+    stylePreset: CardStylePreset,
+    network: CardNetwork,
+    modifier: Modifier = Modifier
+) {
+    val isLightSurface = stylePreset.isLightSurface
+    val primaryText = stylePreset.primaryTextColor
+    val secondaryText = stylePreset.secondaryTextColor
+
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        border = BorderStroke(
+            1.dp,
+            if (isLightSurface) Color(0xFF94A3B8).copy(alpha = 0.4f) else Color.White.copy(alpha = 0.22f)
+        )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Brush.linearGradient(colors = stylePreset.gradientColors))
+                .padding(horizontal = 16.dp, vertical = 14.dp)
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = bankName.ifBlank { "发卡银行" }.uppercase(),
+                            style = MaterialTheme.typography.labelSmall.copy(letterSpacing = 1.2.sp, fontWeight = FontWeight.Bold),
+                            color = secondaryText
+                        )
+                        Text(
+                            text = cardAlias.ifBlank { "信用卡名称" },
+                            style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                            color = primaryText
+                        )
+                    }
+                    EmvChipGraphic()
+                }
+
+                Text(
+                    text = "••••  ••••  ••••  ${last4Digits.padEnd(4, '•').take(4)}",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontFamily = FontFamily.Monospace,
+                        letterSpacing = 2.sp,
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    color = primaryText
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom
+                ) {
+                    Column {
+                        Text(
+                            text = "额度 ${NumberFormat.getCurrencyInstance(Locale.CHINA).format(creditLimit)} · 每月${repaymentDay}日还",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = secondaryText
+                        )
+                    }
+                    CardNetworkBadge(
+                        network = network,
+                        isLightSurface = isLightSurface
+                    )
                 }
             }
         }
@@ -541,9 +637,11 @@ private fun EmvChipGraphic(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun ContactlessWavesGraphic(modifier: Modifier = Modifier) {
+private fun ContactlessWavesGraphic(
+    waveColor: Color,
+    modifier: Modifier = Modifier
+) {
     Canvas(modifier = modifier.size(16.dp, 20.dp)) {
-        val waveColor = Color.White.copy(alpha = 0.75f)
         val stroke = Stroke(width = 1.5.dp.toPx())
         drawArc(
             color = waveColor,
@@ -563,24 +661,5 @@ private fun ContactlessWavesGraphic(modifier: Modifier = Modifier) {
             size = Size(14.dp.toPx(), 20.dp.toPx()),
             style = stroke
         )
-    }
-}
-
-@Composable
-private fun PaymentNetworkGraphic(modifier: Modifier = Modifier) {
-    Box(modifier = modifier.size(36.dp, 22.dp), contentAlignment = Alignment.Center) {
-        Canvas(modifier = Modifier.fillMaxSize()) {
-            val radius = 10.dp.toPx()
-            drawCircle(
-                color = Color(0xFFEF4444).copy(alpha = 0.85f),
-                radius = radius,
-                center = Offset(11.dp.toPx(), size.height / 2)
-            )
-            drawCircle(
-                color = Color(0xFFFBBF24).copy(alpha = 0.75f),
-                radius = radius,
-                center = Offset(21.dp.toPx(), size.height / 2)
-            )
-        }
     }
 }

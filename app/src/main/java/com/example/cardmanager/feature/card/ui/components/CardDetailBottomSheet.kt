@@ -9,25 +9,33 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Alarm
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -39,13 +47,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.cardmanager.core.database.entity.CardNetwork
+import com.example.cardmanager.core.database.entity.CardStylePreset
 import com.example.cardmanager.core.database.entity.CreditCardEntity
-
-import androidx.compose.material.icons.filled.Close
+import com.example.cardmanager.core.database.entity.detectCardNetwork
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,17 +91,23 @@ fun CardDetailContent(
 ) {
     var bankName by remember(card) { mutableStateOf(card.bankName) }
     var cardAlias by remember(card) { mutableStateOf(card.cardAlias) }
-    var last4Digits by remember(card) { mutableStateOf(card.last4Digits) }
+    var cardNumberInput by remember(card) { mutableStateOf(card.last4Digits) }
     var creditLimit by remember(card) { mutableStateOf(card.creditLimit.toString()) }
     var billDay by remember(card) { mutableStateOf(card.billDay.toString()) }
     var repaymentDay by remember(card) { mutableStateOf(card.repaymentDay.toString()) }
-    var selectedCardColor by remember(card) { mutableStateOf(card.cardColorHex) }
+    var selectedStyle by remember(card) {
+        mutableStateOf(CardStylePreset.resolve(card.cardStyle, card.cardColorHex))
+    }
+    var selectedNetwork by remember(card) { mutableStateOf(card.cardNetwork) }
+    var hasManuallySelectedNetwork by remember(card) { mutableStateOf(false) }
     var hasAnnualFee by remember(card) { mutableStateOf(card.hasAnnualFee) }
     var annualFeeAmount by remember(card) { mutableStateOf(if (card.annualFeeAmount > 0) card.annualFeeAmount.toString() else "") }
     var annualFeeWaiverCount by remember(card) { mutableStateOf(if (card.annualFeeWaiverCount > 0) card.annualFeeWaiverCount.toString() else "") }
     var showDeleteConfirm by remember { mutableStateOf(false) }
 
-    val colorPalette = listOf("#1E3A8A", "#0F172A", "#B45309", "#0284C7", "#059669", "#7C3AED")
+    val extractedLast4 = cardNumberInput.filter { it.isDigit() }.let { digits ->
+        if (digits.length >= 4) digits.takeLast(4) else card.last4Digits
+    }
 
     Column(
         modifier = modifier
@@ -119,6 +134,16 @@ fun CardDetailContent(
             }
         }
 
+        CardPreviewBanner(
+            bankName = bankName,
+            cardAlias = cardAlias,
+            last4Digits = extractedLast4,
+            creditLimit = creditLimit.toDoubleOrNull() ?: card.creditLimit,
+            repaymentDay = repaymentDay.toIntOrNull()?.coerceIn(1, 31) ?: card.repaymentDay,
+            stylePreset = selectedStyle,
+            network = selectedNetwork
+        )
+
         OutlinedTextField(
             value = bankName,
             onValueChange = { bankName = it },
@@ -137,12 +162,21 @@ fun CardDetailContent(
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedTextField(
-                value = last4Digits,
-                onValueChange = { if (it.length <= 4) last4Digits = it.filter { ch -> ch.isDigit() } },
-                label = { Text("卡号后4位") },
+                value = cardNumberInput,
+                onValueChange = { raw ->
+                    val digits = raw.filter { it.isDigit() }.take(19)
+                    cardNumberInput = digits
+                    if (!hasManuallySelectedNetwork && digits.length > 4) {
+                        val detected = detectCardNetwork(digits)
+                        if (detected != CardNetwork.OTHER) {
+                            selectedNetwork = detected
+                        }
+                    }
+                },
+                label = { Text("卡号/后4位") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 singleLine = true,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1.1f)
             )
             OutlinedTextField(
                 value = creditLimit,
@@ -150,7 +184,7 @@ fun CardDetailContent(
                 label = { Text("信用额度 (元)") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 singleLine = true,
-                modifier = Modifier.weight(1.5f)
+                modifier = Modifier.weight(1.4f)
             )
         }
 
@@ -173,6 +207,69 @@ fun CardDetailContent(
             )
         }
 
+        Text("卡组织 / 双标选择", style = MaterialTheme.typography.labelMedium)
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(CardNetwork.entries) { network ->
+                FilterChip(
+                    selected = selectedNetwork == network,
+                    onClick = {
+                        selectedNetwork = network
+                        hasManuallySelectedNetwork = true
+                    },
+                    label = { Text(network.displayName) }
+                )
+            }
+        }
+
+        Text("卡面主题配色", style = MaterialTheme.typography.labelMedium)
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            items(CardStylePreset.entries) { preset ->
+                val isSelected = preset == selectedStyle
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        .clickable { selectedStyle = preset }
+                        .padding(horizontal = 4.dp, vertical = 2.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(38.dp)
+                            .clip(CircleShape)
+                            .background(Brush.linearGradient(preset.gradientColors))
+                            .border(
+                                width = if (isSelected) 2.5.dp else 1.dp,
+                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                                shape = CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (isSelected) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                tint = preset.primaryTextColor,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = preset.displayName,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -186,7 +283,7 @@ fun CardDetailContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            androidx.compose.material3.Switch(checked = hasAnnualFee, onCheckedChange = { hasAnnualFee = it })
+            Switch(checked = hasAnnualFee, onCheckedChange = { hasAnnualFee = it })
         }
 
         if (hasAnnualFee) {
@@ -212,23 +309,6 @@ fun CardDetailContent(
             }
         }
 
-        Text("卡片卡面颜色", style = MaterialTheme.typography.labelMedium)
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            colorPalette.forEach { hex ->
-                Box(
-                    modifier = Modifier
-                        .size(34.dp)
-                        .clip(CircleShape)
-                        .background(Color(android.graphics.Color.parseColor(hex)))
-                        .clickable { selectedCardColor = hex }
-                        .then(
-                            if (hex == selectedCardColor) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                            else Modifier
-                        )
-                )
-            }
-        }
-
         OutlinedButton(
             onClick = onSetAlarm,
             modifier = Modifier.fillMaxWidth()
@@ -250,11 +330,13 @@ fun CardDetailContent(
                     card.copy(
                         bankName = bankName.trim(),
                         cardAlias = cardAlias.trim(),
-                        last4Digits = last4Digits.takeIf { it.length == 4 } ?: card.last4Digits,
+                        last4Digits = extractedLast4,
                         creditLimit = limit,
                         billDay = bDay,
                         repaymentDay = rDay,
-                        cardColorHex = selectedCardColor,
+                        cardColorHex = selectedStyle.primaryHex,
+                        cardNetwork = selectedNetwork,
+                        cardStyle = selectedStyle.name,
                         hasAnnualFee = hasAnnualFee,
                         annualFeeAmount = feeAmt,
                         annualFeeWaiverCount = waiverCount

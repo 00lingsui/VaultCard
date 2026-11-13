@@ -7,15 +7,24 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
@@ -29,10 +38,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.cardmanager.core.database.entity.CardNetwork
+import com.example.cardmanager.core.database.entity.CardStylePreset
 import com.example.cardmanager.core.database.entity.CreditCardEntity
+import com.example.cardmanager.core.database.entity.detectCardNetwork
 
 @Composable
 fun AddCardDialog(
@@ -41,18 +55,22 @@ fun AddCardDialog(
 ) {
     var bankName by remember { mutableStateOf("") }
     var cardAlias by remember { mutableStateOf("") }
-    var last4Digits by remember { mutableStateOf("") }
+    var cardNumberInput by remember { mutableStateOf("") }
     var creditLimit by remember { mutableStateOf("") }
     var billDay by remember { mutableStateOf("") }
     var repaymentDay by remember { mutableStateOf("") }
-    var selectedCardColor by remember { mutableStateOf("#1E3A8A") }
+    var selectedStyle by remember { mutableStateOf(CardStylePreset.DEEP_OCEAN) }
+    var selectedNetwork by remember { mutableStateOf(CardNetwork.UNIONPAY) }
+    var hasManuallySelectedNetwork by remember { mutableStateOf(false) }
     var hasAnnualFee by remember { mutableStateOf(false) }
     var annualFeeAmount by remember { mutableStateOf("") }
     var annualFeeWaiverCount by remember { mutableStateOf("") }
     var syncCalendar by remember { mutableStateOf(true) }
     var errorText by remember { mutableStateOf<String?>(null) }
 
-    val colorPalette = listOf("#1E3A8A", "#0F172A", "#B45309", "#0284C7", "#059669", "#7C3AED")
+    val extractedLast4 = cardNumberInput.filter { it.isDigit() }.let { digits ->
+        if (digits.length >= 4) digits.takeLast(4) else digits
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -64,6 +82,16 @@ fun AddCardDialog(
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
+                CardPreviewBanner(
+                    bankName = bankName,
+                    cardAlias = cardAlias,
+                    last4Digits = extractedLast4,
+                    creditLimit = creditLimit.toDoubleOrNull() ?: 0.0,
+                    repaymentDay = repaymentDay.toIntOrNull()?.coerceIn(1, 31) ?: 15,
+                    stylePreset = selectedStyle,
+                    network = selectedNetwork
+                )
+
                 errorText?.let {
                     Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
                 }
@@ -84,24 +112,33 @@ fun AddCardDialog(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(
-                        value = last4Digits,
-                        onValueChange = { if (it.length <= 4) last4Digits = it.filter { ch -> ch.isDigit() } },
-                        label = { Text("卡号后4位") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        singleLine = true,
-                        modifier = Modifier.weight(1f)
-                    )
-                    OutlinedTextField(
-                        value = creditLimit,
-                        onValueChange = { creditLimit = it },
-                        label = { Text("信用额度 (元)") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                        singleLine = true,
-                        modifier = Modifier.weight(1.5f)
-                    )
-                }
+                OutlinedTextField(
+                    value = cardNumberInput,
+                    onValueChange = { raw ->
+                        val digits = raw.filter { it.isDigit() }.take(19)
+                        cardNumberInput = digits
+                        if (!hasManuallySelectedNetwork && digits.isNotEmpty()) {
+                            val detected = detectCardNetwork(digits)
+                            if (detected != CardNetwork.OTHER) {
+                                selectedNetwork = detected
+                            }
+                        }
+                    },
+                    label = { Text("卡号或后4位 (输入完整卡号自动识别卡组织)") },
+                    placeholder = { Text("例如 6225... 或直接输入后4位") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                OutlinedTextField(
+                    value = creditLimit,
+                    onValueChange = { creditLimit = it },
+                    label = { Text("信用额度 (元)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(
@@ -120,6 +157,69 @@ fun AddCardDialog(
                         singleLine = true,
                         modifier = Modifier.weight(1f)
                     )
+                }
+
+                Text("卡组织 / 双标选择", style = MaterialTheme.typography.labelMedium)
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(CardNetwork.entries) { network ->
+                        FilterChip(
+                            selected = selectedNetwork == network,
+                            onClick = {
+                                selectedNetwork = network
+                                hasManuallySelectedNetwork = true
+                            },
+                            label = { Text(network.displayName) }
+                        )
+                    }
+                }
+
+                Text("卡面主题配色", style = MaterialTheme.typography.labelMedium)
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    items(CardStylePreset.entries) { preset ->
+                        val isSelected = preset == selectedStyle
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(10.dp))
+                                .clickable { selectedStyle = preset }
+                                .padding(horizontal = 4.dp, vertical = 2.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(CircleShape)
+                                    .background(Brush.linearGradient(preset.gradientColors))
+                                    .border(
+                                        width = if (isSelected) 2.5.dp else 1.dp,
+                                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                                        shape = CircleShape
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                if (isSelected) {
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = null,
+                                        tint = preset.primaryTextColor,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                            }
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                text = preset.displayName,
+                                style = MaterialTheme.typography.labelSmall,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
                 }
 
                 Row(
@@ -163,27 +263,6 @@ fun AddCardDialog(
                     }
                 }
 
-                Text("卡面配色", style = MaterialTheme.typography.labelMedium)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    colorPalette.forEach { hex ->
-                        val isSelected = hex == selectedCardColor
-                        Box(
-                            modifier = Modifier
-                                .size(32.dp)
-                                .clip(CircleShape)
-                                .background(Color(android.graphics.Color.parseColor(hex)))
-                                .clickable { selectedCardColor = hex }
-                                .then(
-                                    if (isSelected) Modifier.border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                                    else Modifier
-                                )
-                        )
-                    }
-                }
-
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -207,7 +286,7 @@ fun AddCardDialog(
 
                     when {
                         bankName.isBlank() || cardAlias.isBlank() -> errorText = "请填写银行名称与卡片备注"
-                        last4Digits.length != 4 -> errorText = "卡号后4位必须为4位数字"
+                        extractedLast4.length != 4 -> errorText = "请输入完整卡号或至少4位卡号尾数"
                         limitVal == null || limitVal <= 0.0 -> errorText = "额度必须为大于0的数字"
                         bDay == null || bDay !in 1..31 -> errorText = "账单日必须在1至31之间"
                         rDay == null || rDay !in 1..31 -> errorText = "还款日必须在1至31之间"
@@ -218,11 +297,13 @@ fun AddCardDialog(
                                 CreditCardEntity(
                                     bankName = bankName.trim(),
                                     cardAlias = cardAlias.trim(),
-                                    last4Digits = last4Digits,
+                                    last4Digits = extractedLast4,
                                     creditLimit = limitVal,
                                     billDay = bDay,
                                     repaymentDay = rDay,
-                                    cardColorHex = selectedCardColor,
+                                    cardColorHex = selectedStyle.primaryHex,
+                                    cardNetwork = selectedNetwork,
+                                    cardStyle = selectedStyle.name,
                                     hasAnnualFee = hasAnnualFee,
                                     annualFeeAmount = feeAmt,
                                     annualFeeWaiverCount = waiverCount
