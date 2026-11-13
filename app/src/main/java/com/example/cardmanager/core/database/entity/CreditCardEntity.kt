@@ -51,7 +51,10 @@ data class CreditCardEntity(
     val annualFeeAmount: Double = 0.0,
 
     @ColumnInfo(name = "annual_fee_waiver_count", defaultValue = "0")
-    val annualFeeWaiverCount: Int = 0
+    val annualFeeWaiverCount: Int = 0,
+
+    @ColumnInfo(name = "initial_waiver_swipes", defaultValue = "0")
+    val initialWaiverSwipes: Int = 0
 ) {
     init {
         require(billDay in 1..31) { "账单日必须在1到31日之间" }
@@ -62,5 +65,6 @@ data class CreditCardEntity(
         require(creditLimit >= 0.0) { "信用额度不能为负数" }
         require(annualFeeAmount >= 0.0) { "年费金额不能为负数" }
         require(annualFeeWaiverCount >= 0) { "刷卡免年费次数不能为负数" }
+        require(initialWaiverSwipes >= 0) { "初始已刷笔数不能为负数" }
     }
 }

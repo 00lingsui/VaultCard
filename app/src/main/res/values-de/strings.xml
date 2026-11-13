@@ -67,4 +67,13 @@
     <string name="card_style_aurora_violet">Aurora-Violett</string>
     <string name="card_style_deep_ocean">Tiefsee</string>
     <string name="card_style_obsidian_titanium">Obsidian-Titan</string>
+
+    <!-- Annual Fee Waiver Progress -->
+    <string name="initial_waiver_swipes_label">Bereits getätigte Zahlungen</string>
+    <string name="initial_waiver_swipes_hint">Zahlungen vor App-Nutzung</string>
+    <string name="waiver_progress_title">Gebührenbefreiungs-Fortschritt</string>
+    <string name="waiver_progress_remaining">%1$d / %2$d Zahlungen (noch %3$d für ¥%4$s Erlass)</string>
+    <string name="waiver_progress_completed">✓ Jahresgebühr erlassen (%1$d Zahlungen dieses Jahr)</string>
+    <string name="waiver_badge_remaining">Noch %1$d Zahlung(en)</string>
+    <string name="waiver_badge_completed">✓ Erlassen</string>
 </resources>

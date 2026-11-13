@@ -77,6 +77,7 @@ import java.util.Locale
 fun CreditCardItem(
     card: CreditCardEntity,
     modifier: Modifier = Modifier,
+    recordedSwipesInCurrentYear: Int = 0,
     initiallyExpanded: Boolean = false,
     onClick: () -> Unit = {},
     onDeleteClick: (() -> Unit)? = null
@@ -214,6 +215,50 @@ fun CreditCardItem(
                             ),
                             color = primaryText
                         )
+                        if (card.hasAnnualFee && card.annualFeeWaiverCount > 0) {
+                            val completedSwipes = card.initialWaiverSwipes + recordedSwipesInCurrentYear
+                            val remainingSwipes = maxOf(0, card.annualFeeWaiverCount - completedSwipes)
+                            val isWaived = remainingSwipes == 0
+
+                            Spacer(Modifier.height(6.dp))
+                            Surface(
+                                shape = RoundedCornerShape(10.dp),
+                                color = when {
+                                    isWaived && isLightSurface -> Color(0xFF047857).copy(alpha = 0.14f)
+                                    isWaived -> Color(0xFF10B981).copy(alpha = 0.24f)
+                                    isLightSurface -> Color(0xFFB45309).copy(alpha = 0.12f)
+                                    else -> Color.White.copy(alpha = 0.16f)
+                                },
+                                border = BorderStroke(
+                                    0.75.dp,
+                                    when {
+                                        isWaived && isLightSurface -> Color(0xFF047857).copy(alpha = 0.3f)
+                                        isWaived -> Color(0xFF6EE7B7).copy(alpha = 0.45f)
+                                        isLightSurface -> Color(0xFFB45309).copy(alpha = 0.25f)
+                                        else -> Color.White.copy(alpha = 0.28f)
+                                    }
+                                )
+                            ) {
+                                Text(
+                                    text = if (isWaived) {
+                                        stringResource(R.string.waiver_badge_completed)
+                                    } else {
+                                        stringResource(R.string.waiver_badge_remaining, remainingSwipes)
+                                    },
+                                    style = MaterialTheme.typography.labelSmall.copy(
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.SemiBold
+                                    ),
+                                    color = when {
+                                        isWaived && isLightSurface -> Color(0xFF065F46)
+                                        isWaived -> Color(0xFFA7F3D0)
+                                        isLightSurface -> Color(0xFF92400E)
+                                        else -> Color.White.copy(alpha = 0.92f)
+                                    },
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                )
+                            }
+                        }
                     }
 
                     Row(

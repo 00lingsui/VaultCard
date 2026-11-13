@@ -457,6 +457,7 @@ fun CardListScreen(
                         ) {
                             CreditCardItem(
                                 card = card,
+                                recordedSwipesInCurrentYear = uiState.annualSwipeCounts[card.id] ?: 0,
                                 onClick = { selectedCardId = card.id },
                                 onDeleteClick = {
                                     requestCardDeletion(card.id, null)
@@ -506,6 +507,7 @@ fun CardListScreen(
                             ) {
                                 CardDetailContent(
                                     card = selectedCardForDetail,
+                                    recordedSwipesInCurrentYear = uiState.annualSwipeCounts[selectedCardForDetail.id] ?: 0,
                                     onUpdate = { updatedCard ->
                                         viewModel.updateCard(updatedCard)
                                     },
@@ -588,6 +590,7 @@ fun CardListScreen(
     if (!isWideScreen && selectedCardForDetail != null) {
         CardDetailBottomSheet(
             card = selectedCardForDetail,
+            recordedSwipesInCurrentYear = uiState.annualSwipeCounts[selectedCardForDetail.id] ?: 0,
             onDismiss = { selectedCardId = null },
             onUpdate = { updatedCard ->
                 viewModel.updateCard(updatedCard)

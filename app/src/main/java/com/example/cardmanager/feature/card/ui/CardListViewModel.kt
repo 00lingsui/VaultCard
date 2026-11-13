@@ -17,6 +17,7 @@ data class CardListUiState(
     val cards: List<CreditCardEntity> = emptyList(),
     val totalCreditLimit: Double = 0.0,
     val totalDebt: Double = 0.0,
+    val annualSwipeCounts: Map<Long, Int> = emptyMap(),
     val isLoading: Boolean = true,
     val errorMessage: String? = null
 )
@@ -28,8 +29,9 @@ class CardListViewModel @Inject constructor(
 
     val uiState: StateFlow<CardListUiState> = combine(
         repository.getAllCards(),
-        repository.getTotalDebt()
-    ) { cards, totalDebt ->
+        repository.getTotalDebt(),
+        repository.getQualifyingSwipeCountsForCurrentYear()
+    ) { cards, totalDebt, swipeCounts ->
         val sharedLimit = cards.groupBy { it.bankName.trim() }
             .values
             .sumOf { bankCards -> bankCards.maxOfOrNull { it.creditLimit } ?: 0.0 }
@@ -38,6 +40,7 @@ class CardListViewModel @Inject constructor(
             cards = cards,
             totalCreditLimit = sharedLimit,
             totalDebt = totalDebt,
+            annualSwipeCounts = swipeCounts,
             isLoading = false
         )
     }.stateIn(

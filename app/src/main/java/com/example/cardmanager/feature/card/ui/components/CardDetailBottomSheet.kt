@@ -31,6 +31,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
@@ -49,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -63,6 +65,7 @@ import com.example.cardmanager.core.database.entity.detectCardNetwork
 @Composable
 fun CardDetailBottomSheet(
     card: CreditCardEntity,
+    recordedSwipesInCurrentYear: Int = 0,
     onDismiss: () -> Unit,
     onUpdate: (CreditCardEntity) -> Unit,
     onDelete: (Long) -> Unit,
@@ -74,6 +77,7 @@ fun CardDetailBottomSheet(
     ) {
         CardDetailContent(
             card = card,
+            recordedSwipesInCurrentYear = recordedSwipesInCurrentYear,
             onUpdate = onUpdate,
             onDelete = onDelete,
             onSetAlarm = onSetAlarm,
@@ -86,6 +90,7 @@ fun CardDetailBottomSheet(
 @Composable
 fun CardDetailContent(
     card: CreditCardEntity,
+    recordedSwipesInCurrentYear: Int = 0,
     onUpdate: (CreditCardEntity) -> Unit,
     onDelete: (Long) -> Unit,
     onSetAlarm: () -> Unit,
@@ -108,6 +113,7 @@ fun CardDetailContent(
     var hasAnnualFee by remember(card) { mutableStateOf(card.hasAnnualFee) }
     var annualFeeAmount by remember(card) { mutableStateOf(if (card.annualFeeAmount > 0) card.annualFeeAmount.toString() else "") }
     var annualFeeWaiverCount by remember(card) { mutableStateOf(if (card.annualFeeWaiverCount > 0) card.annualFeeWaiverCount.toString() else "") }
+    var initialWaiverSwipes by remember(card) { mutableStateOf(if (card.initialWaiverSwipes > 0) card.initialWaiverSwipes.toString() else "") }
     var showDeleteConfirm by remember { mutableStateOf(false) }
 
     val extractedLast4 = cardNumberInput.filter { it.isDigit() }.let { digits ->
@@ -277,6 +283,11 @@ fun CardDetailContent(
 
         val previewFeeAmt = if (hasAnnualFee) (annualFeeAmount.toDoubleOrNull() ?: card.annualFeeAmount) else 0.0
         val previewWaiver = if (hasAnnualFee) (annualFeeWaiverCount.toIntOrNull() ?: card.annualFeeWaiverCount) else 0
+        val previewInitialSwipes = if (hasAnnualFee && previewWaiver > 0) {
+            (initialWaiverSwipes.toIntOrNull() ?: 0).coerceAtLeast(0)
+        } else {
+            0
+        }
         val feeAmtDisplay = if (previewFeeAmt % 1.0 == 0.0) previewFeeAmt.toInt().toString() else previewFeeAmt.toString()
         val annualFeeSummary = when {
             !hasAnnualFee -> stringResource(R.string.annual_fee_free_summary)
@@ -304,6 +315,82 @@ fun CardDetailContent(
                     fontWeight = FontWeight.SemiBold,
                     color = if (hasAnnualFee) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
                 )
+            }
+        }
+
+        if (hasAnnualFee && previewWaiver > 0) {
+            val completedSwipes = previewInitialSwipes + recordedSwipesInCurrentYear
+            val remainingSwipes = maxOf(0, previewWaiver - completedSwipes)
+            val progress = (completedSwipes.toFloat() / previewWaiver.toFloat()).coerceIn(0f, 1f)
+            val isWaived = remainingSwipes == 0
+
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                color = if (isWaived) {
+                    Color(0xFF059669).copy(alpha = 0.12f)
+                } else {
+                    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f)
+                }
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = stringResource(R.string.waiver_progress_title),
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = if (isWaived) Color(0xFF059669) else MaterialTheme.colorScheme.onSurface
+                        )
+                        if (isWaived) {
+                            Surface(
+                                shape = RoundedCornerShape(8.dp),
+                                color = Color(0xFF059669)
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.waiver_badge_completed),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                )
+                            }
+                        }
+                    }
+
+                    LinearProgressIndicator(
+                        progress = { progress },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(7.dp)
+                            .clip(RoundedCornerShape(4.dp)),
+                        color = if (isWaived) Color(0xFF059669) else MaterialTheme.colorScheme.primary,
+                        trackColor = if (isWaived) Color(0xFF059669).copy(alpha = 0.2f) else MaterialTheme.colorScheme.surfaceVariant
+                    )
+
+                    Text(
+                        text = if (isWaived) {
+                            stringResource(R.string.waiver_progress_completed, completedSwipes)
+                        } else {
+                            stringResource(
+                                R.string.waiver_progress_remaining,
+                                completedSwipes,
+                                previewWaiver,
+                                remainingSwipes,
+                                feeAmtDisplay
+                            )
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = if (isWaived) Color(0xFF047857) else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
             }
         }
 
@@ -344,6 +431,17 @@ fun CardDetailContent(
                     modifier = Modifier.weight(1.2f)
                 )
             }
+            if ((annualFeeWaiverCount.toIntOrNull() ?: 0) > 0) {
+                OutlinedTextField(
+                    value = initialWaiverSwipes,
+                    onValueChange = { initialWaiverSwipes = it.filter { ch -> ch.isDigit() } },
+                    label = { Text(stringResource(R.string.initial_waiver_swipes_label)) },
+                    placeholder = { Text("0 (${stringResource(R.string.initial_waiver_swipes_hint)})") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
 
         OutlinedButton(
@@ -362,6 +460,7 @@ fun CardDetailContent(
                 val rDay = repaymentDay.toIntOrNull()?.coerceIn(1, 31) ?: card.repaymentDay
                 val feeAmt = if (hasAnnualFee) (annualFeeAmount.toDoubleOrNull() ?: 0.0).coerceAtLeast(0.0) else 0.0
                 val waiverCount = if (hasAnnualFee) (annualFeeWaiverCount.toIntOrNull() ?: 0).coerceAtLeast(0) else 0
+                val initialSwipes = if (hasAnnualFee && waiverCount > 0) (initialWaiverSwipes.toIntOrNull() ?: 0).coerceAtLeast(0) else 0
 
                 onUpdate(
                     card.copy(
@@ -376,7 +475,8 @@ fun CardDetailContent(
                         cardStyle = selectedStyle.name,
                         hasAnnualFee = hasAnnualFee,
                         annualFeeAmount = feeAmt,
-                        annualFeeWaiverCount = waiverCount
+                        annualFeeWaiverCount = waiverCount,
+                        initialWaiverSwipes = initialSwipes
                     )
                 )
             },

@@ -14,7 +14,7 @@ import com.example.cardmanager.core.database.entity.TransactionEntity
 
 @Database(
     entities = [CreditCardEntity::class, TransactionEntity::class],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(CardConverters::class)
@@ -41,6 +41,12 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE credit_cards ADD COLUMN initial_waiver_swipes INTEGER NOT NULL DEFAULT 0")
+            }
+        }
+
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
@@ -51,7 +57,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     DATABASE_NAME
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
                     .fallbackToDestructiveMigration()
                     .build()
                     .also { INSTANCE = it }

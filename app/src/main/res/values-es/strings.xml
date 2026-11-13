@@ -67,4 +67,13 @@
     <string name="card_style_aurora_violet">Violeta Aurora</string>
     <string name="card_style_deep_ocean">Océano Profundo</string>
     <string name="card_style_obsidian_titanium">Titanio Obsidiana</string>
+
+    <!-- Annual Fee Waiver Progress -->
+    <string name="initial_waiver_swipes_label">Pagos iniciales realizados</string>
+    <string name="initial_waiver_swipes_hint">Pagos previos al uso de la app</string>
+    <string name="waiver_progress_title">Progreso de exención anual</string>
+    <string name="waiver_progress_remaining">%1$d / %2$d pagos (faltan %3$d para eximir ¥%4$s)</string>
+    <string name="waiver_progress_completed">✓ Cuota exenta (%1$d pagos este año)</string>
+    <string name="waiver_badge_remaining">Faltan %1$d pago(s)</string>
+    <string name="waiver_badge_completed">✓ Exenta</string>
 </resources>

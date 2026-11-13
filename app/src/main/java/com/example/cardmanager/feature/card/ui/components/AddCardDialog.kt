@@ -67,6 +67,7 @@ fun AddCardDialog(
     var hasAnnualFee by remember { mutableStateOf(false) }
     var annualFeeAmount by remember { mutableStateOf("") }
     var annualFeeWaiverCount by remember { mutableStateOf("") }
+    var initialWaiverSwipes by remember { mutableStateOf("") }
     var syncCalendar by remember { mutableStateOf(true) }
     var errorText by remember { mutableStateOf<String?>(null) }
 
@@ -263,6 +264,17 @@ fun AddCardDialog(
                             modifier = Modifier.weight(1.2f)
                         )
                     }
+                    if ((annualFeeWaiverCount.toIntOrNull() ?: 0) > 0) {
+                        OutlinedTextField(
+                            value = initialWaiverSwipes,
+                            onValueChange = { initialWaiverSwipes = it.filter { ch -> ch.isDigit() } },
+                            label = { Text(stringResource(R.string.initial_waiver_swipes_label)) },
+                            placeholder = { Text("0 (${stringResource(R.string.initial_waiver_swipes_hint)})") },
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
                 }
 
                 Row(
@@ -285,6 +297,7 @@ fun AddCardDialog(
                     val rDay = repaymentDay.toIntOrNull()
                     val feeAmt = if (hasAnnualFee) (annualFeeAmount.toDoubleOrNull() ?: 0.0) else 0.0
                     val waiverCount = if (hasAnnualFee) (annualFeeWaiverCount.toIntOrNull() ?: 0) else 0
+                    val initialSwipes = if (hasAnnualFee && waiverCount > 0) (initialWaiverSwipes.toIntOrNull() ?: 0) else 0
 
                     when {
                         bankName.isBlank() || cardAlias.isBlank() -> errorText = "请填写银行名称与卡片备注"
@@ -294,6 +307,7 @@ fun AddCardDialog(
                         rDay == null || rDay !in 1..31 -> errorText = "还款日必须在1至31之间"
                         hasAnnualFee && feeAmt < 0.0 -> errorText = "年费金额不能为负数"
                         hasAnnualFee && waiverCount < 0 -> errorText = "刷卡免年费笔数不能为负数"
+                        initialSwipes < 0 -> errorText = "初始已刷笔数不能为负数"
                         else -> {
                             onConfirm(
                                 CreditCardEntity(
@@ -308,7 +322,8 @@ fun AddCardDialog(
                                     cardStyle = selectedStyle.name,
                                     hasAnnualFee = hasAnnualFee,
                                     annualFeeAmount = feeAmt,
-                                    annualFeeWaiverCount = waiverCount
+                                    annualFeeWaiverCount = waiverCount,
+                                    initialWaiverSwipes = initialSwipes
                                 ),
                                 syncCalendar
                             )

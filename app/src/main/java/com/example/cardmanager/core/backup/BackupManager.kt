@@ -42,6 +42,7 @@ class BackupManager @Inject constructor() {
                     put("has_annual_fee", card.hasAnnualFee)
                     put("annual_fee_amount", card.annualFeeAmount)
                     put("annual_fee_waiver_count", card.annualFeeWaiverCount)
+                    put("initial_waiver_swipes", card.initialWaiverSwipes)
                 }
                 cardsArray.put(cardObj)
             }
@@ -109,6 +110,7 @@ class BackupManager @Inject constructor() {
                 val safeFeeAmount = obj.optDouble("annual_fee_amount", 0.0)
                     .let { if (it.isNaN() || it < 0.0) 0.0 else it }
                 val safeWaiverCount = obj.optInt("annual_fee_waiver_count", 0).coerceAtLeast(0)
+                val safeInitialSwipes = obj.optInt("initial_waiver_swipes", 0).coerceAtLeast(0)
                 val safeColorHex = obj.optString("card_color_hex", "#1E3A8A")
                     .ifBlank { "#1E3A8A" }
                 val resolvedPreset = com.example.cardmanager.core.database.entity.CardStylePreset.resolve(
@@ -132,7 +134,8 @@ class BackupManager @Inject constructor() {
                         cardStyle = resolvedPreset.name,
                         hasAnnualFee = obj.optBoolean("has_annual_fee", false),
                         annualFeeAmount = safeFeeAmount,
-                        annualFeeWaiverCount = safeWaiverCount
+                        annualFeeWaiverCount = safeWaiverCount,
+                        initialWaiverSwipes = safeInitialSwipes
                     )
                 )
             }

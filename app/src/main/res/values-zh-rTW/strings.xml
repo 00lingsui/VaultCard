@@ -67,4 +67,13 @@
     <string name="card_style_aurora_violet">極光幻紫</string>
     <string name="card_style_deep_ocean">深海靜謐</string>
     <string name="card_style_obsidian_titanium">曜石黑鈦</string>
+
+    <!-- Annual Fee Waiver Progress -->
+    <string name="initial_waiver_swipes_label">已刷筆數 / 初始筆數</string>
+    <string name="initial_waiver_swipes_hint">使用App前本年已刷筆數</string>
+    <string name="waiver_progress_title">年費減免進度</string>
+    <string name="waiver_progress_remaining">已消費 %1$d / %2$d 筆（還差 %3$d 筆免 ¥%4$s 年費）</string>
+    <string name="waiver_progress_completed">✓ 已達標免年費（本年已消費 %1$d 筆）</string>
+    <string name="waiver_badge_remaining">差 %1$d 筆免年費</string>
+    <string name="waiver_badge_completed">✓ 已免年費</string>
 </resources>
