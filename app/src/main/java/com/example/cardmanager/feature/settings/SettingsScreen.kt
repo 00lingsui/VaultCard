@@ -27,21 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.outlined.BrightnessAuto
-import androidx.compose.material.icons.outlined.CloudDownload
-import androidx.compose.material.icons.outlined.CloudSync
-import androidx.compose.material.icons.outlined.CloudUpload
-import androidx.compose.material.icons.outlined.ColorLens
-import androidx.compose.material.icons.outlined.DarkMode
-import androidx.compose.material.icons.outlined.LightMode
-import androidx.compose.material.icons.outlined.Palette
-import androidx.compose.material.icons.outlined.Payments
-import androidx.compose.material.icons.outlined.Storage
-import androidx.compose.material.icons.outlined.Style
-import androidx.compose.material.icons.outlined.Translate
-import androidx.compose.material.icons.outlined.Vibration
-import androidx.compose.material.icons.outlined.Visibility
-import androidx.compose.material.icons.outlined.VisibilityOff
+import com.example.cardmanager.ui.icons.AppIcons
 import com.example.cardmanager.core.currency.AppCurrency
 import com.example.cardmanager.core.currency.CurrencyPreferenceManager
 import com.example.cardmanager.core.feedback.FeedbackManager
@@ -236,7 +222,7 @@ fun SettingsScreen(
             item {
                 SectionHeader(
                     title = stringResource(R.string.ui_style),
-                    icon = Icons.Outlined.Style
+                    icon = AppIcons.Style
                 )
                 Spacer(Modifier.height(8.dp))
                 Card(
@@ -273,7 +259,7 @@ fun SettingsScreen(
             item {
                 SectionHeader(
                     title = stringResource(R.string.theme_palette),
-                    icon = Icons.Outlined.ColorLens
+                    icon = AppIcons.ColorLens
                 )
                 Spacer(Modifier.height(8.dp))
                 Card(
@@ -360,7 +346,7 @@ fun SettingsScreen(
             item {
                 SectionHeader(
                     title = stringResource(R.string.theme_mode),
-                    icon = Icons.Outlined.Palette
+                    icon = AppIcons.Palette
                 )
                 Spacer(Modifier.height(8.dp))
                 Card(
@@ -373,7 +359,7 @@ fun SettingsScreen(
                     Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                         ThemeModeOptionRow(
                             title = stringResource(R.string.mode_system),
-                            icon = Icons.Outlined.BrightnessAuto,
+                            icon = AppIcons.BrightnessAuto,
                             selected = themeState.currentMode == AppThemeMode.SYSTEM,
                             onClick = {
                                 FeedbackManager.performClick(view)
@@ -382,7 +368,7 @@ fun SettingsScreen(
                         )
                         ThemeModeOptionRow(
                             title = stringResource(R.string.mode_light),
-                            icon = Icons.Outlined.LightMode,
+                            icon = AppIcons.LightMode,
                             selected = themeState.currentMode == AppThemeMode.LIGHT,
                             onClick = {
                                 FeedbackManager.performClick(view)
@@ -391,7 +377,7 @@ fun SettingsScreen(
                         )
                         ThemeModeOptionRow(
                             title = stringResource(R.string.mode_dark),
-                            icon = Icons.Outlined.DarkMode,
+                            icon = AppIcons.DarkMode,
                             selected = themeState.currentMode == AppThemeMode.DARK,
                             onClick = {
                                 FeedbackManager.performClick(view)
@@ -406,7 +392,7 @@ fun SettingsScreen(
             item {
                 SectionHeader(
                     title = stringResource(R.string.language_settings),
-                    icon = Icons.Outlined.Translate
+                    icon = AppIcons.Translate
                 )
                 Spacer(Modifier.height(8.dp))
                 Card(
@@ -452,7 +438,7 @@ fun SettingsScreen(
             item {
                 SectionHeader(
                     title = stringResource(R.string.default_currency_settings),
-                    icon = Icons.Outlined.Payments
+                    icon = AppIcons.Payments
                 )
                 Spacer(Modifier.height(8.dp))
                 Card(
@@ -498,7 +484,7 @@ fun SettingsScreen(
             item {
                 SectionHeader(
                     title = stringResource(R.string.feedback_settings_title),
-                    icon = Icons.Outlined.Vibration
+                    icon = AppIcons.Vibration
                 )
                 Spacer(Modifier.height(8.dp))
                 Card(
@@ -545,7 +531,7 @@ fun SettingsScreen(
             item {
                 SectionHeader(
                     title = "数据备份与恢复",
-                    icon = Icons.Outlined.Storage
+                    icon = AppIcons.Storage
                 )
                 Spacer(Modifier.height(8.dp))
                 Card(
@@ -559,7 +545,7 @@ fun SettingsScreen(
                         SettingsActionRow(
                             title = "导出备份 (JSON)",
                             subtitle = "将卡片信息与消费记录保存为本地 JSON 文件",
-                            icon = Icons.Outlined.CloudUpload,
+                            icon = AppIcons.CloudUpload,
                             onClick = {
                                 val timestamp = java.text.SimpleDateFormat("yyyyMMdd_HHmmss", java.util.Locale.getDefault()).format(java.util.Date())
                                 exportLauncher.launch("vaultcard_backup_$timestamp.json")
@@ -572,7 +558,7 @@ fun SettingsScreen(
                         SettingsActionRow(
                             title = "恢复备份 (JSON)",
                             subtitle = "从文件导入并合并卡片与交易记录",
-                            icon = Icons.Outlined.CloudDownload,
+                            icon = AppIcons.CloudDownload,
                             onClick = {
                                 importLauncher.launch(arrayOf("application/json", "*/*"))
                             }
@@ -585,7 +571,7 @@ fun SettingsScreen(
             item {
                 SectionHeader(
                     title = "云端备份与同步 (WebDAV)",
-                    icon = Icons.Outlined.CloudSync
+                    icon = AppIcons.CloudSync
                 )
                 Spacer(Modifier.height(8.dp))
                 Card(
@@ -636,7 +622,7 @@ fun SettingsScreen(
                             trailingIcon = {
                                 IconButton(onClick = { passwordVisible = !passwordVisible }) {
                                     Icon(
-                                        imageVector = if (passwordVisible) Icons.Outlined.VisibilityOff else Icons.Outlined.Visibility,
+                                        imageVector = if (passwordVisible) AppIcons.VisibilityOff else AppIcons.Visibility,
                                         contentDescription = if (passwordVisible) "隐藏密码" else "显示密码"
                                     )
                                 }

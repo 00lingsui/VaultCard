@@ -21,10 +21,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Alarm
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import com.example.cardmanager.ui.icons.AppIcons
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -487,7 +487,7 @@ fun CardDetailContent(
             },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Icon(Icons.Default.Alarm, contentDescription = null, modifier = Modifier.size(18.dp))
+            Icon(AppIcons.Alarm, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(8.dp))
             Text("在系统时钟中设置还款提醒闹钟")
         }

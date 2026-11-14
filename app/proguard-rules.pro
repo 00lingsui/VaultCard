@@ -1,32 +1,48 @@
-# Room Database, DAOs & Entities
--keep class * extends androidx.room.RoomDatabase
+# Room Database, DAOs, Entities & TypeConverters
+-keep class * extends androidx.room.RoomDatabase { *; }
 -keep @androidx.room.Entity class * { *; }
 -keep @androidx.room.Dao interface * { *; }
--dontwarn androidx.room.**
+-keep class com.example.cardmanager.core.database.AppDatabase* { *; }
+-keep class com.example.cardmanager.core.database.CardConverters { *; }
 -keep class com.example.cardmanager.core.database.entity.** { *; }
+-keepclassmembers class * {
+    @androidx.room.* <methods>;
+}
+-dontwarn androidx.room.**
+
+# Backup, Serialization & Enums
+-keep class com.example.cardmanager.core.backup.** { *; }
+-keep class com.example.cardmanager.core.currency.AppCurrency { *; }
+-keep class com.example.cardmanager.core.language.AppLanguage { *; }
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}
 
 # WorkManager Workers
 -keep class * extends androidx.work.ListenableWorker {
     public <init>(android.content.Context, androidx.work.WorkerParameters);
 }
 
-# Hilt & Dependency Injection
+# Hilt, Dagger & ViewModels
 -keep class * extends androidx.lifecycle.ViewModel { *; }
+-keep class * extends androidx.lifecycle.AndroidViewModel { *; }
 -keep interface * extends dagger.hilt.internal.GeneratedComponent { *; }
 -keep class * extends dagger.hilt.android.internal.managers.ViewComponentManager$FragmentContextWrapper { *; }
-
-# Jetpack Compose runtime & UI
--keep class androidx.compose.** { *; }
--dontwarn androidx.compose.**
+-keep @dagger.hilt.android.HiltAndroidApp class * { *; }
+-keep @dagger.hilt.android.AndroidEntryPoint class * { *; }
+-keep @dagger.hilt.android.lifecycle.HiltViewModel class * { *; }
+-keep class javax.inject.** { *; }
 
 # Biometric & Crypto
--dontwarn androidx.biometric.**
 -keep class androidx.biometric.** { *; }
+-dontwarn androidx.biometric.**
 
-# Suppress external library warnings in R8 full mode
+# Suppress harmless missing optional class/annotation warnings under R8
 -dontwarn androidx.**
 -dontwarn dagger.**
 -dontwarn com.google.**
 -dontwarn javax.annotation.**
 -dontwarn org.jetbrains.**
--ignorewarnings
+-dontwarn kotlin.**
+-dontwarn kotlinx.**

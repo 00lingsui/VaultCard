@@ -13,10 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.outlined.AccountBalanceWallet
-import androidx.compose.material.icons.outlined.Analytics
-import androidx.compose.material.icons.outlined.PieChart
-import androidx.compose.material.icons.outlined.ShowChart
+import com.example.cardmanager.ui.icons.AppIcons
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -137,7 +134,7 @@ fun StatisticsScreen(
                 item {
                     ChartContainerCard(
                         title = "额度使用占比",
-                        icon = Icons.Outlined.AccountBalanceWallet,
+                        icon = AppIcons.AccountBalanceWallet,
                         shapeRadius = cardRadius
                     ) {
                         DonutChart(
@@ -155,7 +152,7 @@ fun StatisticsScreen(
                 item {
                     ChartContainerCard(
                         title = "近期支出趋势",
-                        icon = Icons.Outlined.ShowChart,
+                        icon = AppIcons.ShowChart,
                         shapeRadius = cardRadius
                     ) {
                         LineChart(
@@ -171,7 +168,7 @@ fun StatisticsScreen(
                 item {
                     ChartContainerCard(
                         title = "消费分类占比",
-                        icon = Icons.Outlined.PieChart,
+                        icon = AppIcons.PieChart,
                         shapeRadius = cardRadius
                     ) {
                         PieChart(

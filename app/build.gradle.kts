@@ -19,6 +19,9 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        ndk {
+            abiFilters += listOf("arm64-v8a")
+        }
     }
 
     val keystorePath = System.getenv("SIGNING_STORE_FILE") ?: "release-key.jks"
@@ -61,7 +64,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
-            isShrinkResources = false
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -76,8 +79,10 @@ android {
 
     packaging {
         resources {
-            excludes += setOf(
+            excludes += listOf(
                 "/META-INF/{AL2.0,LGPL2.1}",
+                "META-INF/*.kotlin_module",
+                "DebugProbesKt.bin",
                 "/META-INF/INDEX.LIST",
                 "/META-INF/DEPENDENCIES",
                 "/META-INF/LICENSE*",
@@ -117,7 +122,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material3:material3-window-size-class")
-    implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.compose.material:material-icons-core")
 
     // Room Database
     val roomVersion = "2.6.1"

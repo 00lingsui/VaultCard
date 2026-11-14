@@ -33,7 +33,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.Tune
+import com.example.cardmanager.ui.icons.AppIcons
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
@@ -512,7 +512,7 @@ fun CreditCardItem(
                                 )
                             ) {
                                 Icon(
-                                    imageVector = Icons.Outlined.Tune,
+                                    imageVector = AppIcons.Tune,
                                     contentDescription = null,
                                     modifier = Modifier.size(16.dp)
                                 )
