@@ -21,6 +21,7 @@ data class CardListUiState(
     val totalDebt: Double = 0.0,
     val limitByCurrency: Map<String, Double> = emptyMap(),
     val debtByCurrency: Map<String, Double> = emptyMap(),
+    val debtByCardId: Map<Long, Double> = emptyMap(),
     val annualSwipeCounts: Map<Long, Int> = emptyMap(),
     val isLoading: Boolean = true,
     val errorMessage: String? = null
@@ -48,9 +49,11 @@ class CardListViewModel @Inject constructor(
 
         val cardCurrencyMap = cards.associate { it.id to it.currencyCode }
         val debtByCurrency = mutableMapOf<String, Double>()
+        val debtByCardId = mutableMapOf<Long, Double>()
         transactions.forEach { tx ->
             val code = cardCurrencyMap[tx.cardId] ?: AppCurrency.CNY.code
             debtByCurrency[code] = (debtByCurrency[code] ?: 0.0) + tx.amount
+            debtByCardId[tx.cardId] = (debtByCardId[tx.cardId] ?: 0.0) + tx.amount
         }
 
         val sharedLimit = limitByCurrency.values.sum()
@@ -61,6 +64,7 @@ class CardListViewModel @Inject constructor(
             totalDebt = totalDebt,
             limitByCurrency = limitByCurrency,
             debtByCurrency = debtByCurrency,
+            debtByCardId = debtByCardId,
             annualSwipeCounts = swipeCounts,
             isLoading = false
         )

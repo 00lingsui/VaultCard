@@ -95,4 +95,5 @@
     <string name="bank_group_limit_summary">合併額度 %1$s</string>
     <string name="available_credit_label">可用額度: %1$s</string>
     <string name="utilization_pct_label">已使用 %1$d%%</string>
+    <string name="card_available_micro_label">可用額度</string>
 </resources>

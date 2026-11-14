@@ -278,6 +278,7 @@ fun CardListScreen(
                     CreditCardItem(
                         card = card,
                         recordedSwipesInCurrentYear = uiState.annualSwipeCounts[card.id] ?: 0,
+                        cardDebt = uiState.debtByCardId[card.id] ?: 0.0,
                         onClick = { selectedCardId = card.id },
                         onDeleteClick = {
                             requestCardDeletion(card.id, null)

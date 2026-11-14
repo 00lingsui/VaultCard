@@ -95,4 +95,5 @@
     <string name="bank_group_limit_summary">Combined Limit: %1$s</string>
     <string name="available_credit_label">Available: %1$s</string>
     <string name="utilization_pct_label">%1$d%% used</string>
+    <string name="card_available_micro_label">AVAILABLE</string>
 </resources>
