@@ -19,8 +19,14 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
-        ndk {
-            abiFilters += listOf("arm64-v8a")
+    }
+
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("arm64-v8a", "armeabi-v7a", "x86_64")
+            isUniversalApk = true
         }
     }
 
@@ -107,7 +113,25 @@ android {
 }
 
 base {
-    archivesName.set("VaultCard-v${android.defaultConfig.versionName}-arm64-v8a")
+    archivesName.set("VaultCard-v${android.defaultConfig.versionName}")
+}
+
+androidComponents {
+    val baseVersionCode = android.defaultConfig.versionCode ?: 1
+    val abiOffsets = mapOf(
+        "arm64-v8a" to 3,
+        "armeabi-v7a" to 2,
+        "x86_64" to 1
+    )
+    onVariants { variant ->
+        variant.outputs.forEach { output ->
+            val abi = output.filters.find {
+                it.filterType == com.android.build.api.variant.FilterConfiguration.FilterType.ABI
+            }?.identifier
+            val offset = abiOffsets[abi] ?: 0
+            output.versionCode.set(baseVersionCode * 10 + offset)
+        }
+    }
 }
 
 dependencies {
