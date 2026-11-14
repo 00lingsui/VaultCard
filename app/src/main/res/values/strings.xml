@@ -42,8 +42,8 @@
     <string name="annual_fee_policy_label">Annual Fee Policy</string>
     <string name="annual_fee_waiver_req_label">Waiver Requirement</string>
     <string name="annual_fee_free_badge">Fee Free</string>
-    <string name="annual_fee_rigid_summary">Rigid Fee: ¥%1$s/yr · Non-waivable</string>
-    <string name="annual_fee_waivable_summary">Fee: ¥%1$s/yr · Waived after %2$d swipes</string>
+    <string name="annual_fee_rigid_summary">Rigid Fee: %1$s/yr · Non-waivable</string>
+    <string name="annual_fee_waivable_summary">Fee: %1$s/yr · Waived after %2$d swipes</string>
     <string name="annual_fee_free_summary">Annual Fee Free · No swipe requirement</string>
 
     <!-- Card Networks -->
@@ -72,8 +72,27 @@
     <string name="initial_waiver_swipes_label">Completed / Initial Swipes</string>
     <string name="initial_waiver_swipes_hint">Swipes before using app</string>
     <string name="waiver_progress_title">Annual Fee Waiver Progress</string>
-    <string name="waiver_progress_remaining">Swiped %1$d / %2$d (%3$d left to waive ¥%4$s fee)</string>
+    <string name="waiver_progress_remaining">Swiped %1$d / %2$d (%3$d left to waive %4$s fee)</string>
     <string name="waiver_progress_completed">✓ Fee Waived (%1$d swipes this year)</string>
     <string name="waiver_badge_remaining">%1$d left to waive</string>
     <string name="waiver_badge_completed">✓ Fee Waived</string>
+
+    <!-- Currency & Feedback & Bank Grouping -->
+    <string name="card_currency_selector_title">Card Currency</string>
+    <string name="default_currency_settings">Default Display Currency</string>
+    <string name="currency_selector_title">Select Currency</string>
+    <string name="currency_cny">CNY (¥) · Chinese Yuan</string>
+    <string name="currency_usd">USD ($) · US Dollar</string>
+    <string name="currency_hkd">HKD (HK$) · Hong Kong Dollar</string>
+    <string name="currency_eur">EUR (€) · Euro</string>
+    <string name="currency_jpy">JPY (¥) · Japanese Yen</string>
+    <string name="currency_gbp">GBP (£) · British Pound</string>
+    <string name="currency_twd">TWD (NT$) · New Taiwan Dollar</string>
+    <string name="currency_krw">KRW (₩) · South Korean Won</string>
+    <string name="currency_sgd">SGD (S$) · Singapore Dollar</string>
+    <string name="feedback_settings_title">Haptic &amp; Sound Feedback</string>
+    <string name="feedback_settings_desc">Tactile vibration and crisp click sound on key actions</string>
+    <string name="bank_group_limit_summary">Combined Limit: %1$s</string>
+    <string name="available_credit_label">Available: %1$s</string>
+    <string name="utilization_pct_label">%1$d%% used</string>
 </resources>

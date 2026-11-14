@@ -35,13 +35,19 @@ import androidx.compose.material.icons.outlined.ColorLens
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material.icons.outlined.Style
 import androidx.compose.material.icons.outlined.Translate
+import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
+import com.example.cardmanager.core.currency.AppCurrency
+import com.example.cardmanager.core.currency.CurrencyPreferenceManager
+import com.example.cardmanager.core.feedback.FeedbackManager
 import com.example.cardmanager.core.language.AppLanguage
 import com.example.cardmanager.core.language.LanguageManager
+import com.example.cardmanager.feature.card.ui.components.localizedName
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -65,6 +71,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -77,6 +84,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -84,6 +92,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.cardmanager.R
 import com.example.cardmanager.core.backup.BackupManager
 import com.example.cardmanager.core.webdav.WebDavClient
@@ -106,9 +115,15 @@ fun SettingsScreen(
     val cardRadius = if (isMiui) 24.dp else 16.dp
 
     val context = LocalContext.current
+    val view = LocalView.current
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val backupManager = remember { BackupManager() }
+
+    LaunchedEffect(Unit) { CurrencyPreferenceManager.getDefaultCurrency(context) }
+    val currentCurrency by CurrencyPreferenceManager.defaultCurrencyFlow.collectAsStateWithLifecycle()
+    var showCurrencyDialog by remember { mutableStateOf(false) }
+    var feedbackEnabled by remember { mutableStateOf(FeedbackManager.isEnabled(context)) }
 
     var webDavConfig by remember { mutableStateOf(WebDavPreferenceManager.getConfig(context)) }
     var currentLanguage by remember { mutableStateOf(LanguageManager.getCurrentLanguage(context)) }
@@ -233,13 +248,19 @@ fun SettingsScreen(
                             title = stringResource(R.string.style_miuix),
                             subtitle = "优雅圆角、充裕间距与 HyperOS 极简质感",
                             selected = themeState.currentStyle == AppThemeStyle.MIUIX,
-                            onClick = { themeState.setStyle(AppThemeStyle.MIUIX) }
+                            onClick = {
+                                FeedbackManager.performClick(view)
+                                themeState.setStyle(AppThemeStyle.MIUIX)
+                            }
                         )
                         StyleOptionRow(
                             title = stringResource(R.string.style_material3),
                             subtitle = "生动的 Material You 动态排版与自适应色彩",
                             selected = themeState.currentStyle == AppThemeStyle.MATERIAL3,
-                            onClick = { themeState.setStyle(AppThemeStyle.MATERIAL3) }
+                            onClick = {
+                                FeedbackManager.performClick(view)
+                                themeState.setStyle(AppThemeStyle.MATERIAL3)
+                            }
                         )
                     }
                 }
@@ -275,7 +296,10 @@ fun SettingsScreen(
                                     horizontalAlignment = Alignment.CenterHorizontally,
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(14.dp))
-                                        .clickable { themeState.setPalette(palette) }
+                                        .clickable {
+                                            FeedbackManager.performClick(view)
+                                            themeState.setPalette(palette)
+                                        }
                                         .padding(horizontal = 6.dp, vertical = 4.dp)
                                 ) {
                                     Box(
@@ -348,19 +372,28 @@ fun SettingsScreen(
                             title = stringResource(R.string.mode_system),
                             icon = Icons.Outlined.BrightnessAuto,
                             selected = themeState.currentMode == AppThemeMode.SYSTEM,
-                            onClick = { themeState.setMode(AppThemeMode.SYSTEM) }
+                            onClick = {
+                                FeedbackManager.performClick(view)
+                                themeState.setMode(AppThemeMode.SYSTEM)
+                            }
                         )
                         ThemeModeOptionRow(
                             title = stringResource(R.string.mode_light),
                             icon = Icons.Outlined.LightMode,
                             selected = themeState.currentMode == AppThemeMode.LIGHT,
-                            onClick = { themeState.setMode(AppThemeMode.LIGHT) }
+                            onClick = {
+                                FeedbackManager.performClick(view)
+                                themeState.setMode(AppThemeMode.LIGHT)
+                            }
                         )
                         ThemeModeOptionRow(
                             title = stringResource(R.string.mode_dark),
                             icon = Icons.Outlined.DarkMode,
                             selected = themeState.currentMode == AppThemeMode.DARK,
-                            onClick = { themeState.setMode(AppThemeMode.DARK) }
+                            onClick = {
+                                FeedbackManager.performClick(view)
+                                themeState.setMode(AppThemeMode.DARK)
+                            }
                         )
                     }
                 }
@@ -383,7 +416,10 @@ fun SettingsScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { showLanguageDialog = true }
+                            .clickable {
+                                FeedbackManager.performClick(view)
+                                showLanguageDialog = true
+                            }
                             .padding(horizontal = 16.dp, vertical = 14.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
@@ -404,6 +440,99 @@ fun SettingsScreen(
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
+            // Section 4B: Default Display Currency
+            item {
+                SectionHeader(
+                    title = stringResource(R.string.default_currency_settings),
+                    icon = Icons.Outlined.Payments
+                )
+                Spacer(Modifier.height(8.dp))
+                Card(
+                    shape = RoundedCornerShape(cardRadius),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                FeedbackManager.performClick(view)
+                                showCurrencyDialog = true
+                            }
+                            .padding(horizontal = 16.dp, vertical = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.default_currency_settings),
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Text(
+                                text = currentCurrency.localizedName(),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
+
+            // Section 4C: Haptic & Sound Feedback
+            item {
+                SectionHeader(
+                    title = stringResource(R.string.feedback_settings_title),
+                    icon = Icons.Outlined.Vibration
+                )
+                Spacer(Modifier.height(8.dp))
+                Card(
+                    shape = RoundedCornerShape(cardRadius),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
+                            Text(
+                                text = stringResource(R.string.feedback_settings_title),
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Text(
+                                text = stringResource(R.string.feedback_settings_desc),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Switch(
+                            checked = feedbackEnabled,
+                            onCheckedChange = { enabled ->
+                                feedbackEnabled = enabled
+                                FeedbackManager.setEnabled(context, enabled)
+                                if (enabled) {
+                                    FeedbackManager.performToggle(view)
+                                }
+                            }
                         )
                     }
                 }
@@ -657,6 +786,7 @@ fun SettingsScreen(
                             Switch(
                                 checked = autoSyncEnabled,
                                 onCheckedChange = { isChecked ->
+                                    FeedbackManager.performToggle(view)
                                     autoSyncEnabled = isChecked
                                     updateAndPersistWebDav(newAutoSync = isChecked)
                                     val msg = if (isChecked) "已开启每日自动备份" else "已关闭自动备份"
@@ -723,6 +853,7 @@ fun SettingsScreen(
             confirmButton = {
                 Button(
                     onClick = {
+                        FeedbackManager.performConfirm(view)
                         showWebDavRestoreConfirm = false
                         coroutineScope.launch {
                             isRestoringWebDav = true
@@ -789,6 +920,7 @@ fun SettingsScreen(
                             subtitle = language.nativeName,
                             selected = currentLanguage == language,
                             onClick = {
+                                FeedbackManager.performClick(view)
                                 currentLanguage = language
                                 LanguageManager.setLanguage(context, language)
                                 showLanguageDialog = false
@@ -804,6 +936,48 @@ fun SettingsScreen(
             },
             confirmButton = {
                 TextButton(onClick = { showLanguageDialog = false }) {
+                    Text("关闭")
+                }
+            }
+        )
+    }
+
+    if (showCurrencyDialog) {
+        AlertDialog(
+            onDismissRequest = { showCurrencyDialog = false },
+            title = {
+                Text(
+                    text = stringResource(R.string.currency_selector_title),
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    AppCurrency.entries.forEachIndexed { index, currency ->
+                        LanguageOptionRow(
+                            title = currency.localizedName(),
+                            subtitle = "${currency.code} · ${currency.symbol}",
+                            selected = currentCurrency == currency,
+                            onClick = {
+                                FeedbackManager.performClick(view)
+                                CurrencyPreferenceManager.setDefaultCurrency(context, currency)
+                                showCurrencyDialog = false
+                            }
+                        )
+                        if (index < AppCurrency.entries.lastIndex) {
+                            HorizontalDivider(
+                                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                            )
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showCurrencyDialog = false }) {
                     Text("关闭")
                 }
             }

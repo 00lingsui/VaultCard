@@ -14,7 +14,7 @@ import com.example.cardmanager.core.database.entity.TransactionEntity
 
 @Database(
     entities = [CreditCardEntity::class, TransactionEntity::class],
-    version = 4,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(CardConverters::class)
@@ -47,6 +47,12 @@ abstract class AppDatabase : RoomDatabase() {
             }
         }
 
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE credit_cards ADD COLUMN currency_code TEXT NOT NULL DEFAULT 'CNY'")
+            }
+        }
+
         @Volatile
         private var INSTANCE: AppDatabase? = null
 
@@ -57,7 +63,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     DATABASE_NAME
                 )
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                     .fallbackToDestructiveMigration()
                     .build()
                     .also { INSTANCE = it }

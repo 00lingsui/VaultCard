@@ -40,21 +40,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.cardmanager.R
+import com.example.cardmanager.core.currency.AppCurrency
+import com.example.cardmanager.core.currency.CurrencyPreferenceManager
 import com.example.cardmanager.core.database.entity.CardNetwork
 import com.example.cardmanager.core.database.entity.CardStylePreset
 import com.example.cardmanager.core.database.entity.CreditCardEntity
 import com.example.cardmanager.core.database.entity.detectCardNetwork
+import com.example.cardmanager.core.feedback.FeedbackManager
 
 @Composable
 fun AddCardDialog(
     onDismiss: () -> Unit,
     onConfirm: (card: CreditCardEntity, syncCalendar: Boolean) -> Unit
 ) {
+    val context = LocalContext.current
+    val view = LocalView.current
     var bankName by remember { mutableStateOf("") }
     var cardAlias by remember { mutableStateOf("") }
     var cardNumberInput by remember { mutableStateOf("") }
@@ -63,6 +70,7 @@ fun AddCardDialog(
     var repaymentDay by remember { mutableStateOf("") }
     var selectedStyle by remember { mutableStateOf(CardStylePreset.DEEP_OCEAN) }
     var selectedNetwork by remember { mutableStateOf(CardNetwork.UNIONPAY) }
+    var selectedCurrency by remember { mutableStateOf(CurrencyPreferenceManager.getDefaultCurrency(context)) }
     var hasManuallySelectedNetwork by remember { mutableStateOf(false) }
     var hasAnnualFee by remember { mutableStateOf(false) }
     var annualFeeAmount by remember { mutableStateOf("") }
@@ -92,7 +100,8 @@ fun AddCardDialog(
                     creditLimit = creditLimit.toDoubleOrNull() ?: 0.0,
                     repaymentDay = repaymentDay.toIntOrNull()?.coerceIn(1, 31) ?: 15,
                     stylePreset = selectedStyle,
-                    network = selectedNetwork
+                    network = selectedNetwork,
+                    currency = selectedCurrency
                 )
 
                 errorText?.let {
@@ -137,11 +146,28 @@ fun AddCardDialog(
                 OutlinedTextField(
                     value = creditLimit,
                     onValueChange = { creditLimit = it },
-                    label = { Text("信用额度 (元)") },
+                    label = { Text("信用额度 (${selectedCurrency.code} ${selectedCurrency.symbol})") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
+
+                Text(stringResource(R.string.card_currency_selector_title), style = MaterialTheme.typography.labelMedium)
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(AppCurrency.entries) { currency ->
+                        FilterChip(
+                            selected = selectedCurrency == currency,
+                            onClick = {
+                                FeedbackManager.performClick(view)
+                                selectedCurrency = currency
+                            },
+                            label = { Text("${currency.code} (${currency.symbol})") }
+                        )
+                    }
+                }
 
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(
@@ -171,6 +197,7 @@ fun AddCardDialog(
                         FilterChip(
                             selected = selectedNetwork == network,
                             onClick = {
+                                FeedbackManager.performClick(view)
                                 selectedNetwork = network
                                 hasManuallySelectedNetwork = true
                             },
@@ -190,7 +217,10 @@ fun AddCardDialog(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
                                 .clip(RoundedCornerShape(10.dp))
-                                .clickable { selectedStyle = preset }
+                                .clickable {
+                                    FeedbackManager.performClick(view)
+                                    selectedStyle = preset
+                                }
                                 .padding(horizontal = 4.dp, vertical = 2.dp)
                         ) {
                             Box(
@@ -240,7 +270,13 @@ fun AddCardDialog(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                    Switch(checked = hasAnnualFee, onCheckedChange = { hasAnnualFee = it })
+                    Switch(
+                        checked = hasAnnualFee,
+                        onCheckedChange = {
+                            FeedbackManager.performToggle(view)
+                            hasAnnualFee = it
+                        }
+                    )
                 }
 
                 if (hasAnnualFee) {
@@ -285,7 +321,13 @@ fun AddCardDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text("同步还款日程至系统日历", style = MaterialTheme.typography.bodySmall)
-                    Switch(checked = syncCalendar, onCheckedChange = { syncCalendar = it })
+                    Switch(
+                        checked = syncCalendar,
+                        onCheckedChange = {
+                            FeedbackManager.performToggle(view)
+                            syncCalendar = it
+                        }
+                    )
                 }
             }
         },
@@ -309,6 +351,7 @@ fun AddCardDialog(
                         hasAnnualFee && waiverCount < 0 -> errorText = "刷卡免年费笔数不能为负数"
                         initialSwipes < 0 -> errorText = "初始已刷笔数不能为负数"
                         else -> {
+                            FeedbackManager.performConfirm(view)
                             onConfirm(
                                 CreditCardEntity(
                                     bankName = bankName.trim(),
@@ -323,7 +366,8 @@ fun AddCardDialog(
                                     hasAnnualFee = hasAnnualFee,
                                     annualFeeAmount = feeAmt,
                                     annualFeeWaiverCount = waiverCount,
-                                    initialWaiverSwipes = initialSwipes
+                                    initialWaiverSwipes = initialSwipes,
+                                    currencyCode = selectedCurrency.code
                                 ),
                                 syncCalendar
                             )

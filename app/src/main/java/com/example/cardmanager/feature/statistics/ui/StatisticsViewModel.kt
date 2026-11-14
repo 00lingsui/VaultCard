@@ -20,6 +20,8 @@ data class StatisticsUiState(
     val availableCredit: Double = 0.0,
     val totalTransactionsCount: Int = 0,
     val largestExpense: Double = 0.0,
+    val singleCardCurrencyCode: String? = null,
+    val largestExpenseCurrencyCode: String? = null,
     val categorySlices: List<PieChartSlice> = emptyList(),
     val trendPoints: List<Float> = emptyList(),
     val trendLabels: List<String> = emptyList(),
@@ -46,10 +48,19 @@ class StatisticsViewModel @Inject constructor(
         repository.getAllTransactions(),
         repository.getTotalDebt()
     ) { cards, transactions, totalDebt ->
-        val totalLimit = cards.groupBy { it.bankName.trim() }
+        val totalLimit = cards
+            .groupBy { it.currencyCode }
             .values
-            .sumOf { bankCards -> bankCards.maxOfOrNull { it.creditLimit } ?: 0.0 }
+            .sumOf { currencyCards ->
+                currencyCards
+                    .groupBy { it.bankName.trim().lowercase(Locale.ROOT) }
+                    .values
+                    .sumOf { bankCards -> bankCards.maxOfOrNull { it.creditLimit } ?: 0.0 }
+            }
         val available = (totalLimit - totalDebt).coerceAtLeast(0.0)
+        val distinctCurrencies = cards.map { it.currencyCode }.distinct()
+        val singleCurrencyCode = if (distinctCurrencies.size == 1) distinctCurrencies.first() else null
+        val cardCurrencyMap = cards.associate { it.id to it.currencyCode }
 
         // 1. Category aggregation
         val categoryTotals = transactions.groupBy { it.category }
@@ -81,7 +92,9 @@ class StatisticsViewModel @Inject constructor(
             emptyList()
         }
 
-        val largest = transactions.maxOfOrNull { it.amount } ?: 0.0
+        val largestTx = transactions.maxByOrNull { it.amount }
+        val largest = largestTx?.amount ?: 0.0
+        val largestCurrency = largestTx?.let { cardCurrencyMap[it.cardId] } ?: singleCurrencyCode
 
         StatisticsUiState(
             totalLimit = totalLimit,
@@ -89,6 +102,8 @@ class StatisticsViewModel @Inject constructor(
             availableCredit = available,
             totalTransactionsCount = transactions.size,
             largestExpense = largest,
+            singleCardCurrencyCode = singleCurrencyCode,
+            largestExpenseCurrencyCode = largestCurrency,
             categorySlices = categorySlices,
             trendPoints = trendPoints,
             trendLabels = trendLabels,

@@ -1,6 +1,15 @@
 package com.example.cardmanager.feature.card.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,15 +25,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.outlined.Analytics
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.AlertDialog
@@ -33,7 +40,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
@@ -54,6 +60,7 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -62,12 +69,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -75,17 +85,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.cardmanager.R
 import com.example.cardmanager.core.common.util.AlarmIntentHelper
 import com.example.cardmanager.core.common.util.CalendarSyncHelper
+import com.example.cardmanager.core.currency.AppCurrency
+import com.example.cardmanager.core.currency.CurrencyPreferenceManager
 import com.example.cardmanager.core.database.entity.CreditCardEntity
+import com.example.cardmanager.core.feedback.FeedbackManager
 import com.example.cardmanager.core.security.BiometricHelper
 import com.example.cardmanager.core.security.findActivity
-import kotlinx.coroutines.launch
 import com.example.cardmanager.feature.card.ui.components.AddCardDialog
 import com.example.cardmanager.feature.card.ui.components.CardDetailBottomSheet
 import com.example.cardmanager.feature.card.ui.components.CardDetailContent
 import com.example.cardmanager.feature.card.ui.components.CreditCardItem
 import com.example.cardmanager.ui.theme.AppThemeStyle
 import com.example.cardmanager.ui.theme.LocalThemeState
-import java.text.NumberFormat
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -101,11 +113,16 @@ fun CardListScreen(
     val themeState = LocalThemeState.current
     val isMiui = themeState.currentStyle == AppThemeStyle.MIUIX
     val context = LocalContext.current
+    val view = LocalView.current
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) { CurrencyPreferenceManager.getDefaultCurrency(context) }
+    val defaultCurrency by CurrencyPreferenceManager.defaultCurrencyFlow.collectAsStateWithLifecycle()
 
     var showAddDialog by remember { mutableStateOf(false) }
     var selectedCardId by rememberSaveable { mutableStateOf<Long?>(null) }
     val isWideScreen = widthSizeClass != WindowWidthSizeClass.Compact
+    val expandedBankKeys = remember { mutableStateMapOf<String, Boolean>() }
 
     val selectedCardForDetail = remember(selectedCardId, uiState.cards) {
         uiState.cards.find { it.id == selectedCardId }
@@ -128,6 +145,7 @@ fun CardListScreen(
                     onCancelled?.invoke()
                 },
                 onSuccess = {
+                    FeedbackManager.performDestructive(view)
                     viewModel.deleteCard(cardId)
                     if (selectedCardId == cardId) {
                         selectedCardId = null
@@ -135,6 +153,7 @@ fun CardListScreen(
                 }
             )
         } else {
+            FeedbackManager.performDestructive(view)
             viewModel.deleteCard(cardId)
             if (selectedCardId == cardId) {
                 selectedCardId = null
@@ -173,7 +192,10 @@ fun CardListScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { showAddDialog = true },
+                onClick = {
+                    FeedbackManager.performClick(view)
+                    showAddDialog = true
+                },
                 shape = RoundedCornerShape(fabCornerRadius),
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
@@ -197,20 +219,127 @@ fun CardListScreen(
                 CircularProgressIndicator(strokeWidth = 3.dp)
             }
         } else {
+            val swipeableCardItem = @Composable { card: CreditCardEntity ->
+                var dismissStateRef: SwipeToDismissBoxState? = null
+                val dismissState = rememberSwipeToDismissBoxState(
+                    confirmValueChange = { dismissValue ->
+                        if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
+                            FeedbackManager.performDestructive(view)
+                            requestCardDeletion(card.id) {
+                                coroutineScope.launch { dismissStateRef?.reset() }
+                            }
+                            false
+                        } else {
+                            false
+                        }
+                    }
+                ).also { dismissStateRef = it }
+
+                SwipeToDismissBox(
+                    state = dismissState,
+                    enableDismissFromStartToEnd = false,
+                    enableDismissFromEndToStart = true,
+                    backgroundContent = {
+                        val isSwiping = dismissState.targetValue == SwipeToDismissBoxValue.EndToStart
+                        val iconScale by animateFloatAsState(
+                            targetValue = if (isSwiping) 1.25f else 0.85f,
+                            animationSpec = spring(dampingRatio = 0.7f, stiffness = 400f),
+                            label = "deleteIconScale"
+                        )
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(cardCornerRadius))
+                                .background(Color(0xFFDC2626))
+                                .padding(horizontal = 24.dp),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text(
+                                    text = "删除",
+                                    color = Color.White,
+                                    style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
+                                    modifier = Modifier.scale(iconScale)
+                                )
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "删除卡片",
+                                    tint = Color.White,
+                                    modifier = Modifier.scale(iconScale)
+                                )
+                            }
+                        }
+                    }
+                ) {
+                    CreditCardItem(
+                        card = card,
+                        recordedSwipesInCurrentYear = uiState.annualSwipeCounts[card.id] ?: 0,
+                        onClick = { selectedCardId = card.id },
+                        onDeleteClick = {
+                            requestCardDeletion(card.id, null)
+                        }
+                    )
+                }
+            }
+
             val cardListPane = @Composable { listModifier: Modifier ->
+                val groupedBanks = remember(uiState.cards) {
+                    uiState.cards.groupBy { it.bankName.trim().lowercase(Locale.ROOT) }.entries.toList()
+                }
+
                 LazyColumn(
                     modifier = listModifier.fillMaxSize(),
                     contentPadding = PaddingValues(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                // 1. Redesigned Premium Gradient Summary Card
+                // 1. Redesigned Premium Gradient Summary Card (Multi-Currency Aware)
                 item {
-                    val currencyFormat = remember { NumberFormat.getCurrencyInstance(Locale.US) }
+                    val activeCurrencies = (uiState.limitByCurrency.keys + uiState.debtByCurrency.keys).distinct()
+                    val isMultiCurrency = activeCurrencies.size > 1
+                    val singleCurrency = if (activeCurrencies.size == 1) {
+                        AppCurrency.fromCode(activeCurrencies.first())
+                    } else {
+                        defaultCurrency
+                    }
                     val totalLimit = uiState.totalCreditLimit
                     val totalDebt = uiState.totalDebt
                     val availableCredit = (totalLimit - totalDebt).coerceAtLeast(0.0)
                     val utilizationRatio = if (totalLimit > 0) (totalDebt / totalLimit).toFloat().coerceIn(0f, 1f) else 0f
                     val utilizationPct = (utilizationRatio * 100).toInt()
+
+                    val totalLimitText = if (isMultiCurrency) {
+                        uiState.limitByCurrency.entries.joinToString(" · ") { (code, amt) ->
+                            AppCurrency.fromCode(code).format(amt, trimWholeDecimals = true)
+                        }.ifEmpty { defaultCurrency.format(0.0) }
+                    } else {
+                        singleCurrency.format(totalLimit)
+                    }
+
+                    val totalDebtText = if (isMultiCurrency) {
+                        val nonZeroDebts = uiState.debtByCurrency.entries.filter { it.value > 0.0 }
+                        if (nonZeroDebts.isEmpty()) {
+                            defaultCurrency.format(0.0)
+                        } else {
+                            nonZeroDebts.joinToString(" · ") { (code, amt) ->
+                                AppCurrency.fromCode(code).format(amt, trimWholeDecimals = true)
+                            }
+                        }
+                    } else {
+                        singleCurrency.format(totalDebt)
+                    }
+
+                    val availableCreditText = if (isMultiCurrency) {
+                        uiState.limitByCurrency.entries.joinToString(" · ") { (code, lim) ->
+                            val avail = (lim - (uiState.debtByCurrency[code] ?: 0.0)).coerceAtLeast(0.0)
+                            AppCurrency.fromCode(code).format(avail, trimWholeDecimals = true)
+                        }.ifEmpty { defaultCurrency.format(0.0) }
+                    } else {
+                        singleCurrency.format(availableCredit)
+                    }
 
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -273,7 +402,7 @@ fun CardListScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    Column {
+                                    Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
                                         Text(
                                             text = stringResource(R.string.total_credit_limit),
                                             style = MaterialTheme.typography.labelSmall,
@@ -281,16 +410,26 @@ fun CardListScreen(
                                         )
                                         Spacer(Modifier.height(4.dp))
                                         Text(
-                                            text = currencyFormat.format(totalLimit),
-                                            style = MaterialTheme.typography.headlineSmall.copy(
-                                                fontWeight = FontWeight.Bold,
-                                                letterSpacing = (-0.5).sp
-                                            ),
+                                            text = totalLimitText,
+                                            style = if (isMultiCurrency) {
+                                                MaterialTheme.typography.titleMedium.copy(
+                                                    fontWeight = FontWeight.Bold,
+                                                    letterSpacing = (-0.3).sp
+                                                )
+                                            } else {
+                                                MaterialTheme.typography.headlineSmall.copy(
+                                                    fontWeight = FontWeight.Bold,
+                                                    letterSpacing = (-0.5).sp
+                                                )
+                                            },
                                             color = Color.White
                                         )
                                     }
 
-                                    Column(horizontalAlignment = Alignment.End) {
+                                    Column(
+                                        modifier = Modifier.weight(1f),
+                                        horizontalAlignment = Alignment.End
+                                    ) {
                                         Text(
                                             text = stringResource(R.string.total_outstanding),
                                             style = MaterialTheme.typography.labelSmall,
@@ -298,11 +437,18 @@ fun CardListScreen(
                                         )
                                         Spacer(Modifier.height(4.dp))
                                         Text(
-                                            text = currencyFormat.format(totalDebt),
-                                            style = MaterialTheme.typography.headlineSmall.copy(
-                                                fontWeight = FontWeight.Bold,
-                                                letterSpacing = (-0.5).sp
-                                            ),
+                                            text = totalDebtText,
+                                            style = if (isMultiCurrency) {
+                                                MaterialTheme.typography.titleMedium.copy(
+                                                    fontWeight = FontWeight.Bold,
+                                                    letterSpacing = (-0.3).sp
+                                                )
+                                            } else {
+                                                MaterialTheme.typography.headlineSmall.copy(
+                                                    fontWeight = FontWeight.Bold,
+                                                    letterSpacing = (-0.5).sp
+                                                )
+                                            },
                                             color = if (totalDebt > 0) Color(0xFFFF5252) else Color(0xFF10B981)
                                         )
                                     }
@@ -316,9 +462,12 @@ fun CardListScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
-                                            text = "可用额度: ${currencyFormat.format(availableCredit)}",
+                                            text = stringResource(R.string.available_credit_label, availableCreditText),
                                             style = MaterialTheme.typography.labelSmall,
-                                            color = Color.White.copy(alpha = 0.6f)
+                                            color = Color.White.copy(alpha = 0.6f),
+                                            modifier = Modifier.weight(1f).padding(end = 8.dp),
+                                            maxLines = 2,
+                                            overflow = TextOverflow.Ellipsis
                                         )
 
                                         val utilColor = when {
@@ -337,7 +486,7 @@ fun CardListScreen(
                                                     .background(utilColor, CircleShape)
                                             )
                                             Text(
-                                                text = "已使用 $utilizationPct%",
+                                                text = stringResource(R.string.utilization_pct_label, utilizationPct),
                                                 style = MaterialTheme.typography.labelSmall.copy(
                                                     fontWeight = FontWeight.SemiBold
                                                 ),
@@ -391,78 +540,149 @@ fun CardListScreen(
                     }
                 }
 
-                // 3. Elevated Empty State or Card List
+                // 3. Elevated Empty State or Collapsible Bank-Grouped Card List
                 if (uiState.cards.isEmpty()) {
                     item {
                         com.example.cardmanager.feature.card.ui.components.EmptyCardsState(
-                            onAddCardClick = { showAddDialog = true },
+                            onAddCardClick = {
+                                FeedbackManager.performClick(view)
+                                showAddDialog = true
+                            },
                             isMiui = isMiui
                         )
                     }
                 } else {
-                    items(uiState.cards, key = { it.id }) { card ->
-                        var dismissStateRef: SwipeToDismissBoxState? = null
-                        val dismissState = rememberSwipeToDismissBoxState(
-                            confirmValueChange = { dismissValue ->
-                                if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
-                                    requestCardDeletion(card.id) {
-                                        coroutineScope.launch { dismissStateRef?.reset() }
-                                    }
-                                    false
-                                } else {
-                                    false
-                                }
+                    groupedBanks.forEach { (bankKey, bankCards) ->
+                        if (bankCards.size == 1) {
+                            val singleCard = bankCards.first()
+                            item(key = "card_${singleCard.id}") {
+                                swipeableCardItem(singleCard)
                             }
-                        ).also { dismissStateRef = it }
-
-                        SwipeToDismissBox(
-                            state = dismissState,
-                            enableDismissFromStartToEnd = false,
-                            enableDismissFromEndToStart = true,
-                            backgroundContent = {
-                                val isSwiping = dismissState.targetValue == SwipeToDismissBoxValue.EndToStart
-                                val iconScale by animateFloatAsState(
-                                    targetValue = if (isSwiping) 1.25f else 0.85f,
-                                    animationSpec = spring(dampingRatio = 0.7f, stiffness = 400f),
-                                    label = "deleteIconScale"
+                        } else {
+                            item(key = "bank_group_$bankKey") {
+                                val isGroupExpanded = expandedBankKeys[bankKey] ?: true
+                                val displayBankName = bankCards.first().bankName.trim()
+                                val bankLimitSummary = bankCards
+                                    .groupBy { it.currencyCode }
+                                    .entries
+                                    .joinToString(" · ") { (code, currencyCards) ->
+                                        val maxLim = currencyCards.maxOfOrNull { it.creditLimit } ?: 0.0
+                                        AppCurrency.fromCode(code).format(maxLim, trimWholeDecimals = true)
+                                    }
+                                val groupChevronRotation by animateFloatAsState(
+                                    targetValue = if (isGroupExpanded) 180f else 0f,
+                                    animationSpec = spring(dampingRatio = 0.8f, stiffness = 400f),
+                                    label = "bankGroupChevron_$bankKey"
                                 )
 
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .clip(RoundedCornerShape(cardCornerRadius))
-                                        .background(Color(0xFFDC2626))
-                                        .padding(horizontal = 24.dp),
-                                    contentAlignment = Alignment.CenterEnd
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                                    Surface(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clip(RoundedCornerShape(if (isMiui) 20.dp else 14.dp))
+                                            .clickable {
+                                                FeedbackManager.performClick(view)
+                                                expandedBankKeys[bankKey] = !isGroupExpanded
+                                            },
+                                        shape = RoundedCornerShape(if (isMiui) 20.dp else 14.dp),
+                                        color = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                        border = BorderStroke(
+                                            1.dp,
+                                            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                                        )
                                     ) {
-                                        Text(
-                                            text = "删除",
-                                            color = Color.White,
-                                            style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold),
-                                            modifier = Modifier.scale(iconScale)
-                                        )
-                                        Icon(
-                                            imageVector = Icons.Default.Delete,
-                                            contentDescription = "删除卡片",
-                                            tint = Color.White,
-                                            modifier = Modifier.scale(iconScale)
-                                        )
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                                modifier = Modifier.weight(1f)
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(36.dp)
+                                                        .clip(CircleShape)
+                                                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Outlined.AccountBalance,
+                                                        contentDescription = null,
+                                                        tint = MaterialTheme.colorScheme.primary,
+                                                        modifier = Modifier.size(18.dp)
+                                                    )
+                                                }
+                                                Column(modifier = Modifier.weight(1f)) {
+                                                    Row(
+                                                        verticalAlignment = Alignment.CenterVertically,
+                                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                                    ) {
+                                                        Text(
+                                                            text = displayBankName,
+                                                            style = MaterialTheme.typography.titleSmall.copy(
+                                                                fontWeight = FontWeight.Bold
+                                                            ),
+                                                            color = MaterialTheme.colorScheme.onSurface,
+                                                            maxLines = 1,
+                                                            overflow = TextOverflow.Ellipsis
+                                                        )
+                                                        Surface(
+                                                            shape = RoundedCornerShape(8.dp),
+                                                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                                                        ) {
+                                                            Text(
+                                                                text = stringResource(R.string.cards_count, bankCards.size),
+                                                                style = MaterialTheme.typography.labelSmall.copy(
+                                                                    fontWeight = FontWeight.SemiBold,
+                                                                    fontSize = 10.sp
+                                                                ),
+                                                                color = MaterialTheme.colorScheme.primary,
+                                                                modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp)
+                                                            )
+                                                        }
+                                                    }
+                                                    Spacer(Modifier.height(2.dp))
+                                                    Text(
+                                                        text = stringResource(R.string.bank_group_limit_summary, bankLimitSummary),
+                                                        style = MaterialTheme.typography.labelSmall,
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis
+                                                    )
+                                                }
+                                            }
+                                            Icon(
+                                                imageVector = Icons.Default.KeyboardArrowDown,
+                                                contentDescription = null,
+                                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                modifier = Modifier
+                                                    .size(22.dp)
+                                                    .rotate(groupChevronRotation)
+                                            )
+                                        }
+                                    }
+
+                                    AnimatedVisibility(
+                                        visible = isGroupExpanded,
+                                        enter = fadeIn(spring(dampingRatio = 0.85f)) + expandVertically(spring(dampingRatio = 0.8f, stiffness = 320f)),
+                                        exit = fadeOut() + shrinkVertically(spring(dampingRatio = 0.85f, stiffness = 350f))
+                                    ) {
+                                        Column(
+                                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            bankCards.forEach { card ->
+                                                swipeableCardItem(card)
+                                            }
+                                        }
                                     }
                                 }
                             }
-                        ) {
-                            CreditCardItem(
-                                card = card,
-                                recordedSwipesInCurrentYear = uiState.annualSwipeCounts[card.id] ?: 0,
-                                onClick = { selectedCardId = card.id },
-                                onDeleteClick = {
-                                    requestCardDeletion(card.id, null)
-                                }
-                            )
                         }
                     }
                 }

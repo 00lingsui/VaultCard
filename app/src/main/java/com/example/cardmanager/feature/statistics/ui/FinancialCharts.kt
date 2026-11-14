@@ -33,8 +33,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import java.text.NumberFormat
-import java.util.Locale
+import com.example.cardmanager.core.currency.AppCurrency
 
 data class PieChartSlice(
     val label: String,
@@ -47,6 +46,7 @@ fun DonutChart(
     totalLimit: Double,
     totalDebt: Double,
     modifier: Modifier = Modifier,
+    currency: AppCurrency = AppCurrency.CNY,
     debtColor: Color = Color(0xFFFF5252),
     availableColor: Color = Color(0xFF10B981),
     trackColor: Color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
@@ -64,8 +64,6 @@ fun DonutChart(
     val debtRatio = if (totalLimit > 0) (totalDebt / totalLimit).toFloat().coerceIn(0f, 1f) else 0f
     val debtSweep = debtRatio * 360f * animationProgress.value
     val availableSweep = (1f - debtRatio) * 360f * animationProgress.value
-
-    val currencyFormat = NumberFormat.getCurrencyInstance(Locale.US)
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -146,12 +144,12 @@ fun DonutChart(
             ChartLegendItem(
                 color = debtColor,
                 label = "待还款",
-                value = currencyFormat.format(totalDebt)
+                value = currency.format(totalDebt)
             )
             ChartLegendItem(
                 color = availableColor,
                 label = "可用额度",
-                value = currencyFormat.format(available)
+                value = currency.format(available)
             )
         }
     }
@@ -269,7 +267,8 @@ fun LineChart(
 @Composable
 fun PieChart(
     slices: List<PieChartSlice>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    currency: AppCurrency = AppCurrency.CNY
 ) {
     if (slices.isEmpty()) {
         Box(
@@ -287,8 +286,6 @@ fun PieChart(
     LaunchedEffect(slices) {
         animationProgress.animateTo(1f, animationSpec = tween(1000))
     }
-
-    val currencyFormat = NumberFormat.getCurrencyInstance(Locale.US)
 
     Row(
         modifier = modifier.fillMaxWidth().padding(vertical = 8.dp),
@@ -332,7 +329,7 @@ fun PieChart(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Text(
-                            text = currencyFormat.format(slice.value),
+                            text = currency.format(slice.value),
                             style = MaterialTheme.typography.bodySmall.copy(fontSize = 11.sp),
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

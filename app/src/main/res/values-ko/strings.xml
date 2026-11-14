@@ -42,8 +42,8 @@
     <string name="annual_fee_policy_label">연회비 정책</string>
     <string name="annual_fee_waiver_req_label">연회비 면제 조건</string>
     <string name="annual_fee_free_badge">연회비 없음</string>
-    <string name="annual_fee_rigid_summary">고정 연회비: ¥%1$s/년 · 면제 불가</string>
-    <string name="annual_fee_waivable_summary">연회비: ¥%1$s/년 · %2$d회 결제 시 면제</string>
+    <string name="annual_fee_rigid_summary">고정 연회비: %1$s/년 · 면제 불가</string>
+    <string name="annual_fee_waivable_summary">연회비: %1$s/년 · %2$d회 결제 시 면제</string>
     <string name="annual_fee_free_summary">연회비 없음 · 실적 조건 없음</string>
 
     <!-- Card Networks -->
@@ -72,8 +72,27 @@
     <string name="initial_waiver_swipes_label">기존 결제 횟수 / 초기 횟수</string>
     <string name="initial_waiver_swipes_hint">앱 사용 전 올해 결제 횟수</string>
     <string name="waiver_progress_title">연회비 면제 진행률</string>
-    <string name="waiver_progress_remaining">%1$d / %2$d회 결제 (¥%4$s 면제까지 %3$d회 남음)</string>
+    <string name="waiver_progress_remaining">%1$d / %2$d회 결제 (%4$s 면제까지 %3$d회 남음)</string>
     <string name="waiver_progress_completed">✓ 연회비 면제 달성 (올해 %1$d회 결제)</string>
     <string name="waiver_badge_remaining">면제까지 %1$d회 남음</string>
     <string name="waiver_badge_completed">✓ 면제 완료</string>
+
+    <!-- Currency & Feedback & Bank Grouping -->
+    <string name="card_currency_selector_title">카드 통화</string>
+    <string name="default_currency_settings">기본 표시 통화</string>
+    <string name="currency_selector_title">통화 선택</string>
+    <string name="currency_cny">중국 위안 CNY (¥)</string>
+    <string name="currency_usd">미국 달러 USD ($)</string>
+    <string name="currency_hkd">홍콩 달러 HKD (HK$)</string>
+    <string name="currency_eur">유로 EUR (€)</string>
+    <string name="currency_jpy">일본 엔 JPY (¥)</string>
+    <string name="currency_gbp">영국 파운드 GBP (£)</string>
+    <string name="currency_twd">대만 달러 TWD (NT$)</string>
+    <string name="currency_krw">대한민국 원 KRW (₩)</string>
+    <string name="currency_sgd">싱가포르 달러 SGD (S$)</string>
+    <string name="feedback_settings_title">햅틱 진동 및 효과음 피드백</string>
+    <string name="feedback_settings_desc">삭제, 스위치 전환 등 주요 동작 시 진동과 클릭음 제공</string>
+    <string name="bank_group_limit_summary">통합 한도 %1$s</string>
+    <string name="available_credit_label">사용 가능 한도: %1$s</string>
+    <string name="utilization_pct_label">%1$d%% 사용됨</string>
 </resources>

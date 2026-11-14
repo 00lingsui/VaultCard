@@ -19,9 +19,10 @@ object CalendarSyncHelper {
             data = CalendarContract.Events.CONTENT_URI
             putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startMillis)
             putExtra(CalendarContract.Events.TITLE, "信用卡还款提醒: ${card.bankName} (${card.cardAlias})")
+            val currency = com.example.cardmanager.core.currency.AppCurrency.fromCode(card.currencyCode)
             putExtra(
                 CalendarContract.Events.DESCRIPTION,
-                "还款截止提醒：${card.cardAlias} (•••• ${card.last4Digits})。额度: ¥${card.creditLimit}"
+                "还款截止提醒：${card.cardAlias} (•••• ${card.last4Digits})。额度: ${currency.format(card.creditLimit, trimWholeDecimals = true)}"
             )
             putExtra(CalendarContract.Events.RRULE, "FREQ=MONTHLY;BYMONTHDAY=${card.repaymentDay}")
             putExtra(CalendarContract.Events.HAS_ALARM, 1)

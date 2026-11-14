@@ -30,21 +30,22 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.cardmanager.core.currency.AppCurrency
+import com.example.cardmanager.core.currency.CurrencyPreferenceManager
 import com.example.cardmanager.ui.theme.AppThemeStyle
 import com.example.cardmanager.ui.theme.LocalThemeState
-import java.text.NumberFormat
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,10 +55,14 @@ fun StatisticsScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    LaunchedEffect(Unit) { CurrencyPreferenceManager.getDefaultCurrency(context) }
+    val defaultCurrency by CurrencyPreferenceManager.defaultCurrencyFlow.collectAsStateWithLifecycle()
+    val displayCurrency = uiState.singleCardCurrencyCode?.let { AppCurrency.fromCode(it) } ?: defaultCurrency
+    val largestCurrency = uiState.largestExpenseCurrencyCode?.let { AppCurrency.fromCode(it) } ?: displayCurrency
     val themeState = LocalThemeState.current
     val isMiui = themeState.currentStyle == AppThemeStyle.MIUIX
     val cardRadius = if (isMiui) 24.dp else 16.dp
-    val currencyFormat = remember { NumberFormat.getCurrencyInstance(Locale.US) }
 
     Scaffold(
         topBar = {
@@ -110,14 +115,14 @@ fun StatisticsScreen(
                     ) {
                         KpiSummaryCard(
                             title = "待还款总额",
-                            value = currencyFormat.format(uiState.totalDebt),
+                            value = displayCurrency.format(uiState.totalDebt),
                             valueColor = if (uiState.totalDebt > 0) Color(0xFFFF5252) else Color(0xFF10B981),
                             modifier = Modifier.weight(1f),
                             shapeRadius = cardRadius
                         )
                         KpiSummaryCard(
                             title = "单笔最大支出",
-                            value = currencyFormat.format(uiState.largestExpense),
+                            value = largestCurrency.format(uiState.largestExpense),
                             valueColor = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.weight(1f),
                             shapeRadius = cardRadius
@@ -135,6 +140,7 @@ fun StatisticsScreen(
                         DonutChart(
                             totalLimit = uiState.totalLimit,
                             totalDebt = uiState.totalDebt,
+                            currency = displayCurrency,
                             debtColor = Color(0xFFFF5252),
                             availableColor = Color(0xFF10B981),
                             modifier = Modifier.padding(vertical = 8.dp)
@@ -167,6 +173,7 @@ fun StatisticsScreen(
                     ) {
                         PieChart(
                             slices = uiState.categorySlices,
+                            currency = displayCurrency,
                             modifier = Modifier.padding(vertical = 4.dp)
                         )
                     }

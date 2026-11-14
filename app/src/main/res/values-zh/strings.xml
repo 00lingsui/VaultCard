@@ -42,8 +42,8 @@
     <string name="annual_fee_policy_label">年费政策</string>
     <string name="annual_fee_waiver_req_label">年费免除要求</string>
     <string name="annual_fee_free_badge">免年费</string>
-    <string name="annual_fee_rigid_summary">刚性年费：¥%1$s/年 · 不可刷卡减免</string>
-    <string name="annual_fee_waivable_summary">年费：¥%1$s/年 · 刷卡满 %2$d 笔免年费</string>
+    <string name="annual_fee_rigid_summary">刚性年费：%1$s/年 · 不可刷卡减免</string>
+    <string name="annual_fee_waivable_summary">年费：%1$s/年 · 刷卡满 %2$d 笔免年费</string>
     <string name="annual_fee_free_summary">免年费 · 无需刷卡自动减免</string>
 
     <!-- Card Networks -->
@@ -72,8 +72,27 @@
     <string name="initial_waiver_swipes_label">已刷笔数 / 初始笔数</string>
     <string name="initial_waiver_swipes_hint">用App前本年已刷笔数</string>
     <string name="waiver_progress_title">年费减免进度</string>
-    <string name="waiver_progress_remaining">已消费 %1$d / %2$d 笔（还差 %3$d 笔免 ¥%4$s 年费）</string>
+    <string name="waiver_progress_remaining">已消费 %1$d / %2$d 笔（还差 %3$d 笔免 %4$s 年费）</string>
     <string name="waiver_progress_completed">✓ 已达标免年费（本年已消费 %1$d 笔）</string>
     <string name="waiver_badge_remaining">差 %1$d 笔免年费</string>
     <string name="waiver_badge_completed">✓ 已免年费</string>
+
+    <!-- Currency & Feedback & Bank Grouping -->
+    <string name="card_currency_selector_title">卡片币种</string>
+    <string name="default_currency_settings">默认显示币种</string>
+    <string name="currency_selector_title">选择币种</string>
+    <string name="currency_cny">人民币 CNY (¥)</string>
+    <string name="currency_usd">美元 USD ($)</string>
+    <string name="currency_hkd">港币 HKD (HK$)</string>
+    <string name="currency_eur">欧元 EUR (€)</string>
+    <string name="currency_jpy">日元 JPY (¥)</string>
+    <string name="currency_gbp">英镑 GBP (£)</string>
+    <string name="currency_twd">新台币 TWD (NT$)</string>
+    <string name="currency_krw">韩元 KRW (₩)</string>
+    <string name="currency_sgd">新加坡元 SGD (S$)</string>
+    <string name="feedback_settings_title">触感震动与音效反馈</string>
+    <string name="feedback_settings_desc">在删除、切换开关与确认操作时提供震动与提示音</string>
+    <string name="bank_group_limit_summary">合并额度 %1$s</string>
+    <string name="available_credit_label">可用额度: %1$s</string>
+    <string name="utilization_pct_label">已使用 %1$d%%</string>
 </resources>

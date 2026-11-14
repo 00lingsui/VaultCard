@@ -42,8 +42,8 @@
     <string name="annual_fee_policy_label">Gebührenmodell</string>
     <string name="annual_fee_waiver_req_label">Befreiungsbedingung</string>
     <string name="annual_fee_free_badge">Gebührenfrei</string>
-    <string name="annual_fee_rigid_summary">Feste Gebühr: ¥%1$s/Jahr · Nicht erlassbar</string>
-    <string name="annual_fee_waivable_summary">Gebühr: ¥%1$s/Jahr · Erlass ab %2$d Zahlungen</string>
+    <string name="annual_fee_rigid_summary">Feste Gebühr: %1$s/Jahr · Nicht erlassbar</string>
+    <string name="annual_fee_waivable_summary">Gebühr: %1$s/Jahr · Erlass ab %2$d Zahlungen</string>
     <string name="annual_fee_free_summary">Keine Jahresgebühr · Kein Mindestumsatz</string>
 
     <!-- Card Networks -->
@@ -72,8 +72,27 @@
     <string name="initial_waiver_swipes_label">Bereits getätigte Zahlungen</string>
     <string name="initial_waiver_swipes_hint">Zahlungen vor App-Nutzung</string>
     <string name="waiver_progress_title">Gebührenbefreiungs-Fortschritt</string>
-    <string name="waiver_progress_remaining">%1$d / %2$d Zahlungen (noch %3$d für ¥%4$s Erlass)</string>
+    <string name="waiver_progress_remaining">%1$d / %2$d Zahlungen (noch %3$d für %4$s Erlass)</string>
     <string name="waiver_progress_completed">✓ Jahresgebühr erlassen (%1$d Zahlungen dieses Jahr)</string>
     <string name="waiver_badge_remaining">Noch %1$d Zahlung(en)</string>
     <string name="waiver_badge_completed">✓ Erlassen</string>
+
+    <!-- Currency & Feedback & Bank Grouping -->
+    <string name="card_currency_selector_title">Kartenwährung</string>
+    <string name="default_currency_settings">Standardwährung</string>
+    <string name="currency_selector_title">Währung wählen</string>
+    <string name="currency_cny">Renminbi CNY (¥)</string>
+    <string name="currency_usd">US-Dollar USD ($)</string>
+    <string name="currency_hkd">Hongkong-Dollar HKD (HK$)</string>
+    <string name="currency_eur">Euro EUR (€)</string>
+    <string name="currency_jpy">Japanischer Yen JPY (¥)</string>
+    <string name="currency_gbp">Britisches Pfund GBP (£)</string>
+    <string name="currency_twd">Taiwan-Dollar TWD (NT$)</string>
+    <string name="currency_krw">Südkoreanischer Won KRW (₩)</string>
+    <string name="currency_sgd">Singapur-Dollar SGD (S$)</string>
+    <string name="feedback_settings_title">Haptik- &amp; Ton-Feedback</string>
+    <string name="feedback_settings_desc">Vibration und Klickton bei wichtigen Aktionen</string>
+    <string name="bank_group_limit_summary">Gesamtlimit: %1$s</string>
+    <string name="available_credit_label">Verfügbar: %1$s</string>
+    <string name="utilization_pct_label">%1$d%% genutzt</string>
 </resources>

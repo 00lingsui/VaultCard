@@ -42,8 +42,8 @@
     <string name="annual_fee_policy_label">Política de cuota anual</string>
     <string name="annual_fee_waiver_req_label">Requisito de exención</string>
     <string name="annual_fee_free_badge">Sin cuota</string>
-    <string name="annual_fee_rigid_summary">Cuota fija: ¥%1$s/año · No eximible</string>
-    <string name="annual_fee_waivable_summary">Cuota: ¥%1$s/año · Exenta tras %2$d pagos</string>
+    <string name="annual_fee_rigid_summary">Cuota fija: %1$s/año · No eximible</string>
+    <string name="annual_fee_waivable_summary">Cuota: %1$s/año · Exenta tras %2$d pagos</string>
     <string name="annual_fee_free_summary">Sin cuota anual · Sin requisito de uso</string>
 
     <!-- Card Networks -->
@@ -72,8 +72,27 @@
     <string name="initial_waiver_swipes_label">Pagos iniciales realizados</string>
     <string name="initial_waiver_swipes_hint">Pagos previos al uso de la app</string>
     <string name="waiver_progress_title">Progreso de exención anual</string>
-    <string name="waiver_progress_remaining">%1$d / %2$d pagos (faltan %3$d para eximir ¥%4$s)</string>
+    <string name="waiver_progress_remaining">%1$d / %2$d pagos (faltan %3$d para eximir %4$s)</string>
     <string name="waiver_progress_completed">✓ Cuota exenta (%1$d pagos este año)</string>
     <string name="waiver_badge_remaining">Faltan %1$d pago(s)</string>
     <string name="waiver_badge_completed">✓ Exenta</string>
+
+    <!-- Currency & Feedback & Bank Grouping -->
+    <string name="card_currency_selector_title">Moneda de la tarjeta</string>
+    <string name="default_currency_settings">Moneda predeterminada</string>
+    <string name="currency_selector_title">Seleccionar moneda</string>
+    <string name="currency_cny">Yuan chino CNY (¥)</string>
+    <string name="currency_usd">Dólar estadounidense USD ($)</string>
+    <string name="currency_hkd">Dólar HK HKD (HK$)</string>
+    <string name="currency_eur">Euro EUR (€)</string>
+    <string name="currency_jpy">Yen japonés JPY (¥)</string>
+    <string name="currency_gbp">Libra esterlina GBP (£)</string>
+    <string name="currency_twd">Dólar taiwanés TWD (NT$)</string>
+    <string name="currency_krw">Won surcoreano KRW (₩)</string>
+    <string name="currency_sgd">Dólar singapurense SGD (S$)</string>
+    <string name="feedback_settings_title">Vibración y sonido</string>
+    <string name="feedback_settings_desc">Vibración háptica y sonido sutil en acciones clave</string>
+    <string name="bank_group_limit_summary">Límite combinado: %1$s</string>
+    <string name="available_credit_label">Disponible: %1$s</string>
+    <string name="utilization_pct_label">%1$d%% usado</string>
 </resources>

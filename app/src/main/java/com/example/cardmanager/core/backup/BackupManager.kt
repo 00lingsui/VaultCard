@@ -43,6 +43,7 @@ class BackupManager @Inject constructor() {
                     put("annual_fee_amount", card.annualFeeAmount)
                     put("annual_fee_waiver_count", card.annualFeeWaiverCount)
                     put("initial_waiver_swipes", card.initialWaiverSwipes)
+                    put("currency_code", card.currencyCode)
                 }
                 cardsArray.put(cardObj)
             }
@@ -135,7 +136,10 @@ class BackupManager @Inject constructor() {
                         hasAnnualFee = obj.optBoolean("has_annual_fee", false),
                         annualFeeAmount = safeFeeAmount,
                         annualFeeWaiverCount = safeWaiverCount,
-                        initialWaiverSwipes = safeInitialSwipes
+                        initialWaiverSwipes = safeInitialSwipes,
+                        currencyCode = com.example.cardmanager.core.currency.AppCurrency.fromCode(
+                            obj.optString("currency_code", com.example.cardmanager.core.currency.AppCurrency.CNY.code)
+                        ).code
                     )
                 )
             }

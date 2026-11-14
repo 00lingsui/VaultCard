@@ -58,6 +58,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -65,13 +66,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cardmanager.R
 import com.example.cardmanager.core.common.util.calculateDaysUntilRepayment
+import com.example.cardmanager.core.currency.AppCurrency
 import com.example.cardmanager.core.database.entity.CardNetwork
 import com.example.cardmanager.core.database.entity.CardStylePreset
 import com.example.cardmanager.core.database.entity.CreditCardEntity
+import com.example.cardmanager.core.feedback.FeedbackManager
 import com.example.cardmanager.ui.theme.AppThemeStyle
 import com.example.cardmanager.ui.theme.LocalThemeState
-import java.text.NumberFormat
-import java.util.Locale
 
 @Composable
 fun CreditCardItem(
@@ -83,12 +84,14 @@ fun CreditCardItem(
     onDeleteClick: (() -> Unit)? = null
 ) {
     val themeState = LocalThemeState.current
+    val view = LocalView.current
     val isMiui = themeState.currentStyle == AppThemeStyle.MIUIX
     val cornerRadius = if (isMiui) 26.dp else 20.dp
 
     var expanded by remember { mutableStateOf(initiallyExpanded) }
 
     val daysRemaining = card.calculateDaysUntilRepayment()
+    val cardCurrency = remember(card.currencyCode) { AppCurrency.fromCode(card.currencyCode) }
     val stylePreset = remember(card.cardStyle, card.cardColorHex) {
         CardStylePreset.resolve(card.cardStyle, card.cardColorHex)
     }
@@ -134,7 +137,10 @@ fun CreditCardItem(
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
-                onClick = { expanded = !expanded }
+                onClick = {
+                    FeedbackManager.performClick(view)
+                    expanded = !expanded
+                }
             ),
         shape = RoundedCornerShape(cornerRadius),
         elevation = CardDefaults.cardElevation(
@@ -355,7 +361,7 @@ fun CreditCardItem(
                         )
                         Spacer(Modifier.height(2.dp))
                         Text(
-                            text = NumberFormat.getCurrencyInstance(Locale.CHINA).format(card.creditLimit),
+                            text = cardCurrency.format(card.creditLimit),
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = (-0.3).sp
@@ -439,11 +445,7 @@ fun CreditCardItem(
 
                         Spacer(Modifier.height(10.dp))
 
-                        val feeStr = if (card.annualFeeAmount % 1.0 == 0.0) {
-                            card.annualFeeAmount.toInt().toString()
-                        } else {
-                            card.annualFeeAmount.toString()
-                        }
+                        val formattedFee = cardCurrency.format(card.annualFeeAmount, trimWholeDecimals = true)
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -456,7 +458,7 @@ fun CreditCardItem(
                                     color = secondaryText
                                 )
                                 val feePolicyText = if (card.hasAnnualFee) {
-                                    "¥$feeStr"
+                                    formattedFee
                                 } else {
                                     stringResource(R.string.annual_fee_free_badge)
                                 }
@@ -484,8 +486,8 @@ fun CreditCardItem(
                                 )
                                 val waiverDetailText = when {
                                     !card.hasAnnualFee -> stringResource(R.string.annual_fee_free_desc)
-                                    card.annualFeeWaiverCount > 0 -> stringResource(R.string.annual_fee_waivable_summary, feeStr, card.annualFeeWaiverCount)
-                                    else -> stringResource(R.string.annual_fee_rigid_summary, feeStr)
+                                    card.annualFeeWaiverCount > 0 -> stringResource(R.string.annual_fee_waivable_summary, formattedFee, card.annualFeeWaiverCount)
+                                    else -> stringResource(R.string.annual_fee_rigid_summary, formattedFee)
                                 }
                                 Text(
                                     text = waiverDetailText,
@@ -503,7 +505,10 @@ fun CreditCardItem(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             FilledTonalButton(
-                                onClick = onClick,
+                                onClick = {
+                                    FeedbackManager.performClick(view)
+                                    onClick()
+                                },
                                 modifier = Modifier.weight(1f),
                                 shape = RoundedCornerShape(12.dp),
                                 colors = ButtonDefaults.filledTonalButtonColors(
@@ -525,7 +530,10 @@ fun CreditCardItem(
 
                             if (onDeleteClick != null) {
                                 IconButton(
-                                    onClick = onDeleteClick,
+                                    onClick = {
+                                        FeedbackManager.performDestructive(view)
+                                        onDeleteClick()
+                                    },
                                     modifier = Modifier
                                         .background(
                                             color = Color(0xFFDC2626).copy(alpha = if (isLightSurface) 0.14f else 0.28f),
@@ -558,7 +566,8 @@ fun CardPreviewBanner(
     repaymentDay: Int,
     stylePreset: CardStylePreset,
     network: CardNetwork,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    currency: AppCurrency = AppCurrency.CNY
 ) {
     val isLightSurface = stylePreset.isLightSurface
     val primaryText = stylePreset.primaryTextColor
@@ -617,7 +626,7 @@ fun CardPreviewBanner(
                 ) {
                     Column {
                         Text(
-                            text = "额度 ${NumberFormat.getCurrencyInstance(Locale.CHINA).format(creditLimit)} · 每月${repaymentDay}日还",
+                            text = "额度 ${currency.format(creditLimit, trimWholeDecimals = true)} · 每月${repaymentDay}日还",
                             style = MaterialTheme.typography.labelSmall,
                             color = secondaryText
                         )

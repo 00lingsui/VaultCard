@@ -42,8 +42,8 @@
     <string name="annual_fee_policy_label">Politique de cotisation</string>
     <string name="annual_fee_waiver_req_label">Condition d\'exonération</string>
     <string name="annual_fee_free_badge">Sans frais</string>
-    <string name="annual_fee_rigid_summary">Cotisation fixe : ¥%1$s/an · Non exonérable</string>
-    <string name="annual_fee_waivable_summary">Cotisation : ¥%1$s/an · Exonérée après %2$d paiements</string>
+    <string name="annual_fee_rigid_summary">Cotisation fixe : %1$s/an · Non exonérable</string>
+    <string name="annual_fee_waivable_summary">Cotisation : %1$s/an · Exonérée après %2$d paiements</string>
     <string name="annual_fee_free_summary">Sans cotisation annuelle · Aucune condition</string>
 
     <!-- Card Networks -->
@@ -72,8 +72,27 @@
     <string name="initial_waiver_swipes_label">Paiements initiaux effectués</string>
     <string name="initial_waiver_swipes_hint">Paiements avant l\'application</string>
     <string name="waiver_progress_title">Suivi d\'exonération annuelle</string>
-    <string name="waiver_progress_remaining">%1$d / %2$d paiements (encore %3$d pour ¥%4$s offerts)</string>
+    <string name="waiver_progress_remaining">%1$d / %2$d paiements (encore %3$d pour %4$s offerts)</string>
     <string name="waiver_progress_completed">✓ Cotisation exonérée (%1$d paiements cette année)</string>
     <string name="waiver_badge_remaining">%1$d restant(s)</string>
     <string name="waiver_badge_completed">✓ Exonérée</string>
+
+    <!-- Currency & Feedback & Bank Grouping -->
+    <string name="card_currency_selector_title">Devise de la carte</string>
+    <string name="default_currency_settings">Devise par défaut</string>
+    <string name="currency_selector_title">Choisir la devise</string>
+    <string name="currency_cny">Yuan chinois CNY (¥)</string>
+    <string name="currency_usd">Dollar US USD ($)</string>
+    <string name="currency_hkd">Dollar HK HKD (HK$)</string>
+    <string name="currency_eur">Euro EUR (€)</string>
+    <string name="currency_jpy">Yen japonais JPY (¥)</string>
+    <string name="currency_gbp">Livre sterling GBP (£)</string>
+    <string name="currency_twd">Dollar taïwanais TWD (NT$)</string>
+    <string name="currency_krw">Won sud-coréen KRW (₩)</string>
+    <string name="currency_sgd">Dollar singapourien SGD (S$)</string>
+    <string name="feedback_settings_title">Retour haptique et sonore</string>
+    <string name="feedback_settings_desc">Vibration tactile et son discret lors des actions clés</string>
+    <string name="bank_group_limit_summary">Plafond combiné : %1$s</string>
+    <string name="available_credit_label">Disponible : %1$s</string>
+    <string name="utilization_pct_label">%1$d%% utilisé</string>
 </resources>

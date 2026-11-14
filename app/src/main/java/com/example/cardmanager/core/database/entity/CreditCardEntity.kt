@@ -54,7 +54,10 @@ data class CreditCardEntity(
     val annualFeeWaiverCount: Int = 0,
 
     @ColumnInfo(name = "initial_waiver_swipes", defaultValue = "0")
-    val initialWaiverSwipes: Int = 0
+    val initialWaiverSwipes: Int = 0,
+
+    @ColumnInfo(name = "currency_code", defaultValue = "'CNY'")
+    val currencyCode: String = com.example.cardmanager.core.currency.AppCurrency.CNY.code
 ) {
     init {
         require(billDay in 1..31) { "账单日必须在1到31日之间" }

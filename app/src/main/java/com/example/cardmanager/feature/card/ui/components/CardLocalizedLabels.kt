@@ -3,6 +3,7 @@ package com.example.cardmanager.feature.card.ui.components
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.example.cardmanager.R
+import com.example.cardmanager.core.currency.AppCurrency
 import com.example.cardmanager.core.database.entity.CardNetwork
 import com.example.cardmanager.core.database.entity.CardStylePreset
 
@@ -28,4 +29,17 @@ fun CardStylePreset.localizedName(): String = when (this) {
     CardStylePreset.AURORA_VIOLET -> stringResource(R.string.card_style_aurora_violet)
     CardStylePreset.DEEP_OCEAN -> stringResource(R.string.card_style_deep_ocean)
     CardStylePreset.OBSIDIAN_TITANIUM -> stringResource(R.string.card_style_obsidian_titanium)
+}
+
+@Composable
+fun AppCurrency.localizedName(): String = when (this) {
+    AppCurrency.CNY -> stringResource(R.string.currency_cny)
+    AppCurrency.USD -> stringResource(R.string.currency_usd)
+    AppCurrency.HKD -> stringResource(R.string.currency_hkd)
+    AppCurrency.EUR -> stringResource(R.string.currency_eur)
+    AppCurrency.JPY -> stringResource(R.string.currency_jpy)
+    AppCurrency.GBP -> stringResource(R.string.currency_gbp)
+    AppCurrency.TWD -> stringResource(R.string.currency_twd)
+    AppCurrency.KRW -> stringResource(R.string.currency_krw)
+    AppCurrency.SGD -> stringResource(R.string.currency_sgd)
 }

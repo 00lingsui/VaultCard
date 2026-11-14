@@ -51,15 +51,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.example.cardmanager.R
+import com.example.cardmanager.core.currency.AppCurrency
 import com.example.cardmanager.core.database.entity.CardNetwork
 import com.example.cardmanager.core.database.entity.CardStylePreset
 import com.example.cardmanager.core.database.entity.CreditCardEntity
 import com.example.cardmanager.core.database.entity.detectCardNetwork
+import com.example.cardmanager.core.feedback.FeedbackManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -97,6 +100,7 @@ fun CardDetailContent(
     modifier: Modifier = Modifier,
     onClose: (() -> Unit)? = null
 ) {
+    val view = LocalView.current
     var bankName by remember(card) { mutableStateOf(card.bankName) }
     var cardAlias by remember(card) { mutableStateOf(card.cardAlias) }
     var cardNumberInput by remember(card) { mutableStateOf(card.last4Digits) }
@@ -107,6 +111,7 @@ fun CardDetailContent(
         mutableStateOf(CardStylePreset.resolve(card.cardStyle, card.cardColorHex))
     }
     var selectedNetwork by remember(card) { mutableStateOf(card.cardNetwork) }
+    var selectedCurrency by remember(card) { mutableStateOf(AppCurrency.fromCode(card.currencyCode)) }
     var hasManuallySelectedNetwork by remember(card) {
         mutableStateOf(card.cardNetwork != CardNetwork.OTHER)
     }
@@ -134,7 +139,10 @@ fun CardDetailContent(
         ) {
             Text("卡片详情与管理", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
             Row {
-                IconButton(onClick = { showDeleteConfirm = true }) {
+                IconButton(onClick = {
+                    FeedbackManager.performClick(view)
+                    showDeleteConfirm = true
+                }) {
                     Icon(Icons.Default.Delete, contentDescription = "删除", tint = MaterialTheme.colorScheme.error)
                 }
                 if (onClose != null) {
@@ -152,7 +160,8 @@ fun CardDetailContent(
             creditLimit = creditLimit.toDoubleOrNull() ?: card.creditLimit,
             repaymentDay = repaymentDay.toIntOrNull()?.coerceIn(1, 31) ?: card.repaymentDay,
             stylePreset = selectedStyle,
-            network = selectedNetwork
+            network = selectedNetwork,
+            currency = selectedCurrency
         )
 
         OutlinedTextField(
@@ -192,11 +201,28 @@ fun CardDetailContent(
             OutlinedTextField(
                 value = creditLimit,
                 onValueChange = { creditLimit = it },
-                label = { Text("信用额度 (元)") },
+                label = { Text("信用额度 (${selectedCurrency.code} ${selectedCurrency.symbol})") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 singleLine = true,
                 modifier = Modifier.weight(1.4f)
             )
+        }
+
+        Text(stringResource(R.string.card_currency_selector_title), style = MaterialTheme.typography.labelMedium)
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(AppCurrency.entries) { currency ->
+                FilterChip(
+                    selected = selectedCurrency == currency,
+                    onClick = {
+                        FeedbackManager.performClick(view)
+                        selectedCurrency = currency
+                    },
+                    label = { Text("${currency.code} (${currency.symbol})") }
+                )
+            }
         }
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -227,6 +253,7 @@ fun CardDetailContent(
                 FilterChip(
                     selected = selectedNetwork == network,
                     onClick = {
+                        FeedbackManager.performClick(view)
                         selectedNetwork = network
                         hasManuallySelectedNetwork = true
                     },
@@ -246,7 +273,10 @@ fun CardDetailContent(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
-                        .clickable { selectedStyle = preset }
+                        .clickable {
+                            FeedbackManager.performClick(view)
+                            selectedStyle = preset
+                        }
                         .padding(horizontal = 4.dp, vertical = 2.dp)
                 ) {
                     Box(
@@ -288,7 +318,7 @@ fun CardDetailContent(
         } else {
             0
         }
-        val feeAmtDisplay = if (previewFeeAmt % 1.0 == 0.0) previewFeeAmt.toInt().toString() else previewFeeAmt.toString()
+        val feeAmtDisplay = selectedCurrency.format(previewFeeAmt, trimWholeDecimals = true)
         val annualFeeSummary = when {
             !hasAnnualFee -> stringResource(R.string.annual_fee_free_summary)
             previewWaiver > 0 -> stringResource(R.string.annual_fee_waivable_summary, feeAmtDisplay, previewWaiver)
@@ -407,7 +437,13 @@ fun CardDetailContent(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            Switch(checked = hasAnnualFee, onCheckedChange = { hasAnnualFee = it })
+            Switch(
+                checked = hasAnnualFee,
+                onCheckedChange = {
+                    FeedbackManager.performToggle(view)
+                    hasAnnualFee = it
+                }
+            )
         }
 
         if (hasAnnualFee) {
@@ -445,7 +481,10 @@ fun CardDetailContent(
         }
 
         OutlinedButton(
-            onClick = onSetAlarm,
+            onClick = {
+                FeedbackManager.performClick(view)
+                onSetAlarm()
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Icon(Icons.Default.Alarm, contentDescription = null, modifier = Modifier.size(18.dp))
@@ -455,6 +494,7 @@ fun CardDetailContent(
 
         Button(
             onClick = {
+                FeedbackManager.performConfirm(view)
                 val limit = (creditLimit.toDoubleOrNull() ?: card.creditLimit).coerceAtLeast(0.0)
                 val bDay = billDay.toIntOrNull()?.coerceIn(1, 31) ?: card.billDay
                 val rDay = repaymentDay.toIntOrNull()?.coerceIn(1, 31) ?: card.repaymentDay
@@ -476,7 +516,8 @@ fun CardDetailContent(
                         hasAnnualFee = hasAnnualFee,
                         annualFeeAmount = feeAmt,
                         annualFeeWaiverCount = waiverCount,
-                        initialWaiverSwipes = initialSwipes
+                        initialWaiverSwipes = initialSwipes,
+                        currencyCode = selectedCurrency.code
                     )
                 )
             },
@@ -496,6 +537,7 @@ fun CardDetailContent(
             confirmButton = {
                 TextButton(
                     onClick = {
+                        FeedbackManager.performDestructive(view)
                         showDeleteConfirm = false
                         onDelete(card.id)
                     }

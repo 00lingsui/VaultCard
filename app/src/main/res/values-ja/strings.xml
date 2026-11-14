@@ -42,8 +42,8 @@
     <string name="annual_fee_policy_label">年会費ポリシー</string>
     <string name="annual_fee_waiver_req_label">免除条件</string>
     <string name="annual_fee_free_badge">年会費無料</string>
-    <string name="annual_fee_rigid_summary">固定年会費：¥%1$s/年 · 免除不可</string>
-    <string name="annual_fee_waivable_summary">年会費：¥%1$s/年 · %2$d回利用で免除</string>
+    <string name="annual_fee_rigid_summary">固定年会費：%1$s/年 · 免除不可</string>
+    <string name="annual_fee_waivable_summary">年会費：%1$s/年 · %2$d回利用で免除</string>
     <string name="annual_fee_free_summary">年会費無料 · 利用回数条件なし</string>
 
     <!-- Card Networks -->
@@ -72,8 +72,27 @@
     <string name="initial_waiver_swipes_label">決済済み回数 / 初期回数</string>
     <string name="initial_waiver_swipes_hint">アプリ利用前の今年の回数</string>
     <string name="waiver_progress_title">年会費免除の進捗</string>
-    <string name="waiver_progress_remaining">決済 %1$d / %2$d 回（残り %3$d 回で ¥%4$s 免除）</string>
+    <string name="waiver_progress_remaining">決済 %1$d / %2$d 回（残り %3$d 回で %4$s 免除）</string>
     <string name="waiver_progress_completed">✓ 年会費免除達成（今年 %1$d 回利用）</string>
     <string name="waiver_badge_remaining">免除まであと %1$d 回</string>
     <string name="waiver_badge_completed">✓ 免除達成</string>
+
+    <!-- Currency & Feedback & Bank Grouping -->
+    <string name="card_currency_selector_title">カードの通貨</string>
+    <string name="default_currency_settings">デフォルト表示通貨</string>
+    <string name="currency_selector_title">通貨を選択</string>
+    <string name="currency_cny">人民元 CNY (¥)</string>
+    <string name="currency_usd">米ドル USD ($)</string>
+    <string name="currency_hkd">香港ドル HKD (HK$)</string>
+    <string name="currency_eur">ユーロ EUR (€)</string>
+    <string name="currency_jpy">日本円 JPY (¥)</string>
+    <string name="currency_gbp">英ポンド GBP (£)</string>
+    <string name="currency_twd">台湾ドル TWD (NT$)</string>
+    <string name="currency_krw">韓国ウォン KRW (₩)</string>
+    <string name="currency_sgd">シンガポールドル SGD (S$)</string>
+    <string name="feedback_settings_title">触覚振動・効果音フィードバック</string>
+    <string name="feedback_settings_desc">削除やトグル切替などの主要操作時に振動とクリック音を再生</string>
+    <string name="bank_group_limit_summary">合算限度額 %1$s</string>
+    <string name="available_credit_label">利用可能額: %1$s</string>
+    <string name="utilization_pct_label">%1$d%% 使用済み</string>
 </resources>

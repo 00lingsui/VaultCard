@@ -19,16 +19,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.example.cardmanager.core.currency.AppCurrency
+import com.example.cardmanager.core.feedback.FeedbackManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddTransactionDialog(
     cardId: Long,
     onDismiss: () -> Unit,
-    onConfirm: (amount: Double, category: String, note: String) -> Unit
+    onConfirm: (amount: Double, category: String, note: String) -> Unit,
+    currency: AppCurrency = AppCurrency.CNY
 ) {
+    val view = LocalView.current
     var amount by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf("餐饮美食") }
     var note by remember { mutableStateOf("") }
@@ -47,7 +52,7 @@ fun AddTransactionDialog(
                 OutlinedTextField(
                     value = amount,
                     onValueChange = { amount = it },
-                    label = { Text("消费金额 (元)") },
+                    label = { Text("消费金额 (${currency.code} ${currency.symbol})") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -73,6 +78,7 @@ fun AddTransactionDialog(
                             DropdownMenuItem(
                                 text = { Text(cat) },
                                 onClick = {
+                                    FeedbackManager.performClick(view)
                                     selectedCategory = cat
                                     categoryExpanded = false
                                 }
@@ -95,6 +101,7 @@ fun AddTransactionDialog(
                 onClick = {
                     val parsed = amount.toDoubleOrNull()
                     if (parsed != null && parsed > 0.0) {
+                        FeedbackManager.performConfirm(view)
                         onConfirm(parsed, selectedCategory, note.trim())
                     }
                 }
