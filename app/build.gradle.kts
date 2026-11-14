@@ -106,6 +106,10 @@ android {
     }
 }
 
+base {
+    archivesName.set("VaultCard-v${android.defaultConfig.versionName}-arm64-v8a")
+}
+
 dependencies {
     // AndroidX & Lifecycle
     implementation("androidx.core:core-ktx:1.13.1")
