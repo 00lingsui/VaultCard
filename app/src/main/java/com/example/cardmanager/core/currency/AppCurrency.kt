@@ -21,7 +21,18 @@ enum class AppCurrency(
     GBP("GBP", "£", 2),
     TWD("TWD", "NT$", 0),
     KRW("KRW", "₩", 0),
-    SGD("SGD", "S$", 2);
+    SGD("SGD", "S$", 2),
+    AUD("AUD", "A$", 2),
+    CAD("CAD", "C$", 2),
+    CHF("CHF", "CHF", 2),
+    NZD("NZD", "NZ$", 2),
+    SEK("SEK", "kr", 2),
+    THB("THB", "฿", 2),
+    MYR("MYR", "RM", 2),
+    INR("INR", "₹", 2),
+    BRL("BRL", "R$", 2),
+    AED("AED", "AED", 2),
+    RUB("RUB", "₽", 2);
 
     fun format(amount: Double, trimWholeDecimals: Boolean = false): String {
         val safeAmount = if (amount.isNaN() || amount.isInfinite()) 0.0 else amount
@@ -31,7 +42,8 @@ enum class AppCurrency(
         val pattern = if (useDecimals) "#,##0.00" else "#,##0"
         val formatter = DecimalFormat(pattern, DecimalFormatSymbols(Locale.US))
         val formatted = formatter.format(absValue)
-        return if (isNegative) "-$symbol$formatted" else "$symbol$formatted"
+        val displayPrefix = if (symbol.last().isLetter()) "$symbol " else symbol
+        return if (isNegative) "-$displayPrefix$formatted" else "$displayPrefix$formatted"
     }
 
     companion object {

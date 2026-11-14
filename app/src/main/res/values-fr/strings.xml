@@ -90,6 +90,17 @@
     <string name="currency_twd">Dollar taïwanais TWD (NT$)</string>
     <string name="currency_krw">Won sud-coréen KRW (₩)</string>
     <string name="currency_sgd">Dollar singapourien SGD (S$)</string>
+    <string name="currency_aud">Dollar australien AUD (A$)</string>
+    <string name="currency_cad">Dollar canadien CAD (C$)</string>
+    <string name="currency_chf">Franc suisse CHF (CHF)</string>
+    <string name="currency_nzd">Dollar néo-zélandais NZD (NZ$)</string>
+    <string name="currency_sek">Couronne suédoise SEK (kr)</string>
+    <string name="currency_thb">Baht thaïlandais THB (฿)</string>
+    <string name="currency_myr">Ringgit malaisien MYR (RM)</string>
+    <string name="currency_inr">Roupie indienne INR (₹)</string>
+    <string name="currency_brl">Réal brésilien BRL (R$)</string>
+    <string name="currency_aed">Dirham des ÉAU AED (AED)</string>
+    <string name="currency_rub">Rouble russe RUB (₽)</string>
     <string name="feedback_settings_title">Retour haptique et sonore</string>
     <string name="feedback_settings_desc">Vibration tactile et son discret lors des actions clés</string>
     <string name="bank_group_limit_summary">Plafond combiné : %1$s</string>

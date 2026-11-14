@@ -1,0 +1,110 @@
+<resources>
+    <string name="app_name">VaultCard</string>
+    <string name="portfolio_overview">نظرة عامة على المحفظة</string>
+    <string name="total_credit_limit">إجمالي الحد الائتماني</string>
+    <string name="total_outstanding">إجمالي المبالغ المستحقة</string>
+    <string name="cards_count">%1$d بطاقات</string>
+    <string name="no_cards_title">لا توجد بطاقات مضافة بعد</string>
+    <string name="no_cards_subtitle">اضغط على زر + أدناه لإضافة بطاقتك الائتمانية الأولى وتفعيل تنبيهات السداد.</string>
+    <string name="add_card">إضافة بطاقة ائتمان</string>
+    <string name="settings">الإعدادات</string>
+    <string name="theme_and_style">تخصيص المظهر والنمط</string>
+    <string name="ui_style">نمط تصميم الواجهة</string>
+    <string name="style_miuix">MIUIX (HyperOS)</string>
+    <string name="style_material3">Material 3</string>
+    <string name="theme_mode">وضع المظهر</string>
+    <string name="mode_system">افتراضي النظام</string>
+    <string name="mode_light">الوضع الفاتح</string>
+    <string name="mode_dark">الوضع الداكن</string>
+    <string name="theme_palette">لوحة الألوان</string>
+    <string name="language_settings">اللغة / Language</string>
+    <string name="language_system">افتراضي النظام</string>
+    <string name="language_zh_cn">الصينية المبسطة (简体中文)</string>
+    <string name="language_zh_tw">الصينية التقليدية (繁體中文)</string>
+    <string name="language_en">English</string>
+    <string name="locked_title">VaultCard مقفل</string>
+    <string name="locked_subtitle">مطلوب التحقق البيومتري للوصول إلى البطاقات</string>
+    <string name="unlock_button">فتح القفل بالبصمة</string>
+    <string name="update_available_title">يتوفر إصدار جديد v%1$s</string>
+    <string name="update_available_desc">يتوفر تحديث جديد لتطبيق VaultCard على GitHub.</string>
+    <string name="download_update">تنزيل التحديث</string>
+    <string name="later">لاحقاً</string>
+    <string name="back">رجوع</string>
+
+    <!-- Annual Fee -->
+    <string name="annual_fee_section_title">إعدادات الرسوم السنوية</string>
+    <string name="annual_fee_toggle_title">البطاقة لها رسوم سنوية</string>
+    <string name="annual_fee_enabled_desc">تفعيل تتبع الرسوم السنوية وشروط الإعفاء</string>
+    <string name="annual_fee_free_desc">بطاقة بدون رسوم سنوية</string>
+    <string name="annual_fee_amount_label">الرسوم السنوية (سنوياً)</string>
+    <string name="annual_fee_waiver_count_label">عدد العمليات للإعفاء</string>
+    <string name="annual_fee_waiver_hint">0 = غير قابلة للإعفاء</string>
+    <string name="annual_fee_policy_label">سياسة الرسوم السنوية</string>
+    <string name="annual_fee_waiver_req_label">شرط الإعفاء</string>
+    <string name="annual_fee_free_badge">مجانية</string>
+    <string name="annual_fee_rigid_summary">رسوم ثابتة: %1$s/سنة · غير قابلة للإعفاء</string>
+    <string name="annual_fee_waivable_summary">الرسوم: %1$s/سنة · تُعفى بعد %2$d عملية</string>
+    <string name="annual_fee_free_summary">بدون رسوم سنوية · دون شروط</string>
+
+    <!-- Card Networks -->
+    <string name="card_network_selector_title">شبكة البطاقة / ثنائية</string>
+    <string name="network_unionpay">UnionPay</string>
+    <string name="network_visa">VISA</string>
+    <string name="network_mastercard">Mastercard</string>
+    <string name="network_amex">American Express</string>
+    <string name="network_jcb">JCB</string>
+    <string name="network_unionpay_visa">UnionPay + VISA</string>
+    <string name="network_unionpay_mastercard">UnionPay + Mastercard</string>
+    <string name="network_other">أخرى</string>
+
+    <!-- Card Surface Presets -->
+    <string name="card_style_selector_title">تصميم سطح البطاقة</string>
+    <string name="card_style_pearl_white">أبيض لؤلؤي</string>
+    <string name="card_style_glacier_mist">ضباب جليدي</string>
+    <string name="card_style_sakura_blush">وردي ساكورا</string>
+    <string name="card_style_mint_breeze">نسيم النعناع</string>
+    <string name="card_style_champagne_gold">ذهبي شامبانيا</string>
+    <string name="card_style_aurora_violet">بنفسجي الشفق</string>
+    <string name="card_style_deep_ocean">أعماق المحيط</string>
+    <string name="card_style_obsidian_titanium">تيتانيوم داكن</string>
+
+    <!-- Annual Fee Waiver Progress -->
+    <string name="initial_waiver_swipes_label">العمليات المكتملة مسبقاً</string>
+    <string name="initial_waiver_swipes_hint">العمليات قبل استخدام التطبيق</string>
+    <string name="waiver_progress_title">تقدم الإعفاء من الرسوم السنوية</string>
+    <string name="waiver_progress_remaining">تم تنفيذ %1$d / %2$d (متبقي %3$d لإعفاء %4$s)</string>
+    <string name="waiver_progress_completed">✓ تم الإعفاء (%1$d عملية هذا العام)</string>
+    <string name="waiver_badge_remaining">متبقي %1$d عملية</string>
+    <string name="waiver_badge_completed">✓ معفاة</string>
+
+    <!-- Currency & Feedback & Bank Grouping -->
+    <string name="card_currency_selector_title">عملة البطاقة</string>
+    <string name="default_currency_settings">عملة العرض الافتراضية</string>
+    <string name="currency_selector_title">اختر العملة</string>
+    <string name="currency_cny">اليوان الصيني CNY (¥)</string>
+    <string name="currency_usd">الدولار الأمريكي USD ($)</string>
+    <string name="currency_hkd">دولار هونغ كونغ HKD (HK$)</string>
+    <string name="currency_eur">اليورو EUR (€)</string>
+    <string name="currency_jpy">الين الياباني JPY (¥)</string>
+    <string name="currency_gbp">الجنيه الإسترليني GBP (£)</string>
+    <string name="currency_twd">الدولار التايواني TWD (NT$)</string>
+    <string name="currency_krw">الوون الكوري KRW (₩)</string>
+    <string name="currency_sgd">الدولار السنغافوري SGD (S$)</string>
+    <string name="currency_aud">الدولار الأسترالي AUD (A$)</string>
+    <string name="currency_cad">الدولار الكندي CAD (C$)</string>
+    <string name="currency_chf">الفرنك السويسري CHF (CHF)</string>
+    <string name="currency_nzd">الدولار النيوزيلندي NZD (NZ$)</string>
+    <string name="currency_sek">الكرونة السويدية SEK (kr)</string>
+    <string name="currency_thb">البات التايلاندي THB (฿)</string>
+    <string name="currency_myr">الرينغيت الماليزي MYR (RM)</string>
+    <string name="currency_inr">الروبية الهندية INR (₹)</string>
+    <string name="currency_brl">الريال البرازيلي BRL (R$)</string>
+    <string name="currency_aed">الدرهم الإماراتي AED (AED)</string>
+    <string name="currency_rub">الروبل الروسي RUB (₽)</string>
+    <string name="feedback_settings_title">الاهتزاز والصوت التفاعلي</string>
+    <string name="feedback_settings_desc">اهتزاز لمسي وصوت نقر لطيف عند الإجراءات الرئيسية</string>
+    <string name="bank_group_limit_summary">الحد المجمع: %1$s</string>
+    <string name="available_credit_label">المتاح: %1$s</string>
+    <string name="utilization_pct_label">مستخدم %1$d%%</string>
+    <string name="card_available_micro_label">المتاح</string>
+</resources>

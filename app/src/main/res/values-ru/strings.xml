@@ -1,0 +1,110 @@
+<resources>
+    <string name="app_name">VaultCard</string>
+    <string name="portfolio_overview">ОБЗОР ПОРТФЕЛЯ</string>
+    <string name="total_credit_limit">Общий кредитный лимит</string>
+    <string name="total_outstanding">Общая задолженность</string>
+    <string name="cards_count">%1$d карт(ы)</string>
+    <string name="no_cards_title">Карты ещё не добавлены</string>
+    <string name="no_cards_subtitle">Нажмите кнопку + ниже, чтобы добавить первую кредитную карту и включить напоминания.</string>
+    <string name="add_card">Добавить карту</string>
+    <string name="settings">Настройки</string>
+    <string name="theme_and_style">Тема и оформление</string>
+    <string name="ui_style">Стиль интерфейса</string>
+    <string name="style_miuix">MIUIX (HyperOS)</string>
+    <string name="style_material3">Material 3</string>
+    <string name="theme_mode">Тема оформления</string>
+    <string name="mode_system">Как в системе</string>
+    <string name="mode_light">Светлая тема</string>
+    <string name="mode_dark">Тёмная тема</string>
+    <string name="theme_palette">Цветовая палитра</string>
+    <string name="language_settings">Язык / Language</string>
+    <string name="language_system">Как в системе</string>
+    <string name="language_zh_cn">Китайский упрощённый (简体中文)</string>
+    <string name="language_zh_tw">Китайский традиционный (繁體中文)</string>
+    <string name="language_en">English</string>
+    <string name="locked_title">VaultCard заблокирован</string>
+    <string name="locked_subtitle">Требуется биометрическая аутентификация для доступа к картам</string>
+    <string name="unlock_button">Разблокировать по биометрии</string>
+    <string name="update_available_title">Доступна новая версия v%1$s</string>
+    <string name="update_available_desc">На GitHub опубликовано новое обновление VaultCard.</string>
+    <string name="download_update">Скачать обновление</string>
+    <string name="later">Позже</string>
+    <string name="back">Назад</string>
+
+    <!-- Annual Fee -->
+    <string name="annual_fee_section_title">Настройки годового обслуживания</string>
+    <string name="annual_fee_toggle_title">Карта с годовым обслуживанием</string>
+    <string name="annual_fee_enabled_desc">Отслеживание платы и условий бесплатности активно</string>
+    <string name="annual_fee_free_desc">Без годового обслуживания</string>
+    <string name="annual_fee_amount_label">Годовая плата (в год)</string>
+    <string name="annual_fee_waiver_count_label">Операций для отмены платы</string>
+    <string name="annual_fee_waiver_hint">0 = Без отмены</string>
+    <string name="annual_fee_policy_label">Условия обслуживания</string>
+    <string name="annual_fee_waiver_req_label">Условие отмены платы</string>
+    <string name="annual_fee_free_badge">Бесплатно</string>
+    <string name="annual_fee_rigid_summary">Фикс. плата: %1$s/год · Без отмены</string>
+    <string name="annual_fee_waivable_summary">Плата: %1$s/год · Бесплатно после %2$d покупок</string>
+    <string name="annual_fee_free_summary">Без годовой платы · Без условий</string>
+
+    <!-- Card Networks -->
+    <string name="card_network_selector_title">Платёжная система</string>
+    <string name="network_unionpay">UnionPay</string>
+    <string name="network_visa">VISA</string>
+    <string name="network_mastercard">Mastercard</string>
+    <string name="network_amex">American Express</string>
+    <string name="network_jcb">JCB</string>
+    <string name="network_unionpay_visa">UnionPay + VISA</string>
+    <string name="network_unionpay_mastercard">UnionPay + Mastercard</string>
+    <string name="network_other">Другая</string>
+
+    <!-- Card Surface Presets -->
+    <string name="card_style_selector_title">Дизайн карты</string>
+    <string name="card_style_pearl_white">Жемчужно-белый</string>
+    <string name="card_style_glacier_mist">Ледниковый туман</string>
+    <string name="card_style_sakura_blush">Нежная сакура</string>
+    <string name="card_style_mint_breeze">Мятный бриз</string>
+    <string name="card_style_champagne_gold">Золото шампань</string>
+    <string name="card_style_aurora_violet">Фиолетовая аврора</string>
+    <string name="card_style_deep_ocean">Глубокий океан</string>
+    <string name="card_style_obsidian_titanium">Обсидиановый титан</string>
+
+    <!-- Annual Fee Waiver Progress -->
+    <string name="initial_waiver_swipes_label">Совершено операций ранее</string>
+    <string name="initial_waiver_swipes_hint">Покупки до начала использования</string>
+    <string name="waiver_progress_title">Прогресс бесплатного обслуживания</string>
+    <string name="waiver_progress_remaining">Операций: %1$d / %2$d (осталось %3$d для отмены %4$s)</string>
+    <string name="waiver_progress_completed">✓ Обслуживание бесплатно (%1$d покупок в этом году)</string>
+    <string name="waiver_badge_remaining">Осталось %1$d оп.</string>
+    <string name="waiver_badge_completed">✓ Бесплатно</string>
+
+    <!-- Currency & Feedback & Bank Grouping -->
+    <string name="card_currency_selector_title">Валюта карты</string>
+    <string name="default_currency_settings">Основная валюта</string>
+    <string name="currency_selector_title">Выбрать валюту</string>
+    <string name="currency_cny">Китайский юань CNY (¥)</string>
+    <string name="currency_usd">Доллар США USD ($)</string>
+    <string name="currency_hkd">Гонконгский доллар HKD (HK$)</string>
+    <string name="currency_eur">Евро EUR (€)</string>
+    <string name="currency_jpy">Японская иена JPY (¥)</string>
+    <string name="currency_gbp">Фунт стерлингов GBP (£)</string>
+    <string name="currency_twd">Тайваньский доллар TWD (NT$)</string>
+    <string name="currency_krw">Южнокорейская вона KRW (₩)</string>
+    <string name="currency_sgd">Сингапурский доллар SGD (S$)</string>
+    <string name="currency_aud">Австралийский доллар AUD (A$)</string>
+    <string name="currency_cad">Канадский доллар CAD (C$)</string>
+    <string name="currency_chf">Швейцарский франк CHF (CHF)</string>
+    <string name="currency_nzd">Новозеландский доллар NZD (NZ$)</string>
+    <string name="currency_sek">Шведская крона SEK (kr)</string>
+    <string name="currency_thb">Тайский бат THB (฿)</string>
+    <string name="currency_myr">Малайзийский ринггит MYR (RM)</string>
+    <string name="currency_inr">Индийская рупия INR (₹)</string>
+    <string name="currency_brl">Бразильский реал BRL (R$)</string>
+    <string name="currency_aed">Дирхам ОАЭ AED (AED)</string>
+    <string name="currency_rub">Российский рубль RUB (₽)</string>
+    <string name="feedback_settings_title">Вибрация и звук</string>
+    <string name="feedback_settings_desc">Тактильный отклик и чёткий звук при ключевых действиях</string>
+    <string name="bank_group_limit_summary">Общий лимит: %1$s</string>
+    <string name="available_credit_label">Доступно: %1$s</string>
+    <string name="utilization_pct_label">Использовано %1$d%%</string>
+    <string name="card_available_micro_label">ДОСТУПНО</string>
+</resources>

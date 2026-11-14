@@ -1,7 +1,7 @@
 package com.example.cardmanager.feature.card.ui.components
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
@@ -52,7 +52,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -152,29 +151,25 @@ fun CreditCardItem(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .scale(scale)
-            .shadow(
-                elevation = elevation,
-                shape = cardShape,
-                clip = false,
-                ambientColor = stylePreset.ambientShadowColor,
-                spotColor = stylePreset.ambientShadowColor
-            )
-            .animateContentSize(animationSpec = spring(dampingRatio = 0.8f, stiffness = 300f))
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                onClick = {
-                    FeedbackManager.performClick(view)
-                    expanded = !expanded
-                }
-            ),
+            .scale(scale),
         shape = cardShape,
-        color = Color.Transparent,
-        shadowElevation = 0.dp,
+        color = stylePreset.gradientColors.last(),
+        shadowElevation = elevation,
         border = specularBorder
     ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(cardShape)
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null,
+                    onClick = {
+                        FeedbackManager.performClick(view)
+                        expanded = !expanded
+                    }
+                )
+        ) {
             LuxuryCardSurfaceLayer(
                 stylePreset = stylePreset,
                 modifier = Modifier.matchParentSize()
@@ -370,15 +365,30 @@ fun CreditCardItem(
                     }
                 }
 
-                // Spring-Animated Expanded Details Section
+                // Spring-Animated Expanded Details Section (single unified container extension)
+                val drawerAnimSpec = spring<androidx.compose.ui.unit.IntSize>(
+                    stiffness = Spring.StiffnessMediumLow,
+                    dampingRatio = Spring.DampingRatioNoBouncy
+                )
+                val fadeAnimSpec = spring<Float>(
+                    stiffness = Spring.StiffnessMediumLow,
+                    dampingRatio = Spring.DampingRatioNoBouncy
+                )
                 AnimatedVisibility(
                     visible = expanded,
-                    enter = fadeIn(spring(dampingRatio = 0.8f)) + expandVertically(spring(dampingRatio = 0.8f, stiffness = 300f)),
-                    exit = fadeOut() + shrinkVertically(spring(dampingRatio = 0.8f, stiffness = 300f))
+                    enter = expandVertically(animationSpec = drawerAnimSpec) + fadeIn(animationSpec = fadeAnimSpec),
+                    exit = shrinkVertically(animationSpec = drawerAnimSpec) + fadeOut(animationSpec = fadeAnimSpec)
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .background(
+                                if (isLightSurface) {
+                                    Color.White.copy(alpha = 0.24f)
+                                } else {
+                                    Color.Black.copy(alpha = 0.16f)
+                                }
+                            )
                             .padding(start = 20.dp, end = 20.dp, bottom = 18.dp)
                     ) {
                         HorizontalDivider(
@@ -560,18 +570,10 @@ fun CardPreviewBanner(
     val cardShape = remember { RoundedCornerShape(20.dp) }
 
     Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .shadow(
-                elevation = 6.dp,
-                shape = cardShape,
-                clip = false,
-                ambientColor = stylePreset.ambientShadowColor,
-                spotColor = stylePreset.ambientShadowColor
-            ),
+        modifier = modifier.fillMaxWidth(),
         shape = cardShape,
-        color = Color.Transparent,
-        shadowElevation = 0.dp,
+        color = stylePreset.gradientColors.last(),
+        shadowElevation = 6.dp,
         border = BorderStroke(
             width = 1.dp,
             brush = Brush.linearGradient(
@@ -585,6 +587,7 @@ fun CardPreviewBanner(
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(PHYSICAL_CARD_ASPECT_RATIO)
+                .clip(cardShape)
         ) {
             LuxuryCardSurfaceLayer(
                 stylePreset = stylePreset,

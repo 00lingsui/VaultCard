@@ -90,6 +90,17 @@
     <string name="currency_twd">TWD (NT$) · New Taiwan Dollar</string>
     <string name="currency_krw">KRW (₩) · South Korean Won</string>
     <string name="currency_sgd">SGD (S$) · Singapore Dollar</string>
+    <string name="currency_aud">AUD (A$) · Australian Dollar</string>
+    <string name="currency_cad">CAD (C$) · Canadian Dollar</string>
+    <string name="currency_chf">CHF (CHF) · Swiss Franc</string>
+    <string name="currency_nzd">NZD (NZ$) · New Zealand Dollar</string>
+    <string name="currency_sek">SEK (kr) · Swedish Krona</string>
+    <string name="currency_thb">THB (฿) · Thai Baht</string>
+    <string name="currency_myr">MYR (RM) · Malaysian Ringgit</string>
+    <string name="currency_inr">INR (₹) · Indian Rupee</string>
+    <string name="currency_brl">BRL (R$) · Brazilian Real</string>
+    <string name="currency_aed">AED (AED) · UAE Dirham</string>
+    <string name="currency_rub">RUB (₽) · Russian Ruble</string>
     <string name="feedback_settings_title">Haptic &amp; Sound Feedback</string>
     <string name="feedback_settings_desc">Tactile vibration and crisp click sound on key actions</string>
     <string name="bank_group_limit_summary">Combined Limit: %1$s</string>

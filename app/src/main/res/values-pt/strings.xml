@@ -1,0 +1,110 @@
+<resources>
+    <string name="app_name">VaultCard</string>
+    <string name="portfolio_overview">RESUMO DA CARTEIRA</string>
+    <string name="total_credit_limit">Limite de Crédito Total</string>
+    <string name="total_outstanding">Total em Aberto</string>
+    <string name="cards_count">%1$d Cartões</string>
+    <string name="no_cards_title">Nenhum cartão adicionado</string>
+    <string name="no_cards_subtitle">Toque no botão + abaixo para registrar seu primeiro cartão de crédito e acompanhar faturas.</string>
+    <string name="add_card">Adicionar Cartão</string>
+    <string name="settings">Configurações</string>
+    <string name="theme_and_style">Tema e Estilo</string>
+    <string name="ui_style">Estilo da Interface</string>
+    <string name="style_miuix">MIUIX (HyperOS)</string>
+    <string name="style_material3">Material 3</string>
+    <string name="theme_mode">Aparência do Tema</string>
+    <string name="mode_system">Padrão do Sistema</string>
+    <string name="mode_light">Modo Claro</string>
+    <string name="mode_dark">Modo Escuro</string>
+    <string name="theme_palette">Paleta de Cores</string>
+    <string name="language_settings">Idioma / Language</string>
+    <string name="language_system">Padrão do Sistema</string>
+    <string name="language_zh_cn">Chinês Simplificado (简体中文)</string>
+    <string name="language_zh_tw">Chinês Tradicional (繁體中文)</string>
+    <string name="language_en">English</string>
+    <string name="locked_title">VaultCard Bloqueado</string>
+    <string name="locked_subtitle">Autenticação biométrica necessária para acessar seus cartões</string>
+    <string name="unlock_button">Desbloquear com Biometria</string>
+    <string name="update_available_title">Nova versão v%1$s disponível</string>
+    <string name="update_available_desc">Uma nova atualização do VaultCard está disponível no GitHub.</string>
+    <string name="download_update">Baixar Atualização</string>
+    <string name="later">Mais tarde</string>
+    <string name="back">Voltar</string>
+
+    <!-- Annual Fee -->
+    <string name="annual_fee_section_title">Configurações de Anuidade</string>
+    <string name="annual_fee_toggle_title">Cartão possui anuidade</string>
+    <string name="annual_fee_enabled_desc">Rastreamento de anuidade e isenção ativado</string>
+    <string name="annual_fee_free_desc">Cartão livre de anuidade</string>
+    <string name="annual_fee_amount_label">Anuidade (por ano)</string>
+    <string name="annual_fee_waiver_count_label">Compras para isenção</string>
+    <string name="annual_fee_waiver_hint">0 = Não isentável</string>
+    <string name="annual_fee_policy_label">Política de Anuidade</string>
+    <string name="annual_fee_waiver_req_label">Requisito de Isenção</string>
+    <string name="annual_fee_free_badge">Sem Anuidade</string>
+    <string name="annual_fee_rigid_summary">Taxa fixa: %1$s/ano · Não isentável</string>
+    <string name="annual_fee_waivable_summary">Taxa: %1$s/ano · Isento após %2$d compras</string>
+    <string name="annual_fee_free_summary">Sem anuidade · Sem requisito de uso</string>
+
+    <!-- Card Networks -->
+    <string name="card_network_selector_title">Bandeira / Dupla Bandeira</string>
+    <string name="network_unionpay">UnionPay</string>
+    <string name="network_visa">VISA</string>
+    <string name="network_mastercard">Mastercard</string>
+    <string name="network_amex">American Express</string>
+    <string name="network_jcb">JCB</string>
+    <string name="network_unionpay_visa">UnionPay + VISA</string>
+    <string name="network_unionpay_mastercard">UnionPay + Mastercard</string>
+    <string name="network_other">Outra</string>
+
+    <!-- Card Surface Presets -->
+    <string name="card_style_selector_title">Tema do Cartão</string>
+    <string name="card_style_pearl_white">Branco Pérola</string>
+    <string name="card_style_glacier_mist">Névoa Glacial</string>
+    <string name="card_style_sakura_blush">Rosa Sakura</string>
+    <string name="card_style_mint_breeze">Brisa Menta</string>
+    <string name="card_style_champagne_gold">Ouro Champanhe</string>
+    <string name="card_style_aurora_violet">Violeta Aurora</string>
+    <string name="card_style_deep_ocean">Oceano Profundo</string>
+    <string name="card_style_obsidian_titanium">Titânio Obsidiana</string>
+
+    <!-- Annual Fee Waiver Progress -->
+    <string name="initial_waiver_swipes_label">Compras iniciais concluídas</string>
+    <string name="initial_waiver_swipes_hint">Compras antes de usar o app</string>
+    <string name="waiver_progress_title">Progresso de Isenção</string>
+    <string name="waiver_progress_remaining">%1$d / %2$d compras (faltam %3$d para isentar %4$s)</string>
+    <string name="waiver_progress_completed">✓ Anuidade isenta (%1$d compras este ano)</string>
+    <string name="waiver_badge_remaining">Faltam %1$d compra(s)</string>
+    <string name="waiver_badge_completed">✓ Isento</string>
+
+    <!-- Currency & Feedback & Bank Grouping -->
+    <string name="card_currency_selector_title">Moeda do Cartão</string>
+    <string name="default_currency_settings">Moeda Padrão</string>
+    <string name="currency_selector_title">Selecionar Moeda</string>
+    <string name="currency_cny">Yuan Chinês CNY (¥)</string>
+    <string name="currency_usd">Dólar Americano USD ($)</string>
+    <string name="currency_hkd">Dólar HK HKD (HK$)</string>
+    <string name="currency_eur">Euro EUR (€)</string>
+    <string name="currency_jpy">Iene Japonês JPY (¥)</string>
+    <string name="currency_gbp">Libra Esterlina GBP (£)</string>
+    <string name="currency_twd">Dólar Taiwanês TWD (NT$)</string>
+    <string name="currency_krw">Won Sul-Coreano KRW (₩)</string>
+    <string name="currency_sgd">Dólar de Singapura SGD (S$)</string>
+    <string name="currency_aud">Dólar Australiano AUD (A$)</string>
+    <string name="currency_cad">Dólar Canadense CAD (C$)</string>
+    <string name="currency_chf">Franco Suíço CHF (CHF)</string>
+    <string name="currency_nzd">Dólar Neozelandês NZD (NZ$)</string>
+    <string name="currency_sek">Coroa Sueca SEK (kr)</string>
+    <string name="currency_thb">Baht Tailandês THB (฿)</string>
+    <string name="currency_myr">Ringgit Malaio MYR (RM)</string>
+    <string name="currency_inr">Rupia Indiana INR (₹)</string>
+    <string name="currency_brl">Real Brasileiro BRL (R$)</string>
+    <string name="currency_aed">Dirham dos EAU AED (AED)</string>
+    <string name="currency_rub">Rublo Russo RUB (₽)</string>
+    <string name="feedback_settings_title">Feedback Tátil e Sonoro</string>
+    <string name="feedback_settings_desc">Vibração tátil e som discreto nas ações principais</string>
+    <string name="bank_group_limit_summary">Limite Combinado: %1$s</string>
+    <string name="available_credit_label">Disponível: %1$s</string>
+    <string name="utilization_pct_label">%1$d%% usado</string>
+    <string name="card_available_micro_label">DISPONÍVEL</string>
+</resources>

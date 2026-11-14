@@ -18,7 +18,12 @@ enum class AppLanguage(
     KOREAN("ko", "ko", "한국어", "한국어"),
     FRENCH("fr", "fr", "Français", "Français"),
     GERMAN("de", "de", "Deutsch", "Deutsch"),
-    SPANISH("es", "es", "Español", "Español")
+    SPANISH("es", "es", "Español", "Español"),
+    PORTUGUESE("pt", "pt", "Português", "Português"),
+    RUSSIAN("ru", "ru", "Русский", "Русский"),
+    ARABIC("ar", "ar", "العربية", "العربية"),
+    HINDI("hi", "hi", "हिन्दी", "हिन्दी"),
+    ITALIAN("it", "it", "Italiano", "Italiano")
 }
 
 object LanguageManager {

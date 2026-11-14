@@ -90,6 +90,17 @@
     <string name="currency_twd">Taiwan-Dollar TWD (NT$)</string>
     <string name="currency_krw">Südkoreanischer Won KRW (₩)</string>
     <string name="currency_sgd">Singapur-Dollar SGD (S$)</string>
+    <string name="currency_aud">Australischer Dollar AUD (A$)</string>
+    <string name="currency_cad">Kanadischer Dollar CAD (C$)</string>
+    <string name="currency_chf">Schweizer Franken CHF (CHF)</string>
+    <string name="currency_nzd">Neuseeland-Dollar NZD (NZ$)</string>
+    <string name="currency_sek">Schwedische Krone SEK (kr)</string>
+    <string name="currency_thb">Thailändischer Baht THB (฿)</string>
+    <string name="currency_myr">Malaysischer Ringgit MYR (RM)</string>
+    <string name="currency_inr">Indische Rupie INR (₹)</string>
+    <string name="currency_brl">Brasilianischer Real BRL (R$)</string>
+    <string name="currency_aed">VAE-Dirham AED (AED)</string>
+    <string name="currency_rub">Russischer Rubel RUB (₽)</string>
     <string name="feedback_settings_title">Haptik- &amp; Ton-Feedback</string>
     <string name="feedback_settings_desc">Vibration und Klickton bei wichtigen Aktionen</string>
     <string name="bank_group_limit_summary">Gesamtlimit: %1$s</string>

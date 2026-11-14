@@ -90,6 +90,17 @@
     <string name="currency_twd">台湾ドル TWD (NT$)</string>
     <string name="currency_krw">韓国ウォン KRW (₩)</string>
     <string name="currency_sgd">シンガポールドル SGD (S$)</string>
+    <string name="currency_aud">豪ドル AUD (A$)</string>
+    <string name="currency_cad">カナダドル CAD (C$)</string>
+    <string name="currency_chf">スイスフラン CHF (CHF)</string>
+    <string name="currency_nzd">NZドル NZD (NZ$)</string>
+    <string name="currency_sek">スウェーデンクローナ SEK (kr)</string>
+    <string name="currency_thb">タイバーツ THB (฿)</string>
+    <string name="currency_myr">マレーシアリンギット MYR (RM)</string>
+    <string name="currency_inr">インドルピー INR (₹)</string>
+    <string name="currency_brl">ブラジルレアル BRL (R$)</string>
+    <string name="currency_aed">UAEディルハム AED (AED)</string>
+    <string name="currency_rub">ロシアルーブル RUB (₽)</string>
     <string name="feedback_settings_title">触覚振動・効果音フィードバック</string>
     <string name="feedback_settings_desc">削除やトグル切替などの主要操作時に振動とクリック音を再生</string>
     <string name="bank_group_limit_summary">合算限度額 %1$s</string>

@@ -90,6 +90,17 @@
     <string name="currency_twd">新台幣 TWD (NT$)</string>
     <string name="currency_krw">韓元 KRW (₩)</string>
     <string name="currency_sgd">新加坡幣 SGD (S$)</string>
+    <string name="currency_aud">澳幣 AUD (A$)</string>
+    <string name="currency_cad">加幣 CAD (C$)</string>
+    <string name="currency_chf">瑞士法郎 CHF (CHF)</string>
+    <string name="currency_nzd">紐西蘭幣 NZD (NZ$)</string>
+    <string name="currency_sek">瑞典克朗 SEK (kr)</string>
+    <string name="currency_thb">泰銖 THB (฿)</string>
+    <string name="currency_myr">馬來西亞令吉 MYR (RM)</string>
+    <string name="currency_inr">印度盧比 INR (₹)</string>
+    <string name="currency_brl">巴西雷亞爾 BRL (R$)</string>
+    <string name="currency_aed">阿聯酋迪拉姆 AED (AED)</string>
+    <string name="currency_rub">俄羅斯盧布 RUB (₽)</string>
     <string name="feedback_settings_title">觸覺震動與音效回饋</string>
     <string name="feedback_settings_desc">在刪除、切換開關與確認操作時提供震動與提示音</string>
     <string name="bank_group_limit_summary">合併額度 %1$s</string>

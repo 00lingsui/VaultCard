@@ -1,0 +1,110 @@
+<resources>
+    <string name="app_name">VaultCard</string>
+    <string name="portfolio_overview">पोर्टफोलियो सारांश</string>
+    <string name="total_credit_limit">कुल क्रेडिट सीमा</string>
+    <string name="total_outstanding">कुल बकाया राशि</string>
+    <string name="cards_count">%1$d कार्ड</string>
+    <string name="no_cards_title">अभी तक कोई कार्ड नहीं जुड़ा</string>
+    <string name="no_cards_subtitle">अपना पहला क्रेडिट कार्ड जोड़ने और स्मार्ट भुगतान रिमाइंडर चालू करने के लिए नीचे + बटन दबाएं।</string>
+    <string name="add_card">क्रेडिट कार्ड जोड़ें</string>
+    <string name="settings">सेटिंग्स</string>
+    <string name="theme_and_style">थीम और स्टाइल</string>
+    <string name="ui_style">यूआई डिज़ाइन स्टाइल</string>
+    <string name="style_miuix">MIUIX (HyperOS)</string>
+    <string name="style_material3">Material 3</string>
+    <string name="theme_mode">थीम मोड</string>
+    <string name="mode_system">सिस्टम डिफ़ॉल्ट</string>
+    <string name="mode_light">लाइट मोड</string>
+    <string name="mode_dark">डार्क मोड</string>
+    <string name="theme_palette">रंग पैलेट</string>
+    <string name="language_settings">भाषा / Language</string>
+    <string name="language_system">सिस्टम डिफ़ॉल्ट</string>
+    <string name="language_zh_cn">सरलीकृत चीनी (简体中文)</string>
+    <string name="language_zh_tw">पारंपरिक चीनी (繁體中文)</string>
+    <string name="language_en">English</string>
+    <string name="locked_title">VaultCard लॉक है</string>
+    <string name="locked_subtitle">कार्ड देखने के लिए बायोमेट्रिक सत्यापन आवश्यक है</string>
+    <string name="unlock_button">बायोमेट्रिक्स से अनलॉक करें</string>
+    <string name="update_available_title">नया संस्करण v%1$s उपलब्ध है</string>
+    <string name="update_available_desc">GitHub पर VaultCard का नया अपडेट उपलब्ध है।</string>
+    <string name="download_update">अपडेट डाउनलोड करें</string>
+    <string name="later">बाद में</string>
+    <string name="back">वापस</string>
+
+    <!-- Annual Fee -->
+    <string name="annual_fee_section_title">वार्षिक शुल्क सेटिंग्स</string>
+    <string name="annual_fee_toggle_title">कार्ड पर वार्षिक शुल्क है</string>
+    <string name="annual_fee_enabled_desc">वार्षिक शुल्क और छूट ट्रैकिंग सक्रिय</string>
+    <string name="annual_fee_free_desc">कोई वार्षिक शुल्क नहीं</string>
+    <string name="annual_fee_amount_label">वार्षिक शुल्क (प्रति वर्ष)</string>
+    <string name="annual_fee_waiver_count_label">छूट के लिए लेनदेन संख्या</string>
+    <string name="annual_fee_waiver_hint">0 = छूट योग्य नहीं</string>
+    <string name="annual_fee_policy_label">वार्षिक शुल्क नीति</string>
+    <string name="annual_fee_waiver_req_label">शुल्क माफ़ी शर्त</string>
+    <string name="annual_fee_free_badge">निःशुल्क</string>
+    <string name="annual_fee_rigid_summary">निश्चित शुल्क: %1$s/वर्ष · छूट नहीं</string>
+    <string name="annual_fee_waivable_summary">शुल्क: %1$s/वर्ष · %2$d लेनदेन पर माफ़</string>
+    <string name="annual_fee_free_summary">वार्षिक शुल्क मुक्त · कोई शर्त नहीं</string>
+
+    <!-- Card Networks -->
+    <string name="card_network_selector_title">कार्ड नेटवर्क / डुअल-ब्रांड</string>
+    <string name="network_unionpay">UnionPay</string>
+    <string name="network_visa">VISA</string>
+    <string name="network_mastercard">Mastercard</string>
+    <string name="network_amex">American Express</string>
+    <string name="network_jcb">JCB</string>
+    <string name="network_unionpay_visa">UnionPay + VISA</string>
+    <string name="network_unionpay_mastercard">UnionPay + Mastercard</string>
+    <string name="network_other">अन्य</string>
+
+    <!-- Card Surface Presets -->
+    <string name="card_style_selector_title">कार्ड डिज़ाइन थीम</string>
+    <string name="card_style_pearl_white">पर्ल व्हाइट</string>
+    <string name="card_style_glacier_mist">ग्लेशियर मिस्ट</string>
+    <string name="card_style_sakura_blush">साकुरा ब्लश</string>
+    <string name="card_style_mint_breeze">मिंट ब्रीज़</string>
+    <string name="card_style_champagne_gold">शैम्पेन गोल्ड</string>
+    <string name="card_style_aurora_violet">ऑरोरा वायलेट</string>
+    <string name="card_style_deep_ocean">डीप ओशन</string>
+    <string name="card_style_obsidian_titanium">ओब्सीडियन टाइटेनियम</string>
+
+    <!-- Annual Fee Waiver Progress -->
+    <string name="initial_waiver_swipes_label">प्रारंभिक पूर्ण लेनदेन</string>
+    <string name="initial_waiver_swipes_hint">ऐप से पहले के लेनदेन</string>
+    <string name="waiver_progress_title">वार्षिक शुल्क छूट प्रगति</string>
+    <string name="waiver_progress_remaining">%1$d / %2$d लेनदेन (%4$s माफ़ी के लिए %3$d बाकी)</string>
+    <string name="waiver_progress_completed">✓ शुल्क माफ़ (इस वर्ष %1$d लेनदेन)</string>
+    <string name="waiver_badge_remaining">%1$d बाकी</string>
+    <string name="waiver_badge_completed">✓ शुल्क माफ़</string>
+
+    <!-- Currency & Feedback & Bank Grouping -->
+    <string name="card_currency_selector_title">कार्ड मुद्रा</string>
+    <string name="default_currency_settings">डिफ़ॉल्ट प्रदर्शन मुद्रा</string>
+    <string name="currency_selector_title">मुद्रा चुनें</string>
+    <string name="currency_cny">चीनी युआन CNY (¥)</string>
+    <string name="currency_usd">अमेरिकी डॉलर USD ($)</string>
+    <string name="currency_hkd">हांगकांग डॉलर HKD (HK$)</string>
+    <string name="currency_eur">यूरो EUR (€)</string>
+    <string name="currency_jpy">जापानी येन JPY (¥)</string>
+    <string name="currency_gbp">ब्रिटिश पाउंड GBP (£)</string>
+    <string name="currency_twd">ताइवान डॉलर TWD (NT$)</string>
+    <string name="currency_krw">दक्षिण कोरियाई वॉन KRW (₩)</string>
+    <string name="currency_sgd">सिंगापुर डॉलर SGD (S$)</string>
+    <string name="currency_aud">ऑस्ट्रेलियाई डॉलर AUD (A$)</string>
+    <string name="currency_cad">कनाडाई डॉलर CAD (C$)</string>
+    <string name="currency_chf">स्विस फ्रैंक CHF (CHF)</string>
+    <string name="currency_nzd">न्यूज़ीलैंड डॉलर NZD (NZ$)</string>
+    <string name="currency_sek">स्वीडिश क्रोना SEK (kr)</string>
+    <string name="currency_thb">थाई बहत THB (฿)</string>
+    <string name="currency_myr">मलेशियाई रिंगित MYR (RM)</string>
+    <string name="currency_inr">भारतीय रुपया INR (₹)</string>
+    <string name="currency_brl">ब्राज़ीलियाई रियल BRL (R$)</string>
+    <string name="currency_aed">यूएई दिरहम AED (AED)</string>
+    <string name="currency_rub">रूसी रूबल RUB (₽)</string>
+    <string name="feedback_settings_title">हैप्टिक और ध्वनि फीडबैक</string>
+    <string name="feedback_settings_desc">प्रमुख क्रियाओं पर हल्का कंपन और क्लिक ध्वनि</string>
+    <string name="bank_group_limit_summary">संयुक्त सीमा: %1$s</string>
+    <string name="available_credit_label">उपलब्ध: %1$s</string>
+    <string name="utilization_pct_label">%1$d%% उपयोग</string>
+    <string name="card_available_micro_label">उपलब्ध</string>
+</resources>

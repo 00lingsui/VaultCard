@@ -90,6 +90,17 @@
     <string name="currency_twd">대만 달러 TWD (NT$)</string>
     <string name="currency_krw">대한민국 원 KRW (₩)</string>
     <string name="currency_sgd">싱가포르 달러 SGD (S$)</string>
+    <string name="currency_aud">호주 달러 AUD (A$)</string>
+    <string name="currency_cad">캐나다 달러 CAD (C$)</string>
+    <string name="currency_chf">스위스 프랑 CHF (CHF)</string>
+    <string name="currency_nzd">뉴질랜드 달러 NZD (NZ$)</string>
+    <string name="currency_sek">스웨덴 크로나 SEK (kr)</string>
+    <string name="currency_thb">태국 바트 THB (฿)</string>
+    <string name="currency_myr">말레이시아 링깃 MYR (RM)</string>
+    <string name="currency_inr">인도 루피 INR (₹)</string>
+    <string name="currency_brl">브라질 레알 BRL (R$)</string>
+    <string name="currency_aed">아랍에미리트 디르함 AED (AED)</string>
+    <string name="currency_rub">러시아 루블 RUB (₽)</string>
     <string name="feedback_settings_title">햅틱 진동 및 효과음 피드백</string>
     <string name="feedback_settings_desc">삭제, 스위치 전환 등 주요 동작 시 진동과 클릭음 제공</string>
     <string name="bank_group_limit_summary">통합 한도 %1$s</string>
