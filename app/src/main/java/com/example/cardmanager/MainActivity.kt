@@ -1,15 +1,20 @@
 package com.example.cardmanager
 
+import android.graphics.Color as AndroidColor
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material3.Button
@@ -19,6 +24,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,20 +32,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.cardmanager.core.security.AuthViewModel
 import com.example.cardmanager.feature.card.ui.CardListScreen
 import com.example.cardmanager.feature.settings.SettingsScreen
 import com.example.cardmanager.feature.statistics.ui.StatisticsScreen
 import com.example.cardmanager.ui.theme.AppDynamicTheme
-import com.example.cardmanager.ui.theme.AppThemeStyle
 import com.example.cardmanager.ui.theme.LocalThemeState
-import com.example.cardmanager.ui.theme.ThemeState
 import com.example.cardmanager.ui.theme.rememberThemeState
+import com.example.cardmanager.ui.theme.resolveIsDarkTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -49,16 +56,40 @@ class MainActivity : AppCompatActivity() {
     private val authViewModel: AuthViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
         setContent {
             val windowSizeClass = calculateWindowSizeClass(this)
             val widthSizeClass = windowSizeClass.widthSizeClass
             val themeState = rememberThemeState()
+            val isDarkTheme = themeState.resolveIsDarkTheme()
             val authState by authViewModel.authState.collectAsStateWithLifecycle()
             var currentScreen by remember { mutableStateOf("cards") }
             var lastBackPressTimestamp by remember { mutableStateOf(0L) }
             val context = androidx.compose.ui.platform.LocalContext.current
+            val view = LocalView.current
+
+            DisposableEffect(isDarkTheme, themeState.currentStyle) {
+                enableEdgeToEdge(
+                    statusBarStyle = if (isDarkTheme) {
+                        SystemBarStyle.dark(AndroidColor.TRANSPARENT)
+                    } else {
+                        SystemBarStyle.light(AndroidColor.TRANSPARENT, AndroidColor.TRANSPARENT)
+                    },
+                    navigationBarStyle = if (isDarkTheme) {
+                        SystemBarStyle.dark(AndroidColor.TRANSPARENT)
+                    } else {
+                        SystemBarStyle.light(AndroidColor.TRANSPARENT, AndroidColor.TRANSPARENT)
+                    }
+                )
+                if (!view.isInEditMode) {
+                    val controller = WindowCompat.getInsetsController(window, view)
+                    controller.isAppearanceLightStatusBars = !isDarkTheme
+                    controller.isAppearanceLightNavigationBars = !isDarkTheme
+                }
+                onDispose {}
+            }
 
             androidx.activity.compose.BackHandler(enabled = true) {
                 if (currentScreen != "cards") {
@@ -89,7 +120,10 @@ class MainActivity : AppCompatActivity() {
 
             CompositionLocalProvider(LocalThemeState provides themeState) {
                 AppDynamicTheme(themeState = themeState) {
-                    Surface(modifier = Modifier.fillMaxSize()) {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = MaterialTheme.colorScheme.background
+                    ) {
                         if (authState.isAuthenticated) {
                             when (currentScreen) {
                                 "settings" -> SettingsScreen(onNavigateBack = { currentScreen = "cards" })
@@ -119,7 +153,11 @@ fun BiometricLockScreen(
     onRetry: () -> Unit
 ) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .navigationBarsPadding()
+            .padding(24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

@@ -84,16 +84,21 @@ fun rememberThemeState(context: Context = LocalContext.current): ThemeState {
 }
 
 @Composable
-fun AppDynamicTheme(
-    themeState: ThemeState,
-    content: @Composable () -> Unit
-) {
+fun ThemeState.resolveIsDarkTheme(): Boolean {
     val isSystemDark = isSystemInDarkTheme()
-    val isDark = when (themeState.currentMode) {
+    return when (currentMode) {
         AppThemeMode.SYSTEM -> isSystemDark
         AppThemeMode.LIGHT -> false
         AppThemeMode.DARK -> true
     }
+}
+
+@Composable
+fun AppDynamicTheme(
+    themeState: ThemeState,
+    content: @Composable () -> Unit
+) {
+    val isDark = themeState.resolveIsDarkTheme()
 
     when (themeState.currentStyle) {
         AppThemeStyle.MIUIX -> MIUIXTheme(
