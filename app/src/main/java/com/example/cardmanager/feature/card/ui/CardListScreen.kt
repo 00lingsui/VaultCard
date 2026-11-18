@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.outlined.Settings
 import com.example.cardmanager.ui.icons.AppIcons
+import com.example.cardmanager.ui.icons.BankBrandBadge
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -606,20 +607,12 @@ fun CardListScreen(
                                                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                                                 modifier = Modifier.weight(1f)
                                             ) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .size(36.dp)
-                                                        .clip(CircleShape)
-                                                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)),
-                                                    contentAlignment = Alignment.Center
-                                                ) {
-                                                    Icon(
-                                                        imageVector = AppIcons.AccountBalance,
-                                                        contentDescription = null,
-                                                        tint = MaterialTheme.colorScheme.primary,
-                                                        modifier = Modifier.size(18.dp)
-                                                    )
-                                                }
+                                                BankBrandBadge(
+                                                    bankName = displayBankName,
+                                                    size = 38.dp,
+                                                    monochromeTint = null,
+                                                    showContainer = true
+                                                )
                                                 Column(modifier = Modifier.weight(1f)) {
                                                     Row(
                                                         verticalAlignment = Alignment.CenterVertically,

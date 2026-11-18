@@ -54,6 +54,9 @@ import com.example.cardmanager.core.database.entity.CardStylePreset
 import com.example.cardmanager.core.database.entity.CreditCardEntity
 import com.example.cardmanager.core.database.entity.detectCardNetwork
 import com.example.cardmanager.core.feedback.FeedbackManager
+import com.example.cardmanager.ui.icons.BankBrand
+import com.example.cardmanager.ui.icons.BankBrandBadge
+import com.example.cardmanager.ui.icons.BankBrandMatcher
 
 @Composable
 fun AddCardDialog(
@@ -108,13 +111,56 @@ fun AddCardDialog(
                     Text(it, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodySmall)
                 }
 
+                val matchedBrand = remember(bankName) { BankBrandMatcher.match(bankName) }
                 OutlinedTextField(
                     value = bankName,
                     onValueChange = { bankName = it },
-                    label = { Text("发卡银行 (如: 招商银行)") },
+                    label = { Text("发卡银行 (如: 招商银行 / HSBC)") },
+                    leadingIcon = {
+                        BankBrandBadge(
+                            bankName = bankName,
+                            size = 24.dp,
+                            monochromeTint = null,
+                            showContainer = true
+                        )
+                    },
+                    supportingText = if (matchedBrand != null) {
+                        {
+                            Text(
+                                text = "${matchedBrand.displayNameZh} · ${matchedBrand.displayNameEn}",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    } else null,
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
+
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(BankBrand.popularQuickBanks) { presetBank ->
+                        val isSelected = matchedBrand == presetBank
+                        FilterChip(
+                            selected = isSelected,
+                            onClick = {
+                                FeedbackManager.performClick(view)
+                                bankName = presetBank.displayNameZh
+                            },
+                            leadingIcon = {
+                                BankBrandBadge(
+                                    bankName = presetBank.displayNameZh,
+                                    size = 18.dp,
+                                    monochromeTint = null,
+                                    showContainer = true
+                                )
+                            },
+                            label = { Text(presetBank.displayNameZh) }
+                        )
+                    }
+                }
 
                 OutlinedTextField(
                     value = cardAlias,

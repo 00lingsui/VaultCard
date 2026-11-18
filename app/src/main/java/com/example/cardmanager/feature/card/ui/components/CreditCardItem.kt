@@ -76,6 +76,7 @@ import com.example.cardmanager.core.database.entity.CardPatternStyle
 import com.example.cardmanager.core.database.entity.CardStylePreset
 import com.example.cardmanager.core.database.entity.CreditCardEntity
 import com.example.cardmanager.core.feedback.FeedbackManager
+import com.example.cardmanager.ui.icons.BankBrandBadge
 import com.example.cardmanager.ui.theme.AppThemeStyle
 import com.example.cardmanager.ui.theme.LocalThemeState
 
@@ -201,8 +202,14 @@ fun CreditCardItem(
                             ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(7.dp)
                                 ) {
+                                    BankBrandBadge(
+                                        bankName = card.bankName,
+                                        size = 20.dp,
+                                        monochromeTint = primaryText.copy(alpha = 0.92f),
+                                        showContainer = true
+                                    )
                                     Text(
                                         text = card.bankName.uppercase(),
                                         style = MaterialTheme.typography.labelMedium.copy(
@@ -606,16 +613,27 @@ fun CardPreviewBanner(
                     verticalAlignment = Alignment.Top
                 ) {
                     Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
-                        Text(
-                            text = bankName.ifBlank { "发卡银行" }.uppercase(),
-                            style = MaterialTheme.typography.labelSmall.copy(
-                                letterSpacing = 0.5.sp,
-                                fontWeight = FontWeight.Bold
-                            ),
-                            color = primaryText,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            BankBrandBadge(
+                                bankName = bankName,
+                                size = 18.dp,
+                                monochromeTint = primaryText.copy(alpha = 0.92f),
+                                showContainer = true
+                            )
+                            Text(
+                                text = bankName.ifBlank { "发卡银行" }.uppercase(),
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    letterSpacing = 0.5.sp,
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = primaryText,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                         Text(
                             text = cardAlias.ifBlank { "信用卡名称" },
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
