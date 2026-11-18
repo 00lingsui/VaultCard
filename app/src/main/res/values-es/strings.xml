@@ -17,6 +17,7 @@
     <string name="mode_light">Modo claro</string>
     <string name="mode_dark">Modo oscuro</string>
     <string name="theme_palette">Paleta de colores</string>
+    <string name="settings_section_general">General y localización</string>
     <string name="language_settings">Idioma / Language</string>
     <string name="language_system">Predeterminado del sistema</string>
     <string name="language_zh_cn">Chino simplificado (简体中文)</string>

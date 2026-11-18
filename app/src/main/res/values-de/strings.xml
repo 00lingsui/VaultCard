@@ -17,6 +17,7 @@
     <string name="mode_light">Heller Modus</string>
     <string name="mode_dark">Dunkler Modus</string>
     <string name="theme_palette">Farbthema</string>
+    <string name="settings_section_general">Allgemein &amp; Lokalisierung</string>
     <string name="language_settings">Sprache / Language</string>
     <string name="language_system">Systemstandard</string>
     <string name="language_zh_cn">Vereinfachtes Chinesisch (简体中文)</string>

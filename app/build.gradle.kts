@@ -142,6 +142,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
     implementation("androidx.activity:activity-compose:1.9.3")
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     // Jetpack Compose & Material 3
     implementation(platform("androidx.compose:compose-bom:2024.10.00"))

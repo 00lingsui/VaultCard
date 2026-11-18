@@ -17,6 +17,7 @@
     <string name="mode_light">라이트 모드</string>
     <string name="mode_dark">다크 모드</string>
     <string name="theme_palette">테마 색상 프리셋</string>
+    <string name="settings_section_general">일반 및 현지화</string>
     <string name="language_settings">언어 / Language</string>
     <string name="language_system">시스템 설정 따름</string>
     <string name="language_zh_cn">중국어 간체 (简体中文)</string>

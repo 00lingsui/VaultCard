@@ -17,6 +17,7 @@
     <string name="mode_light">Светлая тема</string>
     <string name="mode_dark">Тёмная тема</string>
     <string name="theme_palette">Цветовая палитра</string>
+    <string name="settings_section_general">Общие и локализация</string>
     <string name="language_settings">Язык / Language</string>
     <string name="language_system">Как в системе</string>
     <string name="language_zh_cn">Китайский упрощённый (简体中文)</string>

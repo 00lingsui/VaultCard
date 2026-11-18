@@ -17,6 +17,7 @@
     <string name="mode_light">الوضع الفاتح</string>
     <string name="mode_dark">الوضع الداكن</string>
     <string name="theme_palette">لوحة الألوان</string>
+    <string name="settings_section_general">الإعدادات العامة واللغة</string>
     <string name="language_settings">اللغة / Language</string>
     <string name="language_system">افتراضي النظام</string>
     <string name="language_zh_cn">الصينية المبسطة (简体中文)</string>

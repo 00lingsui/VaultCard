@@ -88,6 +88,7 @@ import com.example.cardmanager.ui.theme.AppThemeMode
 import com.example.cardmanager.ui.theme.AppThemePalette
 import com.example.cardmanager.ui.theme.AppThemeStyle
 import com.example.cardmanager.ui.theme.LocalThemeState
+import com.example.cardmanager.ui.theme.resolveIsDarkTheme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -356,7 +357,59 @@ fun SettingsScreen(
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
+                    val isDarkTheme = themeState.resolveIsDarkTheme()
                     Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    FeedbackManager.performToggle(view)
+                                    themeState.toggleDarkMode(isDarkTheme)
+                                }
+                                .padding(horizontal = 16.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(14.dp),
+                                modifier = Modifier.weight(1f).padding(end = 12.dp)
+                            ) {
+                                Icon(
+                                    imageVector = if (isDarkTheme) AppIcons.DarkMode else AppIcons.LightMode,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Column {
+                                    Text(
+                                        text = stringResource(R.string.mode_dark),
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    Text(
+                                        text = when {
+                                            themeState.currentMode == AppThemeMode.SYSTEM -> stringResource(R.string.mode_system)
+                                            isDarkTheme -> stringResource(R.string.mode_dark)
+                                            else -> stringResource(R.string.mode_light)
+                                        },
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                            Switch(
+                                checked = isDarkTheme,
+                                onCheckedChange = { enabled ->
+                                    FeedbackManager.performToggle(view)
+                                    themeState.setDarkMode(enabled)
+                                }
+                            )
+                        }
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        )
                         ThemeModeOptionRow(
                             title = stringResource(R.string.mode_system),
                             icon = AppIcons.BrightnessAuto,
@@ -388,10 +441,10 @@ fun SettingsScreen(
                 }
             }
 
-            // Section 4: App Language Settings (Compact Dialog Trigger)
+            // Section 4: General & Localization (Language + Default Currency)
             item {
                 SectionHeader(
-                    title = stringResource(R.string.language_settings),
+                    title = stringResource(R.string.settings_section_general),
                     icon = AppIcons.Translate
                 )
                 Spacer(Modifier.height(8.dp))
@@ -402,80 +455,81 @@ fun SettingsScreen(
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                FeedbackManager.performClick(view)
-                                showLanguageDialog = true
-                            }
-                            .padding(horizontal = 16.dp, vertical = 14.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = stringResource(R.string.language_settings),
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.SemiBold
+                    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    FeedbackManager.performClick(view)
+                                    showLanguageDialog = true
+                                }
+                                .padding(horizontal = 16.dp, vertical = 14.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(14.dp)
+                        ) {
+                            Icon(
+                                imageVector = AppIcons.Translate,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(22.dp)
                             )
-                            Text(
-                                text = "${currentLanguage.displayName} (${currentLanguage.nativeName})",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.primary
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = stringResource(R.string.language_settings),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Text(
+                                    text = "${currentLanguage.displayName} (${currentLanguage.nativeName})",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        HorizontalDivider(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                         )
-                    }
-                }
-            }
-
-            // Section 4B: Default Display Currency
-            item {
-                SectionHeader(
-                    title = stringResource(R.string.default_currency_settings),
-                    icon = AppIcons.Payments
-                )
-                Spacer(Modifier.height(8.dp))
-                Card(
-                    shape = RoundedCornerShape(cardRadius),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                FeedbackManager.performClick(view)
-                                showCurrencyDialog = true
-                            }
-                            .padding(horizontal = 16.dp, vertical = 14.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = stringResource(R.string.default_currency_settings),
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.SemiBold
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    FeedbackManager.performClick(view)
+                                    showCurrencyDialog = true
+                                }
+                                .padding(horizontal = 16.dp, vertical = 14.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(14.dp)
+                        ) {
+                            Icon(
+                                imageVector = AppIcons.Payments,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(22.dp)
                             )
-                            Text(
-                                text = currentCurrency.localizedName(),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.primary
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = stringResource(R.string.default_currency_settings),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Text(
+                                    text = currentCurrency.localizedName(),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
                     }
                 }
             }

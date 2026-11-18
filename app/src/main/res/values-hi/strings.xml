@@ -17,6 +17,7 @@
     <string name="mode_light">लाइट मोड</string>
     <string name="mode_dark">डार्क मोड</string>
     <string name="theme_palette">रंग पैलेट</string>
+    <string name="settings_section_general">सामान्य और स्थानीयकरण</string>
     <string name="language_settings">भाषा / Language</string>
     <string name="language_system">सिस्टम डिफ़ॉल्ट</string>
     <string name="language_zh_cn">सरलीकृत चीनी (简体中文)</string>
