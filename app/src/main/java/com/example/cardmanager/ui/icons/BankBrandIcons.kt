@@ -888,7 +888,7 @@ private fun DrawScope.drawCoreBankEmblem(
 
         else -> {
             // Unreachable since only hasCoreVectorEmblem banks enter drawCoreBankEmblem
-            drawCircle(color = accentContrast, radius = r * 0.5f)
+            drawCircle(color = primary, radius = r * 0.5f)
         }
     }
 }
