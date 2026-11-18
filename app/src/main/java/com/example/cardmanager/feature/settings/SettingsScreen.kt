@@ -40,6 +40,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -88,7 +89,7 @@ import com.example.cardmanager.ui.theme.AppThemeMode
 import com.example.cardmanager.ui.theme.AppThemePalette
 import com.example.cardmanager.ui.theme.AppThemeStyle
 import com.example.cardmanager.ui.theme.LocalThemeState
-import com.example.cardmanager.ui.theme.resolveIsDarkTheme
+import com.example.cardmanager.ui.theme.ThemeManager
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -357,15 +358,35 @@ fun SettingsScreen(
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
-                    val isDarkTheme = themeState.resolveIsDarkTheme()
+                    val activeMode by remember(context) {
+                        ThemeManager.observeThemeMode(context)
+                    }.collectAsStateWithLifecycle()
+                    val activeModeIcon = when (activeMode) {
+                        AppThemeMode.SYSTEM -> AppIcons.BrightnessAuto
+                        AppThemeMode.LIGHT -> AppIcons.LightMode
+                        AppThemeMode.DARK -> AppIcons.DarkMode
+                    }
+                    val activeModeLabel = when (activeMode) {
+                        AppThemeMode.SYSTEM -> stringResource(R.string.mode_system)
+                        AppThemeMode.LIGHT -> stringResource(R.string.mode_light)
+                        AppThemeMode.DARK -> stringResource(R.string.mode_dark)
+                    }
+                    val nextMode = activeMode.next()
+                    val nextModeIcon = when (nextMode) {
+                        AppThemeMode.SYSTEM -> AppIcons.BrightnessAuto
+                        AppThemeMode.LIGHT -> AppIcons.LightMode
+                        AppThemeMode.DARK -> AppIcons.DarkMode
+                    }
+                    val nextModeLabel = when (nextMode) {
+                        AppThemeMode.SYSTEM -> stringResource(R.string.mode_system)
+                        AppThemeMode.LIGHT -> stringResource(R.string.mode_light)
+                        AppThemeMode.DARK -> stringResource(R.string.mode_dark)
+                    }
+
                     Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .clickable {
-                                    FeedbackManager.performToggle(view)
-                                    themeState.toggleDarkMode(isDarkTheme)
-                                }
                                 .padding(horizontal = 16.dp, vertical = 12.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
@@ -376,35 +397,43 @@ fun SettingsScreen(
                                 modifier = Modifier.weight(1f).padding(end = 12.dp)
                             ) {
                                 Icon(
-                                    imageVector = if (isDarkTheme) AppIcons.DarkMode else AppIcons.LightMode,
+                                    imageVector = activeModeIcon,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(20.dp)
                                 )
                                 Column {
                                     Text(
-                                        text = stringResource(R.string.mode_dark),
+                                        text = stringResource(R.string.theme_mode),
                                         style = MaterialTheme.typography.bodyLarge,
                                         fontWeight = FontWeight.SemiBold
                                     )
                                     Text(
-                                        text = when {
-                                            themeState.currentMode == AppThemeMode.SYSTEM -> stringResource(R.string.mode_system)
-                                            isDarkTheme -> stringResource(R.string.mode_dark)
-                                            else -> stringResource(R.string.mode_light)
-                                        },
+                                        text = activeModeLabel,
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.primary
                                     )
                                 }
                             }
-                            Switch(
-                                checked = isDarkTheme,
-                                onCheckedChange = { enabled ->
+                            FilledTonalButton(
+                                onClick = {
                                     FeedbackManager.performToggle(view)
-                                    themeState.setDarkMode(enabled)
-                                }
-                            )
+                                    themeState.cycleMode()
+                                },
+                                shape = RoundedCornerShape(12.dp)
+                            ) {
+                                Icon(
+                                    imageVector = nextModeIcon,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(Modifier.width(6.dp))
+                                Text(
+                                    text = nextModeLabel,
+                                    style = MaterialTheme.typography.labelMedium,
+                                    maxLines = 1
+                                )
+                            }
                         }
                         HorizontalDivider(
                             modifier = Modifier.padding(horizontal = 16.dp),
@@ -413,7 +442,7 @@ fun SettingsScreen(
                         ThemeModeOptionRow(
                             title = stringResource(R.string.mode_system),
                             icon = AppIcons.BrightnessAuto,
-                            selected = themeState.currentMode == AppThemeMode.SYSTEM,
+                            selected = activeMode == AppThemeMode.SYSTEM,
                             onClick = {
                                 FeedbackManager.performClick(view)
                                 themeState.setMode(AppThemeMode.SYSTEM)
@@ -422,7 +451,7 @@ fun SettingsScreen(
                         ThemeModeOptionRow(
                             title = stringResource(R.string.mode_light),
                             icon = AppIcons.LightMode,
-                            selected = themeState.currentMode == AppThemeMode.LIGHT,
+                            selected = activeMode == AppThemeMode.LIGHT,
                             onClick = {
                                 FeedbackManager.performClick(view)
                                 themeState.setMode(AppThemeMode.LIGHT)
@@ -431,7 +460,7 @@ fun SettingsScreen(
                         ThemeModeOptionRow(
                             title = stringResource(R.string.mode_dark),
                             icon = AppIcons.DarkMode,
-                            selected = themeState.currentMode == AppThemeMode.DARK,
+                            selected = activeMode == AppThemeMode.DARK,
                             onClick = {
                                 FeedbackManager.performClick(view)
                                 themeState.setMode(AppThemeMode.DARK)
