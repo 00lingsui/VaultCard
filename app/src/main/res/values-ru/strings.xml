@@ -108,4 +108,32 @@
     <string name="available_credit_label">Доступно: %1$s</string>
     <string name="utilization_pct_label">Использовано %1$d%%</string>
     <string name="card_available_micro_label">ДОСТУПНО</string>
+
+    <!-- Smart Repayment & Statement Reminders -->
+    <string name="notification_channel_name">Напоминания о платежах и выписках</string>
+    <string name="notification_channel_desc">Уведомления о сроках оплаты кредитных карт и новых выписках</string>
+    <string name="notif_due_today_label">Срок сегодня</string>
+    <string name="notif_due_tomorrow_label">Срок завтра</string>
+    <string name="notif_due_in_days_label">Через %1$d дн.</string>
+    <string name="notif_payment_due_title">%1$s · %2$s</string>
+    <string name="notif_payment_due_body">%1$s (•••• %2$s): %3$s. Текущий баланс: %4$s</string>
+    <string name="notif_statement_issued_title">Выписка сформирована · %1$s</string>
+    <string name="notif_statement_issued_body">Сегодня дата выписки по %1$s (•••• %2$s). Задолженность: %3$s.</string>
+    <string name="notif_test_title">Тест напоминания · VaultCard</string>
+    <string name="notif_test_body">Пример банка (•••• 8888): Через 3 дн. Текущий баланс: %1$s</string>
+    <string name="reminder_section_title">Напоминания о платежах и выписках</string>
+    <string name="reminder_enable_title">Умные напоминания</string>
+    <string name="reminder_enable_desc">Экономичные локальные уведомления о платежах и датах выписки</string>
+    <string name="reminder_permission_missing_desc">Для получения напоминаний о платежах требуется разрешение на уведомления.</string>
+    <string name="reminder_open_system_settings">Открыть настройки</string>
+    <string name="reminder_advance_days_title">Заблаговременное уведомление</string>
+    <string name="reminder_days_before_chip">За %1$d дн.</string>
+    <string name="reminder_on_due_date_title">В день платежа</string>
+    <string name="reminder_on_due_date_desc">Отправлять срочное напоминание в последний день оплаты</string>
+    <string name="reminder_on_statement_day_title">Оповещение о выписке</string>
+    <string name="reminder_on_statement_day_desc">Уведомлять при формировании ежемесячной выписки</string>
+    <string name="reminder_time_title">Время ежедневных напоминаний</string>
+    <string name="reminder_send_test_btn">Отправить тестовое уведомление</string>
+    <string name="reminder_test_sent_msg">Тестовое уведомление отправлено</string>
+    <string name="reminder_permission_required_msg">Разрешите уведомления для включения напоминаний</string>
 </resources>

@@ -108,4 +108,32 @@
     <string name="available_credit_label">Disponible : %1$s</string>
     <string name="utilization_pct_label">%1$d%% utilisé</string>
     <string name="card_available_micro_label">DISPONIBLE</string>
+
+    <!-- Smart Repayment & Statement Reminders -->
+    <string name="notification_channel_name">Rappels d’échéance et relevés</string>
+    <string name="notification_channel_desc">Alertes pour les dates d’échéance de carte et les nouveaux relevés</string>
+    <string name="notif_due_today_label">Échéance aujourd’hui</string>
+    <string name="notif_due_tomorrow_label">Échéance demain</string>
+    <string name="notif_due_in_days_label">Échéance dans %1$d jours</string>
+    <string name="notif_payment_due_title">%1$s · %2$s</string>
+    <string name="notif_payment_due_body">%1$s (•••• %2$s) : %3$s. Solde actuel : %4$s</string>
+    <string name="notif_statement_issued_title">Nouveau relevé disponible · %1$s</string>
+    <string name="notif_statement_issued_body">Relevé %1$s (•••• %2$s) émis aujourd’hui. Solde actuel : %3$s.</string>
+    <string name="notif_test_title">Test de rappel · VaultCard</string>
+    <string name="notif_test_body">Banque exemple (•••• 8888) : Échéance dans 3 jours. Solde : %1$s</string>
+    <string name="reminder_section_title">Rappels d’échéance et relevés</string>
+    <string name="reminder_enable_title">Rappels intelligents</string>
+    <string name="reminder_enable_desc">Alertes locales économes en batterie avant échéance et à la facturation</string>
+    <string name="reminder_permission_missing_desc">L’autorisation de notification est requise pour recevoir les rappels.</string>
+    <string name="reminder_open_system_settings">Ouvrir réglages</string>
+    <string name="reminder_advance_days_title">Préavis</string>
+    <string name="reminder_days_before_chip">%1$d j avant</string>
+    <string name="reminder_on_due_date_title">Le jour d’échéance</string>
+    <string name="reminder_on_due_date_desc">Envoyer un rappel urgent le jour limite de paiement</string>
+    <string name="reminder_on_statement_day_title">Alerte de nouveau relevé</string>
+    <string name="reminder_on_statement_day_desc">Notifier lors de l’émission d’un nouveau relevé mensuel</string>
+    <string name="reminder_time_title">Heure de rappel quotidienne</string>
+    <string name="reminder_send_test_btn">Envoyer une notification test</string>
+    <string name="reminder_test_sent_msg">Notification test envoyée</string>
+    <string name="reminder_permission_required_msg">Veuillez autoriser les notifications pour activer les rappels</string>
 </resources>

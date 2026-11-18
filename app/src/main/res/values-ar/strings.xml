@@ -108,4 +108,32 @@
     <string name="available_credit_label">المتاح: %1$s</string>
     <string name="utilization_pct_label">مستخدم %1$d%%</string>
     <string name="card_available_micro_label">المتاح</string>
+
+    <!-- Smart Repayment & Statement Reminders -->
+    <string name="notification_channel_name">تذكيرات السداد وكشوف الحساب</string>
+    <string name="notification_channel_desc">تنبيهات مواعيد استحقاق بطاقات الائتمان وإصدار الكشوف الجديدة</string>
+    <string name="notif_due_today_label">مستحق اليوم</string>
+    <string name="notif_due_tomorrow_label">مستحق غداً</string>
+    <string name="notif_due_in_days_label">مستحق خلال %1$d أيام</string>
+    <string name="notif_payment_due_title">%1$s · %2$s</string>
+    <string name="notif_payment_due_body">%1$s (•••• %2$s) %3$s. الرصيد الحالي: %4$s</string>
+    <string name="notif_statement_issued_title">صدر كشف الحساب · %1$s</string>
+    <string name="notif_statement_issued_body">صدر كشف %1$s (•••• %2$s) اليوم. الرصيد الحالي: %3$s.</string>
+    <string name="notif_test_title">اختبار التذكير · VaultCard</string>
+    <string name="notif_test_body">بنك تجريبي (•••• 8888) مستحق خلال 3 أيام. الرصيد الحالي: %1$s</string>
+    <string name="reminder_section_title">تذكيرات السداد وكشوف الحساب</string>
+    <string name="reminder_enable_title">التذكيرات الذكية</string>
+    <string name="reminder_enable_desc">إشعارات محلية موفرة للطاقة قبل الاستحقاق وفي يوم صدور الكشف</string>
+    <string name="reminder_permission_missing_desc">إذن الإشعارات مطلوب لتلقي تنبيهات مواعيد السداد.</string>
+    <string name="reminder_open_system_settings">فتح الإعدادات</string>
+    <string name="reminder_advance_days_title">التنبيه المسبق</string>
+    <string name="reminder_days_before_chip">قبل %1$d أيام</string>
+    <string name="reminder_on_due_date_title">في يوم الاستحقاق</string>
+    <string name="reminder_on_due_date_desc">إرسال تذكير عاجل في آخر يوم للسداد</string>
+    <string name="reminder_on_statement_day_title">تنبيه صدور الكشف</string>
+    <string name="reminder_on_statement_day_desc">إشعار عند إنشاء كشف الحساب الشهري الجديد</string>
+    <string name="reminder_time_title">وقت التذكير اليومي</string>
+    <string name="reminder_send_test_btn">إرسال إشعار تجريبي</string>
+    <string name="reminder_test_sent_msg">تم إرسال الإشعار التجريبي</string>
+    <string name="reminder_permission_required_msg">يرجى منح إذن الإشعارات لتفعيل التذكيرات</string>
 </resources>

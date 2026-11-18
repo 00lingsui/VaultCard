@@ -1,13 +1,21 @@
 package com.example.cardmanager.feature.settings
 
+import android.Manifest
+import android.app.Activity
+import android.content.Intent
+import android.os.Build
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,6 +41,8 @@ import com.example.cardmanager.core.currency.CurrencyPreferenceManager
 import com.example.cardmanager.core.feedback.FeedbackManager
 import com.example.cardmanager.core.language.AppLanguage
 import com.example.cardmanager.core.language.LanguageManager
+import com.example.cardmanager.core.notification.CardReminderNotificationManager
+import com.example.cardmanager.core.notification.ReminderSettings
 import com.example.cardmanager.feature.card.ui.components.localizedName
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -41,6 +51,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -58,6 +69,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -79,6 +91,11 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.cardmanager.R
 import com.example.cardmanager.core.backup.BackupManager
@@ -92,21 +109,84 @@ import com.example.cardmanager.ui.theme.LocalThemeState
 import com.example.cardmanager.ui.theme.ThemeManager
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun SettingsScreen(
     onNavigateBack: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     val themeState = LocalThemeState.current
     val isMiui = themeState.currentStyle == AppThemeStyle.MIUIX
     val cardRadius = if (isMiui) 24.dp else 16.dp
 
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     val view = LocalView.current
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val backupManager = remember { BackupManager() }
+
+    val reminderSettings by settingsViewModel.reminderSettings.collectAsStateWithLifecycle()
+    var hasNotificationPermission by remember {
+        mutableStateOf(CardReminderNotificationManager.hasNotificationPermission(context))
+    }
+    var pendingEnableAfterPermission by remember { mutableStateOf(false) }
+    var pendingTestAfterPermission by remember { mutableStateOf(false) }
+    var permissionBlockedWarning by remember { mutableStateOf(false) }
+
+    val testSentMsg = stringResource(R.string.reminder_test_sent_msg)
+    val permissionRequiredMsg = stringResource(R.string.reminder_permission_required_msg)
+
+    DisposableEffect(lifecycleOwner, context) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                hasNotificationPermission = CardReminderNotificationManager.hasNotificationPermission(context)
+                if (hasNotificationPermission) {
+                    permissionBlockedWarning = false
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        val updatedPermission = CardReminderNotificationManager.hasNotificationPermission(context)
+        hasNotificationPermission = updatedPermission
+        if (granted && updatedPermission) {
+            permissionBlockedWarning = false
+            if (pendingEnableAfterPermission) {
+                settingsViewModel.setRemindersEnabled(true)
+            }
+            if (pendingTestAfterPermission) {
+                settingsViewModel.sendTestNotification()
+                coroutineScope.launch { snackbarHostState.showSnackbar(testSentMsg) }
+            }
+        } else {
+            val shouldShowRationale = (context as? Activity)?.let { activity ->
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                    ActivityCompat.shouldShowRequestPermissionRationale(
+                        activity,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    )
+            } ?: false
+            permissionBlockedWarning = !shouldShowRationale || !updatedPermission
+            coroutineScope.launch { snackbarHostState.showSnackbar(permissionRequiredMsg) }
+        }
+        pendingEnableAfterPermission = false
+        pendingTestAfterPermission = false
+    }
+
+    fun openSystemNotificationSettings() {
+        val intent = Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).apply {
+            putExtra(Settings.EXTRA_APP_PACKAGE, context.packageName)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        runCatching { context.startActivity(intent) }
+    }
 
     LaunchedEffect(Unit) { CurrencyPreferenceManager.getDefaultCurrency(context) }
     val currentCurrency by CurrencyPreferenceManager.defaultCurrencyFlow.collectAsStateWithLifecycle()
@@ -558,6 +638,302 @@ fun SettingsScreen(
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
+                        }
+                    }
+                }
+            }
+
+            // Section 4B: Smart Repayment & Statement Reminders
+            item {
+                SectionHeader(
+                    title = stringResource(R.string.reminder_section_title),
+                    icon = AppIcons.NotificationsActive
+                )
+                Spacer(Modifier.height(8.dp))
+                Card(
+                    shape = RoundedCornerShape(cardRadius),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 10.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
+                                Text(
+                                    text = stringResource(R.string.reminder_enable_title),
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Text(
+                                    text = stringResource(R.string.reminder_enable_desc),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Switch(
+                                checked = reminderSettings.enabled,
+                                onCheckedChange = { checked ->
+                                    FeedbackManager.performToggle(view)
+                                    if (!checked) {
+                                        settingsViewModel.setRemindersEnabled(false)
+                                    } else {
+                                        val grantedNow = CardReminderNotificationManager.hasNotificationPermission(context)
+                                        hasNotificationPermission = grantedNow
+                                        if (grantedNow) {
+                                            permissionBlockedWarning = false
+                                            settingsViewModel.setRemindersEnabled(true)
+                                        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                                            !CardReminderNotificationManager.hasRuntimePermissionOnly(context)
+                                        ) {
+                                            pendingEnableAfterPermission = true
+                                            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                        } else {
+                                            permissionBlockedWarning = true
+                                            coroutineScope.launch { snackbarHostState.showSnackbar(permissionRequiredMsg) }
+                                        }
+                                    }
+                                }
+                            )
+                        }
+
+                        if (!hasNotificationPermission && (reminderSettings.enabled || permissionBlockedWarning)) {
+                            Surface(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                                shape = RoundedCornerShape(12.dp),
+                                color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.65f)
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 12.dp, vertical = 10.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.reminder_permission_missing_desc),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onErrorContainer,
+                                        modifier = Modifier.weight(1f).padding(end = 8.dp)
+                                    )
+                                    TextButton(onClick = { openSystemNotificationSettings() }) {
+                                        Text(
+                                            text = stringResource(R.string.reminder_open_system_settings),
+                                            style = MaterialTheme.typography.labelMedium,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        AnimatedVisibility(visible = reminderSettings.enabled) {
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
+                                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                )
+
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 6.dp)
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.reminder_advance_days_title),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    Spacer(Modifier.height(6.dp))
+                                    FlowRow(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        ReminderSettings.ALLOWED_ADVANCE_DAYS.forEach { day ->
+                                            val selected = day in reminderSettings.advanceDays
+                                            FilterChip(
+                                                selected = selected,
+                                                onClick = {
+                                                    FeedbackManager.performClick(view)
+                                                    settingsViewModel.toggleAdvanceDay(day)
+                                                },
+                                                label = {
+                                                    Text(
+                                                        text = stringResource(R.string.reminder_days_before_chip, day),
+                                                        style = MaterialTheme.typography.labelMedium
+                                                    )
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 6.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
+                                        Text(
+                                            text = stringResource(R.string.reminder_on_due_date_title),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        Text(
+                                            text = stringResource(R.string.reminder_on_due_date_desc),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                    Switch(
+                                        checked = reminderSettings.notifyOnDueDate,
+                                        onCheckedChange = { enabled ->
+                                            FeedbackManager.performToggle(view)
+                                            settingsViewModel.setNotifyOnDueDate(enabled)
+                                        }
+                                    )
+                                }
+
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 6.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column(modifier = Modifier.weight(1f).padding(end = 12.dp)) {
+                                        Text(
+                                            text = stringResource(R.string.reminder_on_statement_day_title),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                        Text(
+                                            text = stringResource(R.string.reminder_on_statement_day_desc),
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                    Switch(
+                                        checked = reminderSettings.notifyOnStatementDay,
+                                        onCheckedChange = { enabled ->
+                                            FeedbackManager.performToggle(view)
+                                            settingsViewModel.setNotifyOnStatementDay(enabled)
+                                        }
+                                    )
+                                }
+
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
+                                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                )
+
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 6.dp)
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = AppIcons.Schedule,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Text(
+                                            text = stringResource(R.string.reminder_time_title),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    }
+                                    Spacer(Modifier.height(6.dp))
+                                    FlowRow(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        ReminderSettings.ALLOWED_REMINDER_HOURS.forEach { hour ->
+                                            val selected = reminderSettings.reminderHour == hour
+                                            FilterChip(
+                                                selected = selected,
+                                                onClick = {
+                                                    FeedbackManager.performClick(view)
+                                                    settingsViewModel.setReminderHour(hour)
+                                                },
+                                                label = {
+                                                    Text(
+                                                        text = String.format(java.util.Locale.US, "%02d:00", hour),
+                                                        style = MaterialTheme.typography.labelMedium
+                                                    )
+                                                }
+                                            )
+                                        }
+                                    }
+                                }
+
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
+                                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                )
+
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 6.dp)
+                                ) {
+                                    OutlinedButton(
+                                        onClick = {
+                                            FeedbackManager.performConfirm(view)
+                                            val grantedNow = CardReminderNotificationManager.hasNotificationPermission(context)
+                                            hasNotificationPermission = grantedNow
+                                            if (grantedNow) {
+                                                val posted = settingsViewModel.sendTestNotification()
+                                                coroutineScope.launch {
+                                                    snackbarHostState.showSnackbar(
+                                                        if (posted) testSentMsg else permissionRequiredMsg
+                                                    )
+                                                }
+                                            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                                                !CardReminderNotificationManager.hasRuntimePermissionOnly(context)
+                                            ) {
+                                                pendingTestAfterPermission = true
+                                                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                            } else {
+                                                permissionBlockedWarning = true
+                                                coroutineScope.launch { snackbarHostState.showSnackbar(permissionRequiredMsg) }
+                                            }
+                                        },
+                                        shape = RoundedCornerShape(12.dp),
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Icon(
+                                            imageVector = AppIcons.NotificationsActive,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                        Spacer(Modifier.width(8.dp))
+                                        Text(
+                                            text = stringResource(R.string.reminder_send_test_btn),
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }

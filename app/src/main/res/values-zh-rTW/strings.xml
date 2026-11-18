@@ -108,4 +108,32 @@
     <string name="available_credit_label">可用額度: %1$s</string>
     <string name="utilization_pct_label">已使用 %1$d%%</string>
     <string name="card_available_micro_label">可用額度</string>
+
+    <!-- Smart Repayment & Statement Reminders -->
+    <string name="notification_channel_name">智慧還款與帳單提醒</string>
+    <string name="notification_channel_desc">信用卡繳款截止日倒數與新帳單出帳提醒通知</string>
+    <string name="notif_due_today_label">今日到期</string>
+    <string name="notif_due_tomorrow_label">明日到期</string>
+    <string name="notif_due_in_days_label">距離到期還有 %1$d 天</string>
+    <string name="notif_payment_due_title">%1$s · %2$s</string>
+    <string name="notif_payment_due_body">%1$s (•••• %2$s) %3$s，目前待還金額：%4$s</string>
+    <string name="notif_statement_issued_title">新帳單已產生 · %1$s</string>
+    <string name="notif_statement_issued_body">%1$s (•••• %2$s) 今日結帳出單，目前餘額 %3$s，點擊查看明細。</string>
+    <string name="notif_test_title">還款提醒測試 · VaultCard</string>
+    <string name="notif_test_body">範例銀行 (•••• 8888) 距離到期還有 3 天，目前待還金額：%1$s</string>
+    <string name="reminder_section_title">還款與帳單提醒</string>
+    <string name="reminder_enable_title">啟用智慧提醒</string>
+    <string name="reminder_enable_desc">省電本地排程通知，準時提醒繳款日與結帳日</string>
+    <string name="reminder_permission_missing_desc">需要開啟系統通知權限才能接收還款與帳單提醒。</string>
+    <string name="reminder_open_system_settings">開啟設定</string>
+    <string name="reminder_advance_days_title">提前通知天數</string>
+    <string name="reminder_days_before_chip">提前 %1$d 天</string>
+    <string name="reminder_on_due_date_title">繳款截止日當天提醒</string>
+    <string name="reminder_on_due_date_desc">在每月最後繳款日當天發送緊急提醒</string>
+    <string name="reminder_on_statement_day_title">帳單出帳提醒</string>
+    <string name="reminder_on_statement_day_desc">在每月帳單產生日通知核對消費明細</string>
+    <string name="reminder_time_title">每日提醒時間</string>
+    <string name="reminder_send_test_btn">發送測試通知</string>
+    <string name="reminder_test_sent_msg">已發送測試通知</string>
+    <string name="reminder_permission_required_msg">請先授予通知權限以啟用提醒功能</string>
 </resources>

@@ -108,4 +108,32 @@
     <string name="available_credit_label">Verfügbar: %1$s</string>
     <string name="utilization_pct_label">%1$d%% genutzt</string>
     <string name="card_available_micro_label">VERFÜGBAR</string>
+
+    <!-- Smart Repayment & Statement Reminders -->
+    <string name="notification_channel_name">Rückzahlungs- &amp; Abrechnungserinnerungen</string>
+    <string name="notification_channel_desc">Benachrichtigungen für Fälligkeitstermine und neue Kartenabrechnungen</string>
+    <string name="notif_due_today_label">Heute fällig</string>
+    <string name="notif_due_tomorrow_label">Morgen fällig</string>
+    <string name="notif_due_in_days_label">In %1$d Tagen fällig</string>
+    <string name="notif_payment_due_title">%1$s · %2$s</string>
+    <string name="notif_payment_due_body">%1$s (•••• %2$s) ist %3$s. Aktueller Saldo: %4$s</string>
+    <string name="notif_statement_issued_title">Neue Abrechnung erstellt · %1$s</string>
+    <string name="notif_statement_issued_body">Abrechnung für %1$s (•••• %2$s) heute erstellt. Saldo: %3$s.</string>
+    <string name="notif_test_title">Erinnerungstest · VaultCard</string>
+    <string name="notif_test_body">Beispielbank (•••• 8888) in 3 Tagen fällig. Aktueller Saldo: %1$s</string>
+    <string name="reminder_section_title">Rückzahlungs- &amp; Abrechnungserinnerungen</string>
+    <string name="reminder_enable_title">Intelligente Erinnerungen</string>
+    <string name="reminder_enable_desc">Akkuschonende lokale Hinweise vor Fälligkeit und am Abrechnungstag</string>
+    <string name="reminder_permission_missing_desc">Für Zahlungserinnerungen ist die Benachrichtigungsberechtigung erforderlich.</string>
+    <string name="reminder_open_system_settings">Einstellungen öffnen</string>
+    <string name="reminder_advance_days_title">Vorlaufzeit</string>
+    <string name="reminder_days_before_chip">%1$d Tage vorher</string>
+    <string name="reminder_on_due_date_title">Am Fälligkeitstag</string>
+    <string name="reminder_on_due_date_desc">Dringende Erinnerung am letzten Rückzahlungstag senden</string>
+    <string name="reminder_on_statement_day_title">Bei neuer Abrechnung</string>
+    <string name="reminder_on_statement_day_desc">Benachrichtigen, wenn eine neue Monatsabrechnung vorliegt</string>
+    <string name="reminder_time_title">Tägliche Erinnerungszeit</string>
+    <string name="reminder_send_test_btn">Testbenachrichtigung senden</string>
+    <string name="reminder_test_sent_msg">Testbenachrichtigung gesendet</string>
+    <string name="reminder_permission_required_msg">Bitte Benachrichtigungsberechtigung für Erinnerungen erteilen</string>
 </resources>

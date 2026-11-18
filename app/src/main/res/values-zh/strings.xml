@@ -108,4 +108,32 @@
     <string name="available_credit_label">可用额度: %1$s</string>
     <string name="utilization_pct_label">已使用 %1$d%%</string>
     <string name="card_available_micro_label">可用额度</string>
+
+    <!-- Smart Repayment & Statement Reminders -->
+    <string name="notification_channel_name">智能还款与账单提醒</string>
+    <string name="notification_channel_desc">信用卡到期还款日倒计时与新账单出账提醒通知</string>
+    <string name="notif_due_today_label">今日到期</string>
+    <string name="notif_due_tomorrow_label">明日到期</string>
+    <string name="notif_due_in_days_label">还剩 %1$d 天到期</string>
+    <string name="notif_payment_due_title">%1$s · %2$s</string>
+    <string name="notif_payment_due_body">%1$s (•••• %2$s) %3$s，当前待还金额：%4$s</string>
+    <string name="notif_statement_issued_title">新账单已出 · %1$s</string>
+    <string name="notif_statement_issued_body">%1$s (•••• %2$s) 今日出账单，当前欠款 %3$s，点击核对明细。</string>
+    <string name="notif_test_title">还款提醒测试 · VaultCard</string>
+    <string name="notif_test_body">示例银行 (•••• 8888) 还剩 3 天到期，当前待还金额：%1$s</string>
+    <string name="reminder_section_title">还款与账单提醒</string>
+    <string name="reminder_enable_title">启用智能提醒</string>
+    <string name="reminder_enable_desc">低功耗本地定时通知，及时提醒还款截止日与出账日</string>
+    <string name="reminder_permission_missing_desc">需要开启系统通知权限才能接收还款与账单提醒。</string>
+    <string name="reminder_open_system_settings">前往设置</string>
+    <string name="reminder_advance_days_title">提前提醒天数</string>
+    <string name="reminder_days_before_chip">提前 %1$d 天</string>
+    <string name="reminder_on_due_date_title">还款日当天提醒</string>
+    <string name="reminder_on_due_date_desc">在每月最后还款日当天发送高优先级提醒</string>
+    <string name="reminder_on_statement_day_title">账单出账提醒</string>
+    <string name="reminder_on_statement_day_desc">在每月账单生成日发送账单核对提醒</string>
+    <string name="reminder_time_title">每日提醒时段</string>
+    <string name="reminder_send_test_btn">发送测试通知</string>
+    <string name="reminder_test_sent_msg">已发送测试通知</string>
+    <string name="reminder_permission_required_msg">请先授予通知权限以启用还款提醒</string>
 </resources>

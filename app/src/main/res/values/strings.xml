@@ -108,4 +108,32 @@
     <string name="available_credit_label">Available: %1$s</string>
     <string name="utilization_pct_label">%1$d%% used</string>
     <string name="card_available_micro_label">AVAILABLE</string>
+
+    <!-- Smart Repayment & Statement Reminders -->
+    <string name="notification_channel_name">Repayment &amp; Statement Reminders</string>
+    <string name="notification_channel_desc">Alerts for upcoming credit card payment due dates and new statements</string>
+    <string name="notif_due_today_label">Due Today</string>
+    <string name="notif_due_tomorrow_label">Due Tomorrow</string>
+    <string name="notif_due_in_days_label">Due in %1$d days</string>
+    <string name="notif_payment_due_title">%1$s · %2$s</string>
+    <string name="notif_payment_due_body">%1$s (•••• %2$s) is %3$s. Current balance: %4$s</string>
+    <string name="notif_statement_issued_title">New Statement Ready · %1$s</string>
+    <string name="notif_statement_issued_body">%1$s (•••• %2$s) statement issued today. Current balance: %3$s — tap to review.</string>
+    <string name="notif_test_title">Payment Reminder Test · VaultCard</string>
+    <string name="notif_test_body">Sample Bank (•••• 8888) is Due in 3 days. Current balance: %1$s</string>
+    <string name="reminder_section_title">Repayment &amp; Statement Reminders</string>
+    <string name="reminder_enable_title">Smart Reminders</string>
+    <string name="reminder_enable_desc">Local battery-friendly alerts before due dates and on statement days</string>
+    <string name="reminder_permission_missing_desc">Notification permission is required to deliver repayment alerts.</string>
+    <string name="reminder_open_system_settings">Open Settings</string>
+    <string name="reminder_advance_days_title">Advance Notice</string>
+    <string name="reminder_days_before_chip">%1$d days before</string>
+    <string name="reminder_on_due_date_title">On Payment Due Date</string>
+    <string name="reminder_on_due_date_desc">Send an urgent reminder on the repayment deadline day</string>
+    <string name="reminder_on_statement_day_title">Statement Issued Alert</string>
+    <string name="reminder_on_statement_day_desc">Notify when a new monthly card statement is generated</string>
+    <string name="reminder_time_title">Daily Reminder Time</string>
+    <string name="reminder_send_test_btn">Send Test Notification</string>
+    <string name="reminder_test_sent_msg">Test notification sent</string>
+    <string name="reminder_permission_required_msg">Please grant notification permission to enable reminders</string>
 </resources>

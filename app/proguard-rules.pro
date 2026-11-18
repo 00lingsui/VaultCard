@@ -19,10 +19,18 @@
     public static ** valueOf(java.lang.String);
 }
 
-# WorkManager Workers
+# WorkManager & Hilt Workers
 -keep class * extends androidx.work.ListenableWorker {
     public <init>(android.content.Context, androidx.work.WorkerParameters);
 }
+-keep class * extends androidx.work.CoroutineWorker { *; }
+-keep @androidx.hilt.work.HiltWorker class * { *; }
+-keep class androidx.hilt.work.** { *; }
+-keepclassmembers class * {
+    @dagger.assisted.AssistedInject <init>(...);
+    @dagger.assisted.Assisted <init>(...);
+}
+-keep class com.example.cardmanager.core.notification.** { *; }
 
 # Hilt, Dagger & ViewModels
 -keep class * extends androidx.lifecycle.ViewModel { *; }

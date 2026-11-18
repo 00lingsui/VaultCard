@@ -108,4 +108,32 @@
     <string name="available_credit_label">사용 가능 한도: %1$s</string>
     <string name="utilization_pct_label">%1$d%% 사용됨</string>
     <string name="card_available_micro_label">사용 가능</string>
+
+    <!-- Smart Repayment & Statement Reminders -->
+    <string name="notification_channel_name">결제일 및 명세서 알림</string>
+    <string name="notification_channel_desc">신용카드 결제 예정일 및 신규 명세서 발행 알림</string>
+    <string name="notif_due_today_label">오늘 마감</string>
+    <string name="notif_due_tomorrow_label">내일 마감</string>
+    <string name="notif_due_in_days_label">마감 %1$d일 전</string>
+    <string name="notif_payment_due_title">%1$s · %2$s</string>
+    <string name="notif_payment_due_body">%1$s (•••• %2$s) %3$s입니다. 현재 청구 잔액: %4$s</string>
+    <string name="notif_statement_issued_title">새 명세서 발행 · %1$s</string>
+    <string name="notif_statement_issued_body">%1$s (•••• %2$s) 명세서가 오늘 발행되었습니다. 현재 잔액: %3$s</string>
+    <string name="notif_test_title">결제 알림 테스트 · VaultCard</string>
+    <string name="notif_test_body">예시 은행 (•••• 8888) 마감 3일 전입니다. 현재 잔액: %1$s</string>
+    <string name="reminder_section_title">결제일 및 명세서 알림</string>
+    <string name="reminder_enable_title">스마트 알림 사용</string>
+    <string name="reminder_enable_desc">배터리 효율적인 로컬 예약 알림으로 결제일과 명세서일을 안내합니다</string>
+    <string name="reminder_permission_missing_desc">결제 알림을 받으려면 알림 권한이 필요합니다.</string>
+    <string name="reminder_open_system_settings">설정 열기</string>
+    <string name="reminder_advance_days_title">사전 알림 일수</string>
+    <string name="reminder_days_before_chip">%1$d일 전</string>
+    <string name="reminder_on_due_date_title">결제일 당일 알림</string>
+    <string name="reminder_on_due_date_desc">매월 결제 마감 당일에 중요 알림을 전송합니다</string>
+    <string name="reminder_on_statement_day_title">명세서 발행일 알림</string>
+    <string name="reminder_on_statement_day_desc">매월 새 카드 명세서가 생성될 때 확인 알림을 보냅니다</string>
+    <string name="reminder_time_title">매일 알림 시간</string>
+    <string name="reminder_send_test_btn">테스트 알림 보내기</string>
+    <string name="reminder_test_sent_msg">테스트 알림을 보냈습니다</string>
+    <string name="reminder_permission_required_msg">알림을 사용하려면 알림 권한을 허용해 주세요</string>
 </resources>

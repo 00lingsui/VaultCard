@@ -108,4 +108,32 @@
     <string name="available_credit_label">利用可能額: %1$s</string>
     <string name="utilization_pct_label">%1$d%% 使用済み</string>
     <string name="card_available_micro_label">利用可能額</string>
+
+    <!-- Smart Repayment & Statement Reminders -->
+    <string name="notification_channel_name">支払い・明細リマインダー</string>
+    <string name="notification_channel_desc">クレジットカードの引き落とし日や新明細発行の通知</string>
+    <string name="notif_due_today_label">本日が期日</string>
+    <string name="notif_due_tomorrow_label">明日が期日</string>
+    <string name="notif_due_in_days_label">あと%1$d日で期日</string>
+    <string name="notif_payment_due_title">%1$s · %2$s</string>
+    <string name="notif_payment_due_body">%1$s (•••• %2$s) は%3$sです。現在の利用残高: %4$s</string>
+    <string name="notif_statement_issued_title">新明細が発行されました · %1$s</string>
+    <string name="notif_statement_issued_body">%1$s (•••• %2$s) の締め日です。現在残高 %3$s を確認してください。</string>
+    <string name="notif_test_title">支払い通知テスト · VaultCard</string>
+    <string name="notif_test_body">サンプル銀行 (•••• 8888) はあと3日で期日です。現在残高: %1$s</string>
+    <string name="reminder_section_title">支払い・明細リマインダー</string>
+    <string name="reminder_enable_title">スマート通知を有効化</string>
+    <string name="reminder_enable_desc">省電力なローカル通知で支払い期日と締め日をお知らせ</string>
+    <string name="reminder_permission_missing_desc">支払い通知を受け取るにはシステムの通知権限が必要です。</string>
+    <string name="reminder_open_system_settings">設定を開く</string>
+    <string name="reminder_advance_days_title">事前通知</string>
+    <string name="reminder_days_before_chip">%1$d日前</string>
+    <string name="reminder_on_due_date_title">支払期日当日の通知</string>
+    <string name="reminder_on_due_date_desc">毎月の引き落とし期日当日にリマインダーを送信</string>
+    <string name="reminder_on_statement_day_title">明細確定日の通知</string>
+    <string name="reminder_on_statement_day_desc">毎月の締め日に新しい明細の確認をお知らせ</string>
+    <string name="reminder_time_title">毎日の通知時刻</string>
+    <string name="reminder_send_test_btn">テスト通知を送信</string>
+    <string name="reminder_test_sent_msg">テスト通知を送信しました</string>
+    <string name="reminder_permission_required_msg">通知を有効にするには通知権限を許可してください</string>
 </resources>

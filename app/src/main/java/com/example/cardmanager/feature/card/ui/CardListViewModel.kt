@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.cardmanager.core.currency.AppCurrency
 import com.example.cardmanager.core.database.entity.CreditCardEntity
 import com.example.cardmanager.core.database.entity.TransactionEntity
+import com.example.cardmanager.core.notification.ReminderScheduler
 import com.example.cardmanager.feature.card.data.repository.CreditCardRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -29,7 +30,8 @@ data class CardListUiState(
 
 @HiltViewModel
 class CardListViewModel @Inject constructor(
-    private val repository: CreditCardRepository
+    private val repository: CreditCardRepository,
+    private val reminderScheduler: ReminderScheduler
 ) : ViewModel() {
 
     val uiState: StateFlow<CardListUiState> = combine(
@@ -75,11 +77,17 @@ class CardListViewModel @Inject constructor(
     )
 
     fun addCard(card: CreditCardEntity) {
-        viewModelScope.launch { repository.addCard(card) }
+        viewModelScope.launch {
+            repository.addCard(card)
+            reminderScheduler.triggerImmediateCheck()
+        }
     }
 
     fun updateCard(card: CreditCardEntity) {
-        viewModelScope.launch { repository.updateCard(card) }
+        viewModelScope.launch {
+            repository.updateCard(card)
+            reminderScheduler.triggerImmediateCheck()
+        }
     }
 
     fun deleteCard(cardId: Long) {

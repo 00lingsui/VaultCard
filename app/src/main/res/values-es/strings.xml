@@ -108,4 +108,32 @@
     <string name="available_credit_label">Disponible: %1$s</string>
     <string name="utilization_pct_label">%1$d%% usado</string>
     <string name="card_available_micro_label">DISPONIBLE</string>
+
+    <!-- Smart Repayment & Statement Reminders -->
+    <string name="notification_channel_name">Recordatorios de pago y estado</string>
+    <string name="notification_channel_desc">Alertas sobre fechas de vencimiento de tarjetas y nuevos estados de cuenta</string>
+    <string name="notif_due_today_label">Vence hoy</string>
+    <string name="notif_due_tomorrow_label">Vence mañana</string>
+    <string name="notif_due_in_days_label">Vence en %1$d días</string>
+    <string name="notif_payment_due_title">%1$s · %2$s</string>
+    <string name="notif_payment_due_body">%1$s (•••• %2$s): %3$s. Saldo actual: %4$s</string>
+    <string name="notif_statement_issued_title">Nuevo estado disponible · %1$s</string>
+    <string name="notif_statement_issued_body">Estado de %1$s (•••• %2$s) emitido hoy. Saldo actual: %3$s.</string>
+    <string name="notif_test_title">Prueba de recordatorio · VaultCard</string>
+    <string name="notif_test_body">Banco ejemplo (•••• 8888): Vence en 3 días. Saldo actual: %1$s</string>
+    <string name="reminder_section_title">Recordatorios de pago y estado</string>
+    <string name="reminder_enable_title">Recordatorios inteligentes</string>
+    <string name="reminder_enable_desc">Alertas locales de bajo consumo antes del vencimiento y al corte</string>
+    <string name="reminder_permission_missing_desc">Se requiere permiso de notificación para recibir alertas de pago.</string>
+    <string name="reminder_open_system_settings">Abrir ajustes</string>
+    <string name="reminder_advance_days_title">Aviso anticipado</string>
+    <string name="reminder_days_before_chip">%1$d días antes</string>
+    <string name="reminder_on_due_date_title">El día de vencimiento</string>
+    <string name="reminder_on_due_date_desc">Enviar un recordatorio urgente en la fecha límite de pago</string>
+    <string name="reminder_on_statement_day_title">Alerta de fecha de corte</string>
+    <string name="reminder_on_statement_day_desc">Notificar cuando se genere un nuevo estado de cuenta mensual</string>
+    <string name="reminder_time_title">Hora diaria de recordatorio</string>
+    <string name="reminder_send_test_btn">Enviar notificación de prueba</string>
+    <string name="reminder_test_sent_msg">Notificación de prueba enviada</string>
+    <string name="reminder_permission_required_msg">Concede el permiso de notificaciones para activar los recordatorios</string>
 </resources>

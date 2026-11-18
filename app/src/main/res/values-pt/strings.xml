@@ -108,4 +108,32 @@
     <string name="available_credit_label">Disponível: %1$s</string>
     <string name="utilization_pct_label">%1$d%% usado</string>
     <string name="card_available_micro_label">DISPONÍVEL</string>
+
+    <!-- Smart Repayment & Statement Reminders -->
+    <string name="notification_channel_name">Lembretes de pagamento e fatura</string>
+    <string name="notification_channel_desc">Alertas de vencimento do cartão de crédito e novas faturas</string>
+    <string name="notif_due_today_label">Vence hoje</string>
+    <string name="notif_due_tomorrow_label">Vence amanhã</string>
+    <string name="notif_due_in_days_label">Vence em %1$d dias</string>
+    <string name="notif_payment_due_title">%1$s · %2$s</string>
+    <string name="notif_payment_due_body">%1$s (•••• %2$s): %3$s. Saldo atual: %4$s</string>
+    <string name="notif_statement_issued_title">Nova fatura fechada · %1$s</string>
+    <string name="notif_statement_issued_body">Fatura %1$s (•••• %2$s) emitida hoje. Saldo atual: %3$s.</string>
+    <string name="notif_test_title">Teste de lembrete · VaultCard</string>
+    <string name="notif_test_body">Banco exemplo (•••• 8888): Vence em 3 dias. Saldo atual: %1$s</string>
+    <string name="reminder_section_title">Lembretes de pagamento e fatura</string>
+    <string name="reminder_enable_title">Lembretes inteligentes</string>
+    <string name="reminder_enable_desc">Alertas locais econômicos antes do vencimento e no fechamento</string>
+    <string name="reminder_permission_missing_desc">A permissão de notificação é necessária para receber alertas de pagamento.</string>
+    <string name="reminder_open_system_settings">Abrir ajustes</string>
+    <string name="reminder_advance_days_title">Aviso antecipado</string>
+    <string name="reminder_days_before_chip">%1$d dias antes</string>
+    <string name="reminder_on_due_date_title">No dia do vencimento</string>
+    <string name="reminder_on_due_date_desc">Enviar um lembrete urgente na data limite de pagamento</string>
+    <string name="reminder_on_statement_day_title">Alerta de fechamento da fatura</string>
+    <string name="reminder_on_statement_day_desc">Notificar quando uma nova fatura mensal for gerada</string>
+    <string name="reminder_time_title">Horário diário do lembrete</string>
+    <string name="reminder_send_test_btn">Enviar notificação de teste</string>
+    <string name="reminder_test_sent_msg">Notificação de teste enviada</string>
+    <string name="reminder_permission_required_msg">Conceda permissão de notificação para ativar os lembretes</string>
 </resources>
