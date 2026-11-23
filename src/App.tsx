@@ -3,11 +3,13 @@ import { CodeViewer } from './components/CodeViewer';
 import { RepaymentSandbox } from './components/RepaymentSandbox';
 import { CardSimulator } from './components/CardSimulator';
 import { ArchitectureView } from './components/ArchitectureView';
+import { RoomMigrationsView } from './components/RoomMigrationsView';
 import {
   CreditCard,
   Code2,
   Calendar,
   Layers,
+  Database,
   Sparkles,
   CheckCircle2,
   Terminal,
@@ -17,9 +19,9 @@ import {
 } from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'code' | 'calculator' | 'preview' | 'architecture'>(
-    'code'
-  );
+  const [activeTab, setActiveTab] = useState<
+    'code' | 'calculator' | 'preview' | 'architecture' | 'migrations'
+  >('code');
 
   return (
     <div className="min-h-screen bg-[#070b14] text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
@@ -112,6 +114,18 @@ export default function App() {
             <Layers className="w-4 h-4" />
             <span>4. Package Structure & Architecture</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab('migrations')}
+            className={`flex items-center gap-2 py-3 px-4 text-xs font-semibold border-b-2 transition-all whitespace-nowrap ${
+              activeTab === 'migrations'
+                ? 'border-indigo-500 text-indigo-400 bg-indigo-500/5'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Database className="w-4 h-4" />
+            <span>5. Room DB Migrations</span>
+          </button>
         </div>
       </header>
 
@@ -121,6 +135,7 @@ export default function App() {
         {activeTab === 'calculator' && <RepaymentSandbox />}
         {activeTab === 'preview' && <CardSimulator />}
         {activeTab === 'architecture' && <ArchitectureView />}
+        {activeTab === 'migrations' && <RoomMigrationsView />}
       </main>
 
       {/* Footer */}
