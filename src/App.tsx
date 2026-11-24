@@ -4,12 +4,16 @@ import { RepaymentSandbox } from './components/RepaymentSandbox';
 import { CardSimulator } from './components/CardSimulator';
 import { ArchitectureView } from './components/ArchitectureView';
 import { RoomMigrationsView } from './components/RoomMigrationsView';
+import { TestingView } from './components/TestingView';
+import { BackgroundTasksView } from './components/BackgroundTasksView';
 import {
   CreditCard,
   Code2,
   Calendar,
   Layers,
   Database,
+  FlaskConical,
+  BellRing,
   Sparkles,
   CheckCircle2,
   Terminal,
@@ -20,7 +24,7 @@ import {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<
-    'code' | 'calculator' | 'preview' | 'architecture' | 'migrations'
+    'code' | 'calculator' | 'preview' | 'architecture' | 'migrations' | 'testing' | 'background'
   >('code');
 
   return (
@@ -126,6 +130,30 @@ export default function App() {
             <Database className="w-4 h-4" />
             <span>5. Room DB Migrations</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab('testing')}
+            className={`flex items-center gap-2 py-3 px-4 text-xs font-semibold border-b-2 transition-all whitespace-nowrap ${
+              activeTab === 'testing'
+                ? 'border-indigo-500 text-indigo-400 bg-indigo-500/5'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <FlaskConical className="w-4 h-4" />
+            <span>6. Unit Testing (MockK & Turbine)</span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab('background')}
+            className={`flex items-center gap-2 py-3 px-4 text-xs font-semibold border-b-2 transition-all whitespace-nowrap ${
+              activeTab === 'background'
+                ? 'border-indigo-500 text-indigo-400 bg-indigo-500/5'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <BellRing className="w-4 h-4" />
+            <span>7. Background Tasks (WorkManager)</span>
+          </button>
         </div>
       </header>
 
@@ -136,6 +164,8 @@ export default function App() {
         {activeTab === 'preview' && <CardSimulator />}
         {activeTab === 'architecture' && <ArchitectureView />}
         {activeTab === 'migrations' && <RoomMigrationsView />}
+        {activeTab === 'testing' && <TestingView />}
+        {activeTab === 'background' && <BackgroundTasksView />}
       </main>
 
       {/* Footer */}
