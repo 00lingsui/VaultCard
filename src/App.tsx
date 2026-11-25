@@ -6,6 +6,7 @@ import { ArchitectureView } from './components/ArchitectureView';
 import { RoomMigrationsView } from './components/RoomMigrationsView';
 import { TestingView } from './components/TestingView';
 import { BackgroundTasksView } from './components/BackgroundTasksView';
+import { SecurityView } from './components/SecurityView';
 import {
   CreditCard,
   Code2,
@@ -24,7 +25,7 @@ import {
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<
-    'code' | 'calculator' | 'preview' | 'architecture' | 'migrations' | 'testing' | 'background'
+    'code' | 'calculator' | 'preview' | 'architecture' | 'migrations' | 'testing' | 'background' | 'security'
   >('code');
 
   return (
@@ -154,6 +155,18 @@ export default function App() {
             <BellRing className="w-4 h-4" />
             <span>7. Background Tasks (WorkManager)</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab('security')}
+            className={`flex items-center gap-2 py-3 px-4 text-xs font-semibold border-b-2 transition-all whitespace-nowrap ${
+              activeTab === 'security'
+                ? 'border-indigo-500 text-indigo-400 bg-indigo-500/5'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <ShieldCheck className="w-4 h-4" />
+            <span>8. Security & R8 Rules</span>
+          </button>
         </div>
       </header>
 
@@ -166,6 +179,7 @@ export default function App() {
         {activeTab === 'migrations' && <RoomMigrationsView />}
         {activeTab === 'testing' && <TestingView />}
         {activeTab === 'background' && <BackgroundTasksView />}
+        {activeTab === 'security' && <SecurityView />}
       </main>
 
       {/* Footer */}
